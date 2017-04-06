@@ -1,0 +1,156 @@
+<?php
+
+namespace AppBundle\Document;
+
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+
+/**
+ * @MongoDB\EmbeddedDocument
+ */
+class TriadicConcept
+{
+
+    /**
+     * @MongoDB\EmbedMany(targetDocument="ConceptObjectId")
+     */
+    protected $objects;
+
+    /**
+     * @MongoDB\EmbedMany(targetDocument="ConceptAttributeId")
+     */
+    protected $attributes;
+
+    /**
+     * @MongoDB\EmbedMany(targetDocument="ConceptConditionId")
+     */
+    protected $conditions;
+
+    public function __construct()
+    {
+        $this->objects = new ArrayCollection();
+        $this->attributes = new ArrayCollection();
+        $this->conditions = new ArrayCollection();
+    }
+
+    public function toArray()
+    {
+        $data = array(
+            'objects' => array(),
+            'attributes' => array(),
+            'conditions' => array(),
+        );
+
+        /** @var ConceptObjectId $object */
+        foreach ($this->getObjects() as $object) {
+            $data['objects'][] = $this->getObjects()[$object->getId()];
+        }
+
+        /** @var ConceptAttributeId $object */
+        foreach ($this->getAttributes() as $attribute) {
+            $data['attributes'][] = $this->getAttributes()[$attribute->getId()];
+        }
+
+        /** @var ConceptConditionId $object */
+        foreach ($this->getConditions() as $condition) {
+            $data['conditions'][] = $this->getConditions()[$condition->getId()];
+        }
+
+        sort($data['objects']);
+        sort($data['attributes']);
+        sort($data['conditions']);
+
+        return $data;
+    }
+
+    /**
+     * Add object
+     *
+     * @param ConceptObjectId $object
+     */
+    public function addObject(ConceptObjectId $object)
+    {
+        $this->objects[] = $object;
+    }
+
+    /**
+     * Remove object
+     *
+     * @param ConceptObjectId $object
+     */
+    public function removeObject(ConceptObjectId $object)
+    {
+        $this->objects->removeElement($object);
+    }
+
+    /**
+     * Get objects
+     *
+     * @return Collection $objects
+     */
+    public function getObjects()
+    {
+        return $this->objects;
+    }
+
+    /**
+     * Add attribute
+     *
+     * @param ConceptAttributeId $attribute
+     */
+    public function addAttribute(ConceptAttributeId $attribute)
+    {
+        $this->attributes[] = $attribute;
+    }
+
+    /**
+     * Remove attribute
+     *
+     * @param ConceptAttributeId $attribute
+     */
+    public function removeAttribute(ConceptAttributeId $attribute)
+    {
+        $this->attributes->removeElement($attribute);
+    }
+
+    /**
+     * Get attributes
+     *
+     * @return Collection $attributes
+     */
+    public function getAttributes()
+    {
+        return $this->attributes;
+    }
+
+    /**
+     * Add condition
+     *
+     * @param ConceptConditionId $condition
+     */
+    public function addCondition(ConceptConditionId $condition)
+    {
+        $this->conditions[] = $condition;
+    }
+
+    /**
+     * Remove condition
+     *
+     * @param ConceptConditionId $condition
+     */
+    public function removeCondition(ConceptConditionId $condition)
+    {
+        $this->conditions->removeElement($condition);
+    }
+
+    /**
+     * Get conditions
+     *
+     * @return Collection $conditions
+     */
+    public function getConditions()
+    {
+        return $this->conditions;
+    }
+}

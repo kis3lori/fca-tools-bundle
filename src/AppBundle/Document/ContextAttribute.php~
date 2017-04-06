@@ -1,0 +1,52 @@
+<?php
+
+namespace AppBundle\Document;
+
+use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+
+/**
+ * @MongoDB\EmbeddedDocument
+ */
+class ContextAttribute {
+
+    /**
+     * @MongoDB\Field(type="string", name="n")
+     */
+    protected $name;
+
+    /**
+     * ContextAttribute constructor.
+     * @param $name
+     */
+    public function __construct($name)
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * Set name
+     *
+     * @param string $name
+     * @return self
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string $name
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    function __toString()
+    {
+        return $this->name;
+    }
+}

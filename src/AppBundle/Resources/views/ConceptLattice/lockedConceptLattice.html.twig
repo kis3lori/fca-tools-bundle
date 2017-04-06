@@ -1,0 +1,63 @@
+{% extends "@App/layout.html.twig" %}
+
+{% block body %}
+    {# context \AppBundle\Document\Context #}
+    <div>
+        <h1 class="page-header">{{ context.name }} - Locked concept lattice</h1>
+
+        <ol class="breadcrumb">
+            <li><a href="{{ path("homepage") }}">Home</a></li>
+            <li><a href="{{ path("view_context", {"id": context.id }) }}">{{ context.name }}</a></li>
+            <li class="active">Locked concept lattice</li>
+        </ol>
+
+        <div class="dimensions-lock-list">
+            {% for index, dimension in context.dimensions %}
+                <div class="btn-group" role="group" aria-label="{{ fcaParams['dimensionsPlural'][index]|capitalize }}"
+                     data-group="{{ fcaParams['dimensions'][index] }}">
+                    {% for elem in dimension %}
+                        <button type="button" data-value="{{ elem }}"
+                                class="btn {{ lockType == fcaParams['dimensions'][index] and (elem in lockedElements)?"btn-success":"btn-default" }}">
+                            {{ elem }}
+                        </button>
+                    {% endfor %}
+                </div>
+
+                <div class="clearfix"></div>
+            {% endfor %}
+
+            {% if viewMode == "1" %}
+                {% set routeName = "view_locked_concept_lattice" %}
+            {% elseif viewMode == "2" %}
+                {% set routeName = "view_large_context_concept_lattice" %}
+            {% endif %}
+
+            <p>
+                <a href="{{ url(routeName, {"id": context.id, "lockType": "_lockType_"}) }}"
+                   class="apply-dimensions-lock btn btn-primary main-lock-btn">
+                    Apply
+                </a>
+            </p>
+        </div>
+    </div>
+
+    {{ include("@App/ConceptLattice/Helper/conceptLatticeSettings.html.twig") }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script src="{{ asset('bundles/app/scripts/fca-graph.js') }}"></script>
+
+    <script>
+        var LOCKABLE_ELEMENTS = {{ lockableElements|json_encode|raw }};
+
+        $(document).ready(function () {
+            {% if viewMode == "1" %}
+            getConceptLatticeFromServer("{{ url("get_locked_concept_lattice_data", {"id": context.id, "lockType": lockType, "lock": lockedElements})|raw }}");
+            {% elseif viewMode == "2" %}
+            getConceptLatticeFromServer("{{ url("get_large_context_concept_lattice_data", {"id": context.id, "lockType": lockType, "lock": lockedElements})|raw }}");
+            {% endif %}
+        });
+    </script>
+{% endblock %}

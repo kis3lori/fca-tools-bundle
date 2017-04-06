@@ -1,0 +1,16 @@
+{% extends "@App/layout.html.twig" %}
+
+{% block body %}
+    <div>
+        <h1 class="page-header">List of contexts</h1>
+
+        <ol class="breadcrumb">
+            <li><a href="{{ path("homepage") }}">Home</a></li>
+            <li class="active">Contexts</li>
+        </ol>
+
+        <div class="table-responsive">
+            {{ include("@App/Context/Helper/contextList.html.twig") }}
+        </div>
+    </div>
+{% endblock %}

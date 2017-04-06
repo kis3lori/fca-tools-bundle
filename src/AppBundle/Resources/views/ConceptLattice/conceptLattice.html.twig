@@ -1,0 +1,28 @@
+{% extends "@App/layout.html.twig" %}
+
+{% block body %}
+    {# context \AppBundle\Document\Context #}
+    <div>
+        <h1 class="page-header">{{ context.name }} - Concept Lattice</h1>
+
+        <ol class="breadcrumb">
+            <li><a href="{{ path("homepage") }}">Home</a></li>
+            <li><a href="{{ path("view_context", {"id": context.id }) }}">{{ context.name }}</a></li>
+            <li class="active">Concept Lattice</li>
+        </ol>
+    </div>
+
+    {{ include("@App/ConceptLattice/Helper/conceptLatticeSettings.html.twig") }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script src="{{ asset('bundles/app/scripts/fca-graph.js') }}"></script>
+
+    <script>
+        $(document).ready(function() {
+            getConceptLatticeFromServer("{{ url("get_concept_lattice_data", {"id": context.id}) }}");
+        });
+    </script>
+{% endblock %}

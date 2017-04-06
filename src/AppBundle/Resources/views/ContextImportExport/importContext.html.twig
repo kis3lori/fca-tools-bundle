@@ -1,0 +1,65 @@
+{% extends "@App/layout.html.twig" %}
+
+{% block body %}
+    <div>
+        <h1 class="page-header">Import a context</h1>
+
+        <ol class="breadcrumb">
+            <li><a href="{{ path("homepage") }}">Home</a></li>
+            <li><a href="{{ path("list_user_contexts") }}">My Contexts</a></li>
+            <li class="active">Import Context</li>
+        </ol>
+
+        <form action="{{ path("import_context") }}" method="post" enctype="multipart/form-data" >
+            <div class="form-group row">
+                <label class="col-sm-2 form-control-label" for="name">Name:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="text" name="name" id="name" />
+                </div>
+            </div>
+
+            {% if errors['name'] is defined %}
+                <p class="bg-danger error-message">{{ errors['name'] }}</p>
+            {% endif %}
+
+            <div class="form-group row">
+                <label class="col-sm-2 form-control-label" for="numericalDimensions">Numerical dimensions:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="text" name="numericalDimensions" id="numericalDimensions" />
+                    <p class="hint-message text-info">Comma separated indexes of the numerical dimensions. (0-indexed)</p>
+                </div>
+            </div>
+
+            {% if errors['numericalDimensions'] is defined %}
+                <p class="bg-danger error-message">{{ errors['numericalDimensions'] }}</p>
+            {% endif %}
+
+            <div class="form-group row">
+                <label class="col-sm-2 form-control-label" for="temporalDimensions">Temporal dimensions:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="text" name="temporalDimensions" id="temporalDimensions" />
+                    <p class="hint-message text-info">Comma separated indexes of the temporal dimensions. (0-indexed)</p>
+                </div>
+            </div>
+
+            {% if errors['temporalDimensions'] is defined %}
+                <p class="bg-danger error-message">{{ errors['temporalDimensions'] }}</p>
+            {% endif %}
+
+            <div class="form-group row">
+                <label class="col-sm-2 form-control-label" for="file">File:</label>
+                <div class="col-sm-10">
+                    <input class="form-control-file" type="file" name="file" />
+                    <small class="text-muted">Only .ctx and .csv files supported.</small>
+                </div>
+            </div>
+
+            {% if errors['file'] is defined %}
+                <p class="bg-danger error-message">{{ errors['file'] }}</p>
+            {% endif %}
+
+            <input type="submit" class="btn btn-primary" />
+            <a class="btn btn-danger" href="{{ path("list_user_contexts") }}">Cancel</a>
+        </form>
+    </div>
+{% endblock %}

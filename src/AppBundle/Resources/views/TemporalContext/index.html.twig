@@ -1,0 +1,34 @@
+{% extends "@App/layout.html.twig" %}
+
+{% block body %}
+    <div>
+        <h1 class="page-header">Temporal context dashboard</h1>
+
+        <ol class="breadcrumb">
+            <li><a href="{{ path("homepage") }}">Home</a></li>
+            <li class="active">Temporal context dashboard</li>
+        </ol>
+
+        <form action="{{ path("generate_temporal_evolution", {"id": context.id}) }}">
+            <h2>Generate temporal concepts</h2>
+
+            <p>This tools will split the context in multiple contexts, one for each value of the temporal dimension.</p>
+            <p>The result is a list of concepts and a concept lattice for each sub-context.</p>
+
+            {% if context.temporalDimensions|length > 1 %}
+                <div class="form-group">
+                    <label for="dimension">Select the temporal dimension to use:</label>
+                    <select name="dimension" id="dimension">
+                        {% for dim in context.temporalDimensions %}
+                            <option value="dim">{{ fcaParams['dimensionsPlural'][dim]|capitalize }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% else %}
+                <input type="hidden" name="dimension" value="{{ context.temporalDimensions[0] }}" />
+            {% endif %}
+
+            <input type="submit" class="btn btn-success" value="Generate"/>
+        </form>
+    </div>
+{% endblock %}

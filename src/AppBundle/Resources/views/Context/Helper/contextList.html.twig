@@ -1,0 +1,42 @@
+<table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Is Public</th>
+        <th>Number of dimensions</th>
+        <th>Number of incidences</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {# context \AppBundle\Document\Context #}
+    {% for context in contexts %}
+        <tr>
+            <td>
+                {{ context.name }}
+            </td>
+
+            <td>
+                {{ context.isPublic ? "Yes" : "No" }}
+            </td>
+
+            <td>
+                {{ context.dimCount }}
+            </td>
+
+            <td>
+                {{ context.relations|length }}
+            </td>
+
+            <td>
+                <a class="btn btn-primary" href="{{ path('view_context', {'id': context.id}) }}">View</a>
+
+                {% if context.user == app.user %}
+                    <a class="btn btn-danger" href="{{ path('delete_context', {'id': context.id}) }}">Delete</a>
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

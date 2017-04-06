@@ -1,0 +1,21 @@
+{% extends "@App/layout.html.twig" %}
+
+{% block body %}
+    <div>
+        <h1 class="page-header">My contexts</h1>
+
+        <ol class="breadcrumb">
+            <li><a href="{{ path("homepage") }}">Home</a></li>
+            <li class="active">My Contexts</li>
+        </ol>
+
+        <div class="table-responsive">
+            <p>
+                <a class="btn btn-primary" href="{{ path("import_context") }}">Import context</a>
+                <a class="btn btn-primary" href="{{ path("create_new_context") }}">Create context</a>
+            </p>
+
+            {{ include("@App/Context/Helper/contextList.html.twig") }}
+        </div>
+    </div>
+{% endblock %}

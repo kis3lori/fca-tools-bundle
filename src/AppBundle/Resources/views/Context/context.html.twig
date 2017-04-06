@@ -1,0 +1,179 @@
+{% extends "@App/layout.html.twig" %}
+
+{% block body %}
+{# context \AppBundle\Document\Context #}
+
+<div>
+    <h1 class="page-header">{{ context.name }}</h1>
+
+    <ol class="breadcrumb">
+        <li><a href="{{ path("homepage") }}">Home</a></li>
+        <li><a href="{{ path("context_homepage") }}">Contexts</a></li>
+        <li class="active">{{ context.name }}</li>
+    </ol>
+
+    <h2>Actions</h2>
+
+    {% if context.user == app.user %}
+        <p>
+            {% if context.concepts is empty %}
+                <a class="btn btn-primary" href="{{ path("generate_concepts", {"id": context.id}) }}">
+                    Generate Concepts
+                </a>
+            {% else %}
+                <a class="btn btn-default" href="{{ path("generate_concepts", {"id": context.id}) }}">
+                    Regenerate Concepts
+                </a>
+            {% endif %}
+
+            {% if context.dimCount == 2 %}
+                {% if context.conceptLattice is empty %}
+                    <a class="btn btn-primary" href="{{ path("generate_concept_lattice", {"id": context.id}) }}">
+                        Generate Concept Lattice
+                    </a>
+                {% else %}
+                    <a class="btn btn-default" href="{{ path("generate_concept_lattice", {"id": context.id}) }}">
+                        Regenerate Concept Lattice
+                    </a>
+                {% endif %}
+            {% endif %}
+
+            {% if context.isPublic %}
+                <a class="btn btn-default" href="{{ path("mark_context_private", {"id": context.id}) }}">
+                    Make context private
+                </a>
+            {% else %}
+                <a class="btn btn-primary" href="{{ path("mark_context_public", {"id": context.id}) }}">
+                    Make context public
+                </a>
+            {% endif %}
+        </p>
+    {% endif %}
+
+    <p>
+        {% if context.temporalDimensions is not null and context.dimCount > 2 %}
+            <a class="btn btn-primary" href="{{ path("temporal_context", {"id": context.id}) }}">
+                Temporal context dashboard
+            </a>
+        {% endif %}
+
+        {% if context.dimCount == 2 %}
+            <a class="btn btn-primary" href="{{ path("export_context_cxt", {"id": context.id}) }}">
+                Export context as cxt
+            </a>
+        {% endif %}
+
+        <a class="btn btn-primary" href="{{ path("export_context_csv", {"id": context.id}) }}">
+            Export context as csv
+        </a>
+
+        {% if context.dimCount == 2 and context.conceptLattice != null %}
+            <a class="btn btn-primary" href="{{ path("view_concept_lattice", {"id": context.id}) }}">
+                View Concept Lattice
+            </a>
+        {% endif %}
+
+        <a class="btn btn-primary" href="{{ path("concept_finder", {"id": context.id}) }}">
+            Find a concept
+        </a>
+    </p>
+
+    {% for index, elements in context.dimensions %}
+        {% set dimension = fcaParams['dimensions'][index] %}
+        <div class="objects">
+            <h2 class="pull-left">{{ dimension|capitalize }} ({{ elements|length }})</h2>
+            <button class="btn btn-primary expand-button pull-left" type="button" data-toggle="collapse"
+                    data-target="#{{ dimension }}-list" aria-expanded="false" aria-controls="collapse">
+                Show
+            </button>
+
+            <div class="clearfix"></div>
+
+            <ul class="list-inline collapse" id="{{ dimension }}-list">
+                {% for elem in elements|slice(0, 100) %}
+                    <li>
+                        {{ elem }}
+                    </li>
+                {% endfor %}
+                {% if (elements|length) > 100 %}
+                    <li>...</li>
+                {% endif %}
+            </ul>
+        </div>
+    {% endfor %}
+
+    <div class="relations">
+        <h2 class="pull-left">Incidences ({{ context.relations|length }})</h2>
+        <button class="btn btn-primary expand-button pull-left" type="button" data-toggle="collapse"
+                data-target="#relation-list" aria-expanded="false" aria-controls="collapse">
+            Show
+        </button>
+
+        <div class="clearfix"></div>
+
+        <ul class="list-group collapse" id="relation-list">
+            {% for relation in context.relations|slice(0, 100) %}
+                <li class="list-group-item">
+                    {% for index, elemId in relation %}
+                        {{ context.element(index, elemId) }} {{ loop.last ? "" : "-" }}
+                    {% endfor %}
+                </li>
+            {% endfor %}
+            {% if (context.relations|length) > 100 %}
+                <li class="list-group-item">...</li>
+            {% endif %}
+        </ul>
+    </div>
+
+    {% if context.concepts is not empty %}
+    <div class="concepts">
+        <h2 class="pull-left">Concepts ({{ context.concepts|length }})</h2>
+        <button class="btn btn-primary expand-button pull-left" type="button" data-toggle="collapse"
+                data-target="#concept-list" aria-expanded="false" aria-controls="collapse">
+            Show
+        </button>
+
+        <div class="clearfix"></div>
+
+        <ul class="list-group collapse" id="concept-list">
+            {% for concept in context.concepts|slice(0, 100) %}
+                <li class="list-group-item">
+                    {% for index, elements in concept %}
+                        <ul class="list-inline">
+                            <li>{{ fcaParams['dimensionsPlural'][index]|capitalize }}:</li>
+
+                            {% if context.dimCount == 3 %}
+                                {% set lock = "?" %}
+                                {% for elemId in elements %}
+                                    {% set lock = lock ~ "lock[]=" ~ context.element(index, elemId) %}
+                                    {% if not loop.last %}
+                                        {% set lock = lock ~ "&" %}
+                                    {% endif %}
+                                {% endfor %}
+
+                                <li>
+                                    <a class="btn btn-primary btn-xs"
+                                       href="{{ path("view_locked_concept_lattice", {
+                                           "id": context.id,
+                                           "lockType": fcaParams['dimensions'][index]
+                                       }) ~ lock }}">
+                                        Lock
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {% for elemId in elements %}
+                                <li>{{ context.element(index, elemId) }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endfor %}
+                </li>
+            {% endfor %}
+            {% if (context.concepts|length) > 100 %}
+            <li class="list-group-item>...</li>
+                    {% endif %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

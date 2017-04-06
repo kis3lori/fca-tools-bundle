@@ -1,0 +1,227 @@
+{% extends "@App/layout.html.twig" %}
+
+{% block body %}
+    {# context \AppBundle\Document\Context #}
+    <div class="find-concept-page">
+        <h1 class="page-header">{{ context.name }} - Concept Finder</h1>
+
+        <ol class="breadcrumb">
+            <li><a href="{{ path("homepage") }}">Home</a></li>
+            <li><a href="{{ path("context_homepage") }}">Contexts</a></li>
+            <li><a href="{{ path("view_context", {"id": context.id }) }}">{{ context.name }}</a></li>
+            <li class="active">Concept Finder</li>
+        </ol>
+
+        <div class="delete-bookmark-url hidden"
+             data-url="{{ url("concept_finder_delete_bookmark", {"id": context.id}) }}"></div>
+        <div class="operation-history well well-sm">
+            <ul>
+                {% for constraint in searchContext['history'] %}
+                    {% if not loop.first %}
+                        <li class="arrow-right"></li>
+                    {% endif %}
+                    <li class="btn-group operation">
+                        {% if constraint['state'] == 'in' %}
+                            <span class="btn btn-xs btn-success">In</span>
+                        {% else %}
+                            <span class="btn btn-xs btn-danger">Out</span>
+                        {% endif %}
+                        <span class="btn btn-xs btn-{{ fcaParams['dimensionColorClasses'][constraint['dimension']] }}"
+                              data-dimension="{{ constraint['dimension'] }}" data-index="{{ constraint['index'] }}">
+                            #{{ constraint['index'] + 1 }}
+                        </span>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <div class="concept-finder-actions pull-right">
+                <button class="btn btn-primary btn-xs save-concept-finder-bookmark"
+                        data-url="{{ url("concept_finder_bookmark", {"id": context.id}) }}">
+                    Save
+                </button>
+                <button class="btn btn-primary btn-xs view-concept-finder-bookmarks" data-url="#">
+                    Bookmarks
+                </button>
+                <button class="btn btn-danger btn-xs reset-concept-finder"
+                        data-url="{{ url("concept_finder_reset", {"id": context.id}) }}">
+                    Reset
+                </button>
+            </div>
+
+            <div class="clearfix"></div>
+        </div>
+
+        <div class="hint-message">
+            <p class="bg-info message state-start{{ state['status'] == "start"?" active":"" }}">
+                You can now start including and excluding elements from your concept.
+            </p>
+            <p class="bg-info message state-intermediary{{ state['status'] == "intermediary"?" active":"" }}">
+                A concept was not yet pin-pointed but the constraints have been updated to prevent reaching an invalid
+                state.
+            </p>
+            <p class="bg-danger message state-unsatisfiable{{ state['status'] == "unsatisfiable"?" active":"" }}">
+                The current constraints have lead to an invalid state. Free or change some constraints in order to
+                continue searching.
+            </p>
+            <p class="bg-success message state-done{{ state['status'] == "done"?" active":"" }}">
+                A concept was found using the provided constraints.
+            </p>
+        </div>
+
+        <div class="row">
+            {% for dimKey, dimension in context.dimensions %}
+                <ul class="filter col-sm-{{ 12 / context.dimCount }}" data-dim="{{ dimKey }}">
+                    <li class="form-group-sm">
+                        <input type="text" placeholder="filter..." name="filter"
+                               class="filter form-control" />
+                    </li>
+                    <li class="pull-right">
+                        <button class="apply-filter btn btn-sm btn-primary">Apply</button>
+                    </li>
+                </ul>
+            {% endfor %}
+        </div>
+
+        <form action="{{ path("concept_finder", {"id": context.id}) }}" method="post"
+              data-ajax-url="{{ url("concept_finder_update", {"id": context.id}) }}">
+            <div class="row elements-selector-wrapper">
+                {% for dimKey, dimension in context.dimensions %}
+                    {% set dimensionName = fcaParams["dimensions"][dimKey] %}
+                    <div class="col-sm-{{ 12 / context.dimCount }} scrollable-container dim-{{ dimKey }}">
+                        <div class="elements-container">
+                            {% for key, element in dimension|slice(0, 100) %}
+                                {% set stateNo = 1 %}
+                                {% if mappedConstraints[dimKey][key] is defined %}
+                                    {% if mappedConstraints[dimKey][key] == "out" %}
+                                        {% set stateNo = 0 %}
+                                    {% else %}
+                                        {% set stateNo = 2 %}
+                                    {% endif %}
+                                {% endif %}
+                                {% if stateNo < 2 %}
+                                    {% set nrPx = 32 * stateNo %}
+                                {% else %}
+                                    {% set nrPx = 63 %}
+                                {% endif %}
+
+                                <div class="item-switch well well-sm" data-index="{{ key }}">
+                                    <div class="three-way-button pull-left" data-toggle="buttons"
+                                         data-dimension="{{ dimKey }}" data-index="{{ key }}">
+                                        <div class="buttons btn-group btn-group-xs input-group">
+                                            <label class="btn btn-xs btn-danger three-way-option{{ stateNo == 0 ? " active disabled" : "" }}"
+                                                   data-state="out">
+                                                <input type="radio" name="{{ dimensionName }}[{{ key }}]"
+                                                       value="out"{{ stateNo == 0 ? " checked=\"checked\"" : "" }}/> Out
+                                            </label>
+                                            <label class="btn btn-xs btn-default three-way-option disabled{{ stateNo == 1 ? " active" : "" }}"
+                                                   data-state="">
+                                                <input type="radio" name="{{ dimensionName }}[{{ key }}]"
+                                                       value=""{{ stateNo == 1 ? " checked=\"checked\"" : "" }}/> &nbsp;
+                                            </label>
+                                            <label class="btn btn-xs btn-success three-way-option{{ stateNo == 2 ? " active disabled" : "" }}"
+                                                   data-state="in">
+                                                <input type="radio" name="{{ dimensionName }}[{{ key }}]"
+                                                       value="in"{{ stateNo == 2 ? " checked=\"checked\"" : "" }}/> In
+                                            </label>
+                                        </div>
+                                        <div class="slider" style="left: {{ nrPx }}px"></div>
+                                        <div class="slider-track"></div>
+                                    </div>
+
+                                    <p>{{ element }}</p>
+
+                                    <div class="ribbon"><span>#{{ loop.index }}</span></div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="row">
+                {% set pageSize = fcaParams["conceptFinderItemsPerPage"] %}
+                {% for dimKey, dimension in context.dimensions %}
+                    {% set nrElems = dimension|length %}
+                    {% set nrPages = ((nrElems - 1) // pageSize) + 1 %}
+                    {% if nrPages > 1 %}
+                        <ul class="pager small col-sm-{{ 12 / context.dimCount }}" data-dim="{{ dimKey }}">
+                            <li class="nav-to-prev-page disabled">
+                                <a href="#">
+                                    <span aria-hidden="true">&larr;</span>
+                                </a>
+                            </li>
+                            <li>
+                                <span>
+                                    <input type="text" class="pager-input" value="1" placeholder="1"/> / {{ nrPages }}
+                                </span>
+                            </li>
+                            <li class="nav-to-next-page">
+                                <a href="#">
+                                    <span aria-hidden="true">&rarr;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </form>
+
+        {% if state['status'] == "done" and state['foundConcept'] != null %}
+            <div class="found-concept concepts">
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        {% for dimKey, elements in state['foundConcept'] %}
+                            <ul class="list-inline">
+                                <li>{{ fcaParams['dimensionsPlural'][dimKey]|capitalize }}:</li>
+
+                                {% if context.dimCount == 3 %}
+                                    {% set lock = "?" %}
+                                    {% for elemId in elements %}
+                                        {% set lock = lock ~ "lock[]=" ~ context.element(dimKey, elemId) %}
+                                        {% if not loop.last %}
+                                            {% set lock = lock ~ "&" %}
+                                        {% endif %}
+                                    {% endfor %}
+
+                                    <li>
+                                        <a class="btn btn-primary btn-xs" target="_blank"
+                                           href="{{ path(lockedConceptLatticeRouteName, {
+                                               "id": context.id,
+                                               "lockType": fcaParams['dimensions'][dimKey]
+                                           }) ~ lock }}">
+                                            Lock
+                                        </a>
+                                    </li>
+                                {% endif %}
+
+                                {% for elemId in elements %}
+                                    <li>{{ context.element(dimKey, elemId) }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endfor %}
+                    </li>
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/app/scripts/concept-finder.js') }}"></script>
+
+    <script>
+        var CONCEPT_FINDER_DATA = {
+            "dimensions": {{ fcaParams['dimensionsPlural']|slice(0, context.dimCount)|json_encode|raw }},
+            "dimensionColorClasses": {{ fcaParams['dimensionColorClasses']|json_encode|raw }},
+            "contextDimensions": {{ context.dimensions|json_encode|raw }},
+            "searchContext": {{ searchContext|json_encode|raw }},
+            {% if lockedConceptLatticeRouteName %}
+            "lockedConceptLatticeUrl": "{{ url(lockedConceptLatticeRouteName, {"id": context.id, "lockType": "_lockType_"}) }}",
+            {% endif %}
+            "pageSize": {{ fcaParams["conceptFinderItemsPerPage"] }}
+        };
+
+        initConceptFinder();
+    </script>
+{% endblock %}

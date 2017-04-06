@@ -1,0 +1,106 @@
+<?php
+
+namespace AppBundle\Document;
+
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+
+/**
+ * @MongoDB\EmbeddedDocument
+ */
+class TriadicContextConceptLattice
+{
+
+    /**
+     * @MongoDB\EmbedMany(targetDocument="TriadicContextConceptLatticeConcept")
+     */
+    protected $concepts;
+
+    /**
+     * @MongoDB\EmbedMany(targetDocument="ContextConceptLatticeLink")
+     */
+    protected $links;
+
+    public function __construct()
+    {
+        $this->concepts = new ArrayCollection();
+        $this->links = new ArrayCollection();
+    }
+
+    /**
+     * Add concept
+     *
+     * @param TriadicContextConceptLatticeConcept $concept
+     */
+    public function addConcept(TriadicContextConceptLatticeConcept $concept)
+    {
+        $this->concepts[] = $concept;
+    }
+
+    /**
+     * Remove concept
+     *
+     * @param TriadicContextConceptLatticeConcept $concept
+     */
+    public function removeConcept(TriadicContextConceptLatticeConcept $concept)
+    {
+        $this->concepts->removeElement($concept);
+    }
+
+    /**
+     * Get concepts
+     *
+     * @return Collection $concepts
+     */
+    public function getConcepts()
+    {
+        return $this->concepts;
+    }
+
+    /**
+     * @param mixed $concepts
+     */
+    public function setConcepts($concepts)
+    {
+        $this->concepts = $concepts;
+    }
+
+    /**
+     * @param mixed $links
+     */
+    public function setLinks($links)
+    {
+        $this->links = $links;
+    }
+
+    /**
+     * Add link
+     *
+     * @param ContextConceptLatticeLink $link
+     */
+    public function addLink(ContextConceptLatticeLink $link)
+    {
+        $this->links[] = $link;
+    }
+
+    /**
+     * Remove link
+     *
+     * @param ContextConceptLatticeLink $link
+     */
+    public function removeLink(ContextConceptLatticeLink $link)
+    {
+        $this->links->removeElement($link);
+    }
+
+    /**
+     * Get links
+     *
+     * @return Collection $links
+     */
+    public function getLinks()
+    {
+        return $this->links;
+    }
+}

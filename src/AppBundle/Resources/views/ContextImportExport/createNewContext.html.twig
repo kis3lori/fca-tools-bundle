@@ -1,0 +1,184 @@
+{% extends "@App/layout.html.twig" %}
+
+{% block body %}
+    <div class="create-new-context-page">
+        <h1 class="page-header">Create a new context</h1>
+
+        <ol class="breadcrumb">
+            <li><a href="{{ path("homepage") }}">Home</a></li>
+            <li><a href="{{ path("list_user_contexts") }}">My Contexts</a></li>
+            <li class="active">Create Context</li>
+        </ol>
+
+        <form action="{{ path("create_new_context") }}" method="post" class="create-context-form">
+            <div class="form-group row">
+                <label class="col-sm-2 form-control-label" for="name">Name:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="text" name="name" id="name" required="required"
+                           value="{{ app.request.request.get("name", "") }}"/>
+                </div>
+            </div>
+            {% if errors['name'] is defined %}
+                <p class="bg-danger error-message">{{ errors['name'] }}</p>
+            {% endif %}
+
+            <div class="form-group row">
+                <label class="col-sm-2" for="context_type">Context Type</label>
+
+                <div class="col-sm-10">
+                    {% set contextType = app.request.request.get("context_type", "dyadic") %}
+                    <label class="radio-inline">
+                        <input type="radio" name="context_type" value="dyadic"
+                                {{ contextType == "dyadic"?"checked=\"checked\"":"" }}/>
+                        Dyadic
+                    </label>
+
+                    <label class="radio-inline">
+                        <input type="radio" name="context_type" value="triadic"
+                                {{ contextType == "triadic"?"checked=\"checked\"":"" }}/>
+                        Triadic
+                    </label>
+                </div>
+            </div>
+            {% if errors['context_type'] is defined %}
+                <p class="bg-danger error-message">{{ errors['context_type'] }}</p>
+            {% endif %}
+
+            {% set condition = app.request.request.get("conditions", [""])[0] %}
+            <div class="relation-tables">
+                <div class="table-data">
+                    <table class="table table-bordered create-context-table">
+                        <tr class="first-row">
+                            <td class="empty-cell">
+                                <input type="text" class="item-name-input condition-input" placeholder="condition..."
+                                       value="{{ condition }}" {{ contextType == "triadic"?"style=\"display: block\"":"" }}/>
+                            </td>
+
+                            {% for object in app.request.request.get("objects", []) %}
+                                <td class="top-head-cell">
+                                    <input type="text" class="item-name-input" value="{{ object }}"/>
+                                </td>
+                            {% endfor %}
+
+                            <td class="top-head-cell add-object-cell">
+                                <input type="text" class="item-name-input" placeholder="Add object..."/>
+                            </td>
+                        </tr>
+
+                        {% for attribute in app.request.request.get("attributes", []) %}
+                            <tr>
+                                <td class="left-head-cell">
+                                    <input type="text" class="item-name-input" value="{{ attribute }}"/>
+                                </td>
+                                {% for object in app.request.request.get("objects", []) %}
+                                    <td class="data-cell">
+                                        {% set tuple1 = object ~ "###" ~ attribute ~ "###" ~ condition %}
+                                        {% set tuple2 = object ~ "###" ~ attribute %}
+
+                                        {% if tuple1 in app.request.request.get("relation_tuples", [])
+                                        or tuple2 in app.request.request.get("relation_tuples", []) %}
+                                            X
+                                        {% else %}
+                                            &nbsp;
+                                        {% endif %}
+                                    </td>
+                                {% endfor %}
+                                <td>&nbsp;</td>
+                            </tr>
+                        {% endfor %}
+
+                        <tr>
+                            <td class="left-head-cell add-attribute-cell">
+                                <input type="text" class="item-name-input" placeholder="Add attribute..."/>
+                            </td>
+                            {% set nrObjects = app.request.request.get("objects", [])|length %}
+                            {% if nrObjects >= 1 %}
+                                {% for index in 1..nrObjects %}
+                                    <td class="data-cell">&nbsp;</td>
+                                {% endfor %}
+                            {% endif %}
+                            <td>&nbsp;</td>
+                        </tr>
+                    </table>
+                </div>
+
+                {% for condition in app.request.request.get("conditions", []) %}
+                    {% if loop.index != 1 %}
+                        <div class="table-data">
+                            <table class="table table-bordered create-context-table">
+                                <tr class="first-row">
+                                    <td class="empty-cell">
+                                        <input type="text" class="item-name-input condition-input"
+                                               placeholder="condition..."
+                                               style="display: block" value="{{ condition }}"/>
+                                    </td>
+
+                                    {% for object in app.request.request.get("objects", []) %}
+                                        <td class="top-head-cell">
+                                            <input type="text" class="item-name-input" value="{{ object }}"/>
+                                        </td>
+                                    {% endfor %}
+
+                                    <td class="top-head-cell add-object-cell">
+                                        <input type="text" class="item-name-input" placeholder="Add object..."/>
+                                    </td>
+                                </tr>
+
+                                {% for attribute in app.request.request.get("attributes", []) %}
+                                    <tr>
+                                        <td class="left-head-cell">
+                                            <input type="text" class="item-name-input" value="{{ attribute }}"/>
+                                        </td>
+                                        {% for object in app.request.request.get("objects", []) %}
+                                            <td class="data-cell">
+                                                {% set tuple = object ~ "###" ~ attribute ~ "###" ~ condition %}
+                                                {% if tuple in app.request.request.get("relation_tuples") %}
+                                                    X
+                                                {% else %}
+                                                    &nbsp;
+                                                {% endif %}
+                                            </td>
+                                        {% endfor %}
+                                        <td>&nbsp;</td>
+                                    </tr>
+                                {% endfor %}
+
+                                <tr>
+                                    <td class="left-head-cell add-attribute-cell">
+                                        <input type="text" class="item-name-input" placeholder="Add attribute..."/>
+                                    </td>
+                                    {% for index in 1..(app.request.request.get("objects", [])|length) %}
+                                        <td class="data-cell">&nbsp;</td>
+                                    {% endfor %}
+                                    <td>&nbsp;</td>
+                                </tr>
+                            </table>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            {% if errors['objects'] is defined %}
+                <p class="bg-danger error-message">{{ errors['objects'] }}</p>
+            {% endif %}
+            {% if errors['attributes'] is defined %}
+                <p class="bg-danger error-message">{{ errors['attributes'] }}</p>
+            {% endif %}
+            {% if errors['conditions'] is defined %}
+                <p class="bg-danger error-message">{{ errors['conditions'] }}</p>
+            {% endif %}
+
+            <p>
+                <button class="btn btn-primary btn-add-condition"
+                        {{ contextType == "triadic"?"style=\"display: block\"":"" }}>
+                    Add condition
+                </button>
+            </p>
+
+            <p>
+                <button class="btn btn-primary btn-create-context">Submit</button>
+                <a class="btn btn-danger" href="{{ path("list_user_contexts") }}">Cancel</a>
+            </p>
+        </form>
+    </div>
+{% endblock %}
