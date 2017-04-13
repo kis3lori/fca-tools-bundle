@@ -1,8 +1,11 @@
-# FCA-Tools-Bundle
+FCA-Tools-Bundle
+================
 
 This website was built in order to provide users with a diverse set of tools used in Formal Concept Analysis.
+It is available at [FCA Tools Bundle](https://fca-tools-bundle.com)
 
-## Features
+Features
+--------
 * Create dyadic contexts
 * Import dyadic contexts
 * Generate a dyadic context's concepts
@@ -16,3 +19,25 @@ This website was built in order to provide users with a diverse set of tools use
 * Navigate on a large triadic context by using perspectives for which the full list of concepts cannot be computed
 * View and interact with all the public contexts uploaded by other users
 * Make your own context public to other users
+
+Setup
+-----
+
+# Requirements
+
+## For the website
+* A web development environment
+* PHP 5.5.9 or higher
+* MongoDB
+* PHP MongoDB extension. Note: Use the legacy extension for now because Doctrine requires it.
+* The [usual Symfony application requirements](http://symfony.com/doc/current/reference/requirements.html).
+* Composer
+
+## For the scripts
+* ASP progarmming language
+* Python
+
+# Installation
+
+1. Clone the project
+3. Install the project dependencies.
