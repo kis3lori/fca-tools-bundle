@@ -32,12 +32,17 @@ Setup
 * PHP MongoDB extension. Note: Use the legacy extension for now because Doctrine requires it.
 * The [usual Symfony application requirements](http://symfony.com/doc/current/reference/requirements.html).
 * Composer
+* Memcached
 
 ## For the scripts
 * ASP progarmming language
-* Python
+
+## Deprecated
+* Python - A python script used to generate the concept lattice but now it has been replaced with PHP.
+  The script is still there and can be used for reference or for debugging.
 
 # Installation
 
 1. Clone the project
-3. Install the project dependencies.
+2. Install the project dependencies.
+3. Load database
