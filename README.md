@@ -1,11 +1,9 @@
-FCA-Tools-Bundle
-================
+# FCA-Tools-Bundle
 
 This website was built in order to provide users with a diverse set of tools used in Formal Concept Analysis.
 It is available at [FCA Tools Bundle](https://fca-tools-bundle.com)
 
-Features
---------
+## Features
 * Create dyadic contexts
 * Import dyadic contexts
 * Generate a dyadic context's concepts
@@ -20,12 +18,9 @@ Features
 * View and interact with all the public contexts uploaded by other users
 * Make your own context public to other users
 
-Setup
------
+## Requirements
 
-# Requirements
-
-## For the website
+### For the website
 * A web development environment
 * PHP 5.5.9 or higher
 * MongoDB
@@ -34,14 +29,14 @@ Setup
 * Composer
 * Memcached
 
-## For the scripts
+### For the scripts
 * ASP progarmming language
 
-## Deprecated
+### Deprecated
 * Python - A python script used to generate the concept lattice but now it has been replaced with PHP.
   The script is still there and can be used for reference or for debugging.
 
-# Installation
+## Installation
 
 1. Clone the project
 2. Install the project dependencies.
