@@ -9,7 +9,7 @@ Note: Paths and versions may differ from environment to environment. Default pat
   Make sure the PHP 5.6 version is enabled. We will use this one in this guide.
 
 2. Add PHP to the environment path variable.  
-  The path should be `C:\Extra\wamp64\bin\php\php5.6.25`.
+  The path should be `C:\wamp64\bin\php\php5.6.25`.
 
 3. Install [MongoDB](https://www.mongodb.com)  
   Don't forget to create the `C:\data\db\` directory needed to run MongoDB.  
