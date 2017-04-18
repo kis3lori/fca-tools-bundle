@@ -3,6 +3,8 @@
 This website was built in order to provide users with a diverse set of tools used in Formal Concept Analysis.
 It is available at [FCA Tools Bundle](https://fca-tools-bundle.com)
 
+*An in-dept windows installation guide can be found at [docs/windows-install-guide.md](docs/windows-install-guide.md)*
+
 ## Features
 * Create dyadic contexts
 * Import dyadic contexts
@@ -37,8 +39,6 @@ It is available at [FCA Tools Bundle](https://fca-tools-bundle.com)
   The script is still there and can be used for reference or for debugging.
 
 ## Installation
-
-An in-dept windows installation guide can be found at [docs/windows-install-guide.md](docs/windows-install-guide.md)
 
 1. Clone the project
 2. Install the project dependencies.
