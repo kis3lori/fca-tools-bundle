@@ -54,7 +54,7 @@ Note: Paths and versions may differ from environment to environment. Default pat
 11. Load the MongoDB database  
   Run `mongorestore --db fca-tools-bundle dump/fca-tools-bundle` in the project root directory.
 
-12. Open your newly installed <a href="http://localhost/fca-tools-bundle/web/app_dev.php" target="_blank">website</a>
+12. Open your newly installed [website](http://localhost/fca-tools-bundle/web/app_dev.php).
 
 ## Install other programming languages used by the website.
 
