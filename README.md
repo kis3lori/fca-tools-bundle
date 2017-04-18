@@ -38,6 +38,8 @@ It is available at [FCA Tools Bundle](https://fca-tools-bundle.com)
 
 ## Installation
 
+An in-dept windows installation guide can be found at [docs/windows-install-guide.md](docs/windows-install-guide.md)
+
 1. Clone the project
 2. Install the project dependencies.
 3. Load database
