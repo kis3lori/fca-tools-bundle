@@ -50,13 +50,15 @@ class ContextService
         if ($context->getDimCount() == 2) {
             $concepts = $this->generateDyadicConcepts($context);
         } else if ($context->getDimCount() >= 3) {
-            $concepts = $this->generateTriadicConcepts($context);
+            $concepts = $this->generateMultiDimensionalConcepts($context);
         }
 
         return $concepts;
     }
 
     /**
+     * Generate the concepts of a dyadic context using the InClose2 algorithm.
+     *
      * @param Context $context
      * @return array
      */
@@ -76,7 +78,7 @@ class ContextService
         $scriptPath = $this->scriptDir . "InClose2.exe " . $dataFilePath . " " . $resultFilePath;
 
         $this->statisticsService->startStatisticsCounter();
-        $error = exec("cd " . $this->scriptDir . " && " . $scriptPath);
+        exec("cd " . $this->scriptDir . " && " . $scriptPath);
         $this->statisticsService->stopCounterAndLogStatistics("generate dyadic concepts script", $context);
 
         $json = file_get_contents($resultFilePath);
@@ -108,6 +110,8 @@ class ContextService
     }
 
     /**
+     * Generate the concepts of a triadic context.
+     *
      * @param Context $context
      * @param string $alg The algorithm to use
      * @return array
@@ -123,6 +127,17 @@ class ContextService
                 return $this->generateTriadicConceptsUsingDataPeeler($context);
                 break;
         }
+    }
+
+    /**
+     * Generate the concepts of a multi-dimensional context
+     *
+     * @param Context $context
+     * @return array
+     */
+    public function generateMultiDimensionalConcepts($context)
+    {
+        return $this->generateTriadicConceptsUsingDataPeeler($context);
     }
 
     /**
@@ -201,11 +216,10 @@ class ContextService
         $script = "d-peeler " . $dataFilePath . " -o " . $resultFilePath . " --ids=\",\" --iis=\"#\" --ods=\"#\"";
 
         $this->statisticsService->startStatisticsCounter();
-        $error = exec("cd " . $this->scriptDir . " && " . $script);
+        exec("cd " . $this->scriptDir . " && " . $script);
         $this->statisticsService->stopCounterAndLogStatistics("generate triadic concepts script", $context);
 
         $data = file_get_contents($resultFilePath);
-        var_dump($data); exit;
 
         unlink($dataFilePath);
         unlink($resultFilePath);
@@ -334,6 +348,8 @@ class ContextService
     }
 
     /**
+     * Generate a temporary file name with the given extension.
+     *
      * @param String $extension
      * @return string
      */
@@ -343,6 +359,8 @@ class ContextService
     }
 
     /**
+     * Generate and save the ".cxt" file of a context.
+     *
      * @param $context Context
      */
     public function generateContextFile($context)
@@ -405,6 +423,8 @@ class ContextService
     }
 
     /**
+     * Generate the ".csv" file of a context and save it in the given path.
+     *
      * @param $context Context
      * @param $path
      */
@@ -428,6 +448,9 @@ class ContextService
     }
 
     /**
+     * Generate a simplified version of the ".csv" file that is used by the data-peeler algorithm
+     * and save it in the given path.
+     *
      * @param $context Context
      * @param $path
      */
@@ -571,6 +594,9 @@ class ContextService
     }
 
     /**
+     * Generate the parsed concept lattice of a context.
+     * This representation of the concept lattice is used by the javascript to display it.
+     *
      * @param $context Context
      * @return array
      */
@@ -647,6 +673,10 @@ class ContextService
     }
 
     /**
+     * Attach the concepts of the triadic context to the concept lattice of the dyadic context.
+     * This dyadic context should have been generated from the original triadic context
+     * based on a set of locked elements.
+     *
      * @param array $parsedConceptLattice
      * @param Context $context
      * @return array
@@ -681,7 +711,8 @@ class ContextService
     }
 
     /**
-     * Get the associated triadic context of a two dimensional context
+     * Get the associated triadic context of a two dimensional context.
+     * This is possible if both contexts have their concepts generated.
      *
      * @param Context $dyadicContext
      * @param Context $triadicContext
@@ -716,6 +747,7 @@ class ContextService
 
     /**
      * Generate the associated triadic context of a two dimensional context
+     * This is the case if the parent triadic context does not have the list of concepts generated.
      *
      * @param Context $dyadicContext
      * @param Context $triadicContext
@@ -776,6 +808,9 @@ class ContextService
     }
 
     /**
+     * Compute the set of elements (objects, attributes, etc.) that are part of a concept.
+     * These sets represent the lockable sets of a triadic context.
+     *
      * @param Context $context
      * @return array
      */
@@ -826,6 +861,8 @@ class ContextService
     }
 
     /**
+     * Find a concept using the ASP programming language.
+     *
      * @param Context $context
      * @param array $constraints
      * @return array
@@ -889,7 +926,6 @@ class ContextService
 
         // Execute the ASP script
         file_put_contents($dataFilePath, $aspProgram);
-//        echo "<code>" . str_replace("\n", "<br />", $aspProgram) . "</code>"; exit;
 
         $command = "clingo " . $dataFilePath . " --enum-mode cautious --quiet=0,2,2 --verbose=0 > " . $resultFilePath;
 
@@ -908,7 +944,6 @@ class ContextService
 
         unlink($dataFilePath);
         unlink($resultFilePath);
-//        echo "<code>" . str_replace("\n", "<br />", $result) . "</code>"; exit;
 
         $lines = explode("\n", CommonUtils::trim($result));
         $size = count($lines);
@@ -945,6 +980,13 @@ class ContextService
         return $constraints;
     }
 
+    /**
+     * Useful method for perspective locking which defines which is the main dimension on which
+     * the locking is done and which are the secondary dimensions (the rest) based on the lock type.
+     *
+     * @param $lockType
+     * @return array
+     */
     private function getPerspectiveByLockType($lockType)
     {
         switch ($lockType) {
