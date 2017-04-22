@@ -11,7 +11,6 @@
 /composer.phar
 /.idea
 /.sass-cache
-/bin/temp/context
 /bin/fca/conceptLattice.json
 /bin/fca/concepts.json
 /bin/fca/data.cxt
@@ -22,6 +21,17 @@
 /bin/fca/triasResult.txt
 /web/uploads/context/files
 /web/uploads/tri-context/files
-/bin/temp
 /bin/fca/gistfile1.pyc
 /bin/fca/svgfig.pyc
+/bin/temp/context/files/*
+/bin/temp/cron_delete/*
+/bin/temp/find_dyadic_concept/input/*
+/bin/temp/find_dyadic_concept/output/*
+/bin/temp/find_triadic_concept/input/*
+/bin/temp/find_triadic_concept/output/*
+/bin/temp/generate_concept_lattice/input/*
+/bin/temp/generate_concept_lattice/output/*
+/bin/temp/generate_concepts/input/*
+/bin/temp/generate_concepts/output/*
+/bin/temp/generate_tri_concepts/input/*
+/bin/temp/generate_tri_concepts/output/*
