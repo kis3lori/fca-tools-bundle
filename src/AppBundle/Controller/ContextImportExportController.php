@@ -39,6 +39,9 @@ class ContextImportExportController extends BaseController
             if (!$postData->has("name") || $postData->get("name") == "") {
                 $errors["name"] = "The name of the context cannot be empty.";
             }
+            if (!$postData->has("description") || $postData->get("description") == "") {
+                $errors["description"] = "The description of the context cannot be empty.";
+            }
             if (!$postData->has("objects")) {
                 $errors["objects"] = "The context must have at least one object.";
             }
@@ -52,6 +55,7 @@ class ContextImportExportController extends BaseController
             if (empty($errors)) {
                 $context = new Context();
                 $context->setName($postData->get("name"));
+                $context->setDescription($postData->get("description"));
                 switch ($contextType) {
                     case "triadic":
                         $dimCount = 3;
@@ -133,6 +137,9 @@ class ContextImportExportController extends BaseController
             if ($request->request->get("name") == null) {
                 $errors['name'] = "The context name cannot be empty.";
             }
+            if ($request->request->get("description") == null) {
+                $errors['description'] = "The context description cannot be empty.";
+            }
 
             if ($uploadedFile == null) {
                 $errors['file'] = "The file is missing or an error occurred during it's upload.";
@@ -187,6 +194,7 @@ class ContextImportExportController extends BaseController
 
                 $context = $parser->parseContext($uploadedFile, $numericalDimensions, $temporalDimensions, $dateFormat);
                 $context->setName($request->request->get("name"));
+                $context->setDescription($request->request->get("description"));
                 $context->setUser($this->getUser());
                 $context->setIsPublic(false);
                 $context->setContextFile(null);

@@ -78,6 +78,7 @@
         </a>
     </p>
 
+    <h2>Description: {{ context.description }}</h2>
     {% for index, elements in context.dimensions %}
         {% set dimension = fcaParams['dimensions'][index] %}
         <div class="objects">

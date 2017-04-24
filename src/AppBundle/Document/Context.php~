@@ -25,6 +25,11 @@ class Context
     protected $name;
 
     /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $description;
+
+    /**
      * @MongoDB\Field(type="int")
      */
     protected $dimCount;
@@ -67,6 +72,11 @@ class Context
     protected $numericalDimensions;
 
     /**
+     * @MongoDB\Collection
+     */
+    protected $temporalDimensions;
+
+    /**
      * @MongoDB\EmbedOne(targetDocument="ConceptLattice")
      */
     protected $conceptLattice;
@@ -90,6 +100,7 @@ class Context
     {
         $this->conceptFinderBookmarks = new ArrayCollection();
         $this->numericalDimensions = array();
+        $this->temporalDimensions = array();
         $this->elements = array();
         $this->relations = array();
         $this->concepts = array();
@@ -186,6 +197,7 @@ class Context
     {
         return $this->name;
     }
+
 
     /**
      * Set contextFileName
@@ -488,5 +500,49 @@ class Context
     public function getConceptFinderBookmarks()
     {
         return $this->conceptFinderBookmarks;
+    }
+
+    /**
+     * Set temporalDimensions
+     *
+     * @param array $temporalDimensions
+     * @return self
+     */
+    public function setTemporalDimensions($temporalDimensions)
+    {
+        $this->temporalDimensions = $temporalDimensions;
+        return $this;
+    }
+
+    /**
+     * Get temporalDimensions
+     *
+     * @return array $temporalDimensions
+     */
+    public function getTemporalDimensions()
+    {
+        return $this->temporalDimensions;
+    }
+
+    /**
+     * Set description
+     *
+     * @param string $description
+     * @return self
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string $description
+     */
+    public function getDescription()
+    {
+        return $this->description;
     }
 }

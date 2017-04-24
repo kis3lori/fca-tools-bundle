@@ -25,6 +25,11 @@ class Context
     protected $name;
 
     /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $description;
+
+    /**
      * @MongoDB\Field(type="int")
      */
     protected $dimCount;
@@ -192,6 +197,7 @@ class Context
     {
         return $this->name;
     }
+
 
     /**
      * Set contextFileName
@@ -516,5 +522,27 @@ class Context
     public function getTemporalDimensions()
     {
         return $this->temporalDimensions;
+    }
+
+    /**
+     * Set description
+     *
+     * @param string $description
+     * @return self
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string $description
+     */
+    public function getDescription()
+    {
+        return $this->description;
     }
 }
