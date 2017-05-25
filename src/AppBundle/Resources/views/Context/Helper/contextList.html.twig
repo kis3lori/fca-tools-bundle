@@ -2,7 +2,10 @@
     <thead>
     <tr>
         <th>Name</th>
-        <th>Is Public</th>
+        <th>Description</th>
+        {% if activeMenu == 'my_contexts' %}
+            <th>Is Public</th>
+        {% endif %}
         <th>Number of dimensions</th>
         <th>Number of incidences</th>
         <th>Actions</th>
@@ -18,9 +21,14 @@
             </td>
 
             <td>
-                {{ context.isPublic ? "Yes" : "No" }}
+                {{ context.description }}
             </td>
 
+            {% if activeMenu == 'my_contexts' %}
+                <td>
+                    {{ context.isPublic ? "Yes" : "No" }}
+                </td>
+            {% endif %}
             <td>
                 {{ context.dimCount }}
             </td>
