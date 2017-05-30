@@ -391,7 +391,7 @@ function collide(node) {
                 r = 30;
         }
 
-        if (l < r) {
+        if (l < r && l > 0) {
             l = (l - r) / l * .5;
             node.x -= x *= l;
             quad.point.x += x;
