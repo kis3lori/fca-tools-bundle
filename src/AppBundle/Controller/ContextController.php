@@ -17,14 +17,41 @@ class ContextController extends BaseController
      */
     public function indexAction()
     {
+        $user = $this->getUser();
+        $groups = $user->getGroups();
+
+        $ids = $this->filterIds($groups);
+
+
         $contexts = $this->getRepo("AppBundle:Context")->findBy(array(
-            'isPublic' => true,
+            'isPublic' => true
         ));
+
+        $privates = $this->getRepo("AppBundle:Context")->findBy(array(
+            'isPublic' => false
+        ));
+
+        foreach ($privates as $pr) {
+            $pr_ids = $this->filterIds($pr->getGroups());
+            if (sizeof(array_intersect($pr_ids, $ids)) > 0) {
+                $contexts[] = $pr;
+            }
+        }
+
 
         return $this->render('@App/Context/index.html.twig', array(
             'activeMenu' => "contexts",
             'contexts' => $contexts,
         ));
+    }
+
+    private function filterIds($groups)
+    {
+        $ids = array();
+        foreach ($groups as $group) {
+            $ids[] = $group->getId();
+        }
+        return $ids;
     }
 
     /**
@@ -57,7 +84,7 @@ class ContextController extends BaseController
         if (!$this->isValidContext($context, array("not null", "can view"))) {
             return $this->renderFoundError("contexts");
         }
-		
+
         return $this->render("@App/Context/context.html.twig", array(
             'context' => $context,
             'activeMenu' => "contexts",

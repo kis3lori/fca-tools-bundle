@@ -1,0 +1,103 @@
+{% extends "@App/layout.html.twig" %}
+
+{% block body %}
+    <div>
+        <h1 class="page-header">Groups</h1>
+
+        <ol class="breadcrumb">
+            <li><a href="{{ path("homepage") }}">Home</a></li>
+            <li class="active">Groups</li>
+        </ol>
+
+
+        <div class="sharing">
+            <button class="btn btn-primary expand-button pull-left" type="button" data-toggle="collapse"
+                    data-target="#create-group" aria-expanded="false" aria-controls="collapse">
+                Create group
+            </button>
+
+            <div class="clearfix"></div>
+
+            <div class="collapse" id="create-group">
+                <form action="{{ path("create_new_group") }}" method="post" class="create-context-form">
+                    <div class="form-group row">
+                        <label class="col-sm-2 form-control-label" for="name">Name:</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" type="text" name="name" id="name" required="required"
+                                   value="{{ app.request.request.get("name", "") }}"/>
+                        </div>
+                    </div>
+
+                    {% if errors['name'] is defined %}
+                        <p class="bg-danger error-message">{{ errors['name'] }}</p>
+                    {% endif %}
+
+                    <p>
+                        <button class="btn btn-primary">Submit</button>
+                    </p>
+                </form>
+            </div>
+        </div>
+
+        <h1 class="page-header">Your groups</h1>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <td>Name</td>
+                    <td>Members</td>
+                    <td>Add member</td>
+                    <td>Actions</td>
+                </tr>
+                </thead>
+
+                <tbody>
+                {# context \AppBundle\Document\Group #}
+                {% for group in groups %}
+                    <tr>
+                        <td>
+                            {{ group.name }}
+                        </td>
+                        <td>
+                            {{ group.numberOfUsers() }}
+                        </td>
+                        <td>
+                            <form action="{{ path("add_member") }}" method="post">
+                                <input type="hidden" name="group-id" value="{{ group.id }}"/>
+                                <label class="col-sm-2" for="username">Name:</label>
+                                <div class="col-sm-2">
+                                    <input class="form-control" type="text" name="username" id="name"
+                                           required="required"
+                                    />
+                                </div>
+
+                                <div class="col-sm-2">
+                                    <button class="btn btn-primary">Submit</button>
+                                </div>
+
+                            </form>
+
+
+                        </td>
+                        <td>
+                            {% if group.creator == app.user %}
+                                <a class="btn btn-danger" href="{{ path('delete_group', {'id': group.id}) }}">Delete</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            {% if errors['username'] is defined %}
+                <p class="bg-danger error-message">{{ errors['username'] }}</p>
+            {% endif %}
+            {% if errors['group'] is defined %}
+                <p class="bg-danger error-message">{{ errors['group'] }}</p>
+            {% endif %}
+        </div>
+
+
+    </div>
+{% endblock %}

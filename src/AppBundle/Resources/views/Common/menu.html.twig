@@ -29,6 +29,12 @@
                         My Contexts
                     </a>
                 </li>
+
+                <li{{ activeMenu == "groups" ? " class=\"active\"" : "" }}>
+                    <a href="{{ path("list_user_groups") }}">
+                        Groups
+                    </a>
+                </li>
             </ul>
 
             <ul class="nav navbar-nav pull-right">

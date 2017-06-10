@@ -27,6 +27,16 @@ $(document).ready(function () {
         container: $(".concept-lattice-container")
     });
 
+    $('#choose_share_group').change(function () {
+        var value = $('#choose_share_group').val();
+        if (value.split("|")[1] == '1') {
+            $('#choose_share_group_submit').removeClass("btn-primary").addClass("btn-danger").val("Unshare context");
+        }
+        else {
+            $('#choose_share_group_submit').removeClass("btn-danger").addClass("btn-primary").val("Share context to a group");
+        }
+    });
+
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
     });

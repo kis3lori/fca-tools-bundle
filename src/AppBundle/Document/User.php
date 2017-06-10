@@ -5,6 +5,7 @@ namespace AppBundle\Document;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @MongoDB\Document
@@ -57,10 +58,22 @@ class User implements UserInterface, \Serializable
      */
     protected $conceptFinderBookmarks;
 
+    /**
+     * @MongoDB\ReferenceMany(targetDocument="Group", mappedBy="users")
+     */
+    protected $groups;
+
+    /**
+     * @MongoDB\ReferenceMany(targetDocument="Group", mappedBy="creator")
+     */
+    protected $groupsCreated;
+
+
     public function __construct()
     {
         $this->contexts = new ArrayCollection();
         $this->conceptFinderBookmarks = new ArrayCollection();
+        $this->groupsCreated = new ArrayCollection();
     }
 
     public function getSalt()
@@ -269,6 +282,17 @@ class User implements UserInterface, \Serializable
 
 
     /**
+     * Get groups
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getGroups()
+    {
+        return $this->groups;
+    }
+
+
+    /**
      * Add conceptFinderBookmark
      *
      * @param ConceptFinderBookmark $conceptFinderBookmark
@@ -297,4 +321,6 @@ class User implements UserInterface, \Serializable
     {
         return $this->conceptFinderBookmarks;
     }
+
+
 }

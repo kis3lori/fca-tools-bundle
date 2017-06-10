@@ -92,6 +92,11 @@ class Context
     protected $conceptFinderBookmarks;
 
     /**
+     * @MongoDB\ReferenceMany(targetDocument="Group", mappedBy="contexts")
+     */
+    protected $groups;
+
+    /**
      * @var string
      */
     protected $baseFilePath = "web/uploads/context/files/";
@@ -104,6 +109,7 @@ class Context
         $this->elements = array();
         $this->relations = array();
         $this->concepts = array();
+        $this->groups = array();
 
         if ($temp) {
             $this->baseFilePath = "bin/temp/context/files/";
@@ -545,4 +551,22 @@ class Context
     {
         return $this->description;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getGroups()
+    {
+        return $this->groups;
+    }
+
+    /**
+     * @param mixed $groups
+     */
+    public function setGroups($groups)
+    {
+        $this->groups = $groups;
+    }
+
+
 }

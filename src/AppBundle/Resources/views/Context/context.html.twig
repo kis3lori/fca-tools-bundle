@@ -1,9 +1,9 @@
 {% extends "@App/layout.html.twig" %}
 
 {% block body %}
-{# context \AppBundle\Document\Context #}
+    {# context \AppBundle\Document\Context #}
 
-<div>
+    <div>
     <h1 class="page-header">{{ context.name }}</h1>
 
     <ol class="breadcrumb">
@@ -38,15 +38,6 @@
                 {% endif %}
             {% endif %}
 
-            {% if context.isPublic %}
-                <a class="btn btn-default" href="{{ path("mark_context_private", {"id": context.id}) }}">
-                    Make context private
-                </a>
-            {% else %}
-                <a class="btn btn-primary" href="{{ path("mark_context_public", {"id": context.id}) }}">
-                    Make context public
-                </a>
-            {% endif %}
         </p>
     {% endif %}
 
@@ -82,6 +73,51 @@
         <h2>Description</h2>
         <p>{{ context.description }}</p>
     {% endif %}
+
+    <div class="sharing">
+        <h2 class="pull-left">Share context</h2>
+        <button class="btn btn-primary expand-button pull-left" type="button" data-toggle="collapse"
+                data-target="#share" aria-expanded="false" aria-controls="collapse">
+            Show
+        </button>
+
+        <div class="clearfix"></div>
+
+        <div class="collapse" id="share">
+            {% if context.isPublic %}
+                <a class="btn btn-default" href="{{ path("mark_context_private", {"id": context.id}) }}">
+                    Make context private
+                </a>
+            {% else %}
+                <a class="btn btn-primary" href="{{ path("mark_context_public", {"id": context.id}) }}">
+                    Make context public
+                </a>
+                <br/>
+                {% if (app.user.groups | length>0) and (context.getUser()==app.user) %}
+                    <form action="{{ path("share_context", {"context_id": context.id}) }}" method="post">
+                        <select id="choose_share_group" name="group">
+                            {% for group in app.user.groups %}
+                                <option value="{{ group.id }}|{{ group.hasContext(context) ? 1:0 }}">{{ group.name }}</option>
+                            {% endfor %}
+                        </select>
+
+                        {% if app.user.groups[0].hasContext(context) %}
+                            <input id="choose_share_group_submit" class="btn btn-danger" type="submit"
+                                   value="Unshare context">
+                        {% else %}
+                            <input id="choose_share_group_submit" class="btn btn-primary" type="submit"
+                                   value="Share context to a group">
+                        {% endif %}
+                    </form>
+                {% endif %}
+
+
+            {% endif %}
+        </div>
+        {% if errors['group'] is defined %}
+            <p class="bg-danger error-message">{{ errors['group'] }}</p>
+        {% endif %}
+    </div>
 
     {% for index, elements in context.dimensions %}
         {% set dimension = fcaParams['dimensions'][index] %}

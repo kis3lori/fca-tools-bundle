@@ -11,7 +11,8 @@ class BaseController extends Controller
 {
     private $error = null;
 
-    protected function getManager() {
+    protected function getManager()
+    {
         return $this->get("doctrine_mongodb")->getManager();
     }
 
@@ -22,15 +23,18 @@ class BaseController extends Controller
      *
      * @return \Doctrine\Common\Persistence\ObjectRepository
      */
-    protected function getRepo($repo) {
+    protected function getRepo($repo)
+    {
         return $this->getManager()->getRepository($repo);
     }
 
-    protected function startStatisticsCounter() {
+    protected function startStatisticsCounter()
+    {
         $this->get("app.statistics_service")->startStatisticsCounter();
     }
 
-    protected function stopCounterAndLogStatistics($operation, $context, $data = null, $dyadicContext = null) {
+    protected function stopCounterAndLogStatistics($operation, $context, $data = null, $dyadicContext = null)
+    {
         $this->get("app.statistics_service")->stopCounterAndLogStatistics($operation, $context, $data, $dyadicContext);
     }
 
@@ -66,9 +70,20 @@ class BaseController extends Controller
                     }
                     break;
                 case "can view":
-                    if (!$context->getIsPublic() && $context->getUser() != $this->getUser()) {
-                        $this->error = "You don't have the permissions to view this context.";
-                        return false;
+                    $user = $this->getUser();
+                    if (!$context->getIsPublic() && $context->getUser() != $user) {
+
+                        $canView = false;
+                        foreach ($user->getGroups() as $group) {
+                            if ($group->hasContext($context)) {
+                                $canView = true;
+                                break;
+                            }
+                        }
+                        if (!$canView) {
+                            $this->error = "You don't have the permissions to view this context.";
+                            return false;
+                        }
                     }
                     break;
                 case "is own":
@@ -127,11 +142,13 @@ class BaseController extends Controller
         return true;
     }
 
-    public function clearBreadcrumb() {
+    public function clearBreadcrumb()
+    {
         $this->get("session")->set("breadcrumb", array());
     }
 
-    public function updateBreadcrumb($level, $text, $route) {
+    public function updateBreadcrumb($level, $text, $route)
+    {
         $breadcrumb = $this->get("session")->get("breadcrumb", array());
         // TODO: Finish the breadcrumb.
     }
