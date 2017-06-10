@@ -21,7 +21,9 @@ $(document).ready(function () {
         adjustMinHeight(container);
     });
 
-    $(".sort-filter").DataTable({"bPaginate": false});
+    $(".sort-filter").DataTable({
+        "bPaginate": false
+    });
 
     $.extend(conceptLattice, {
         container: $(".concept-lattice-container")

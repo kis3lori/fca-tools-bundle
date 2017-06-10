@@ -1,41 +1,34 @@
 $.extend(true, conceptLattice, {});
 
 function collide(node) {
-    var r = 30;
-    var nx1 = node.x - r;
-    var nx2 = node.x + r;
-    var text;
+    var textLength = 0;
+    if (conceptLattice.settings.collapseLabels && conceptLattice.settings.showLabels) {
+        textLength = Math.max(conceptLattice.bottomLabels[0][node.index].getComputedTextLength(),
+            conceptLattice.topLabels[0][node.index].getComputedTextLength());
+    }
+
+    var nodeRadius = Math.max(15, textLength / 2) + 7;
+    var nx1 = node.x - nodeRadius;
+    var nx2 = node.x + nodeRadius;
 
     return function (quad, x1, y1, x2, y2) {
-        // collision detection with labels
-        if (conceptLattice.settings.showLabels) {
-            if (node.ownedObjects[0]) {
-                text = node.ownedObjects[0];
-            }
-            if (node.ownedAttributes[0]) {
-                if (text) {
-                    if (text.length < node.ownedAttributes[0].length) {
-                        text = node.ownedAttributes[0];
-                    }
-                } else {
-                    text = node.ownedAttributes[0];
-                }
-            }
-        }
         if (quad.point && (quad.point !== node)) {
             var x = node.x - quad.point.x;
             var y = node.initialY - quad.point.initialY;
-            var l = Math.sqrt(x * x + y * y);
-            var r;
-            if (text)
-                r = 30 + text.length * 6;
-            else
-                r = 30;
+            var distanceBetweenNodes = Math.sqrt(x * x + y * y);
+            var quadTextLength = 0;
+            if (conceptLattice.settings.collapseLabels && conceptLattice.settings.showLabels) {
+                quadTextLength = Math.max(conceptLattice.bottomLabels[0][quad.point.index].getComputedTextLength(),
+                    conceptLattice.topLabels[0][quad.point.index].getComputedTextLength());
+            }
+
+            var quadRadius = Math.max(15, quadTextLength / 2) + 7;
+            var distanceBetweenColliders = nodeRadius + quadRadius;
         }
 
-        if (l < r && l > 0) {
-            l = (l - r) / l * .5;
-            node.x -= x *= l;
+        if (distanceBetweenNodes > 0 && distanceBetweenColliders - distanceBetweenNodes > 0) {
+            var lerpDistance = (distanceBetweenNodes - distanceBetweenColliders) / distanceBetweenNodes * .5;
+            node.x -= x *= lerpDistance;
             quad.point.x += x;
         }
 
