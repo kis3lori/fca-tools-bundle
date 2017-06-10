@@ -364,19 +364,39 @@ function collide(node) {
     var r = 30;
     var nx1 = node.x - r;
     var nx2 = node.x + r;
+    var text;
 
     return function (quad, x1, y1, x2, y2) {
+        // collision detection with labels
+        if (conceptLattice.settings.showLabels) {
+            if (node.ownedObjects[0]) {
+                text = node.ownedObjects[0];
+            }
+            if (node.ownedAttributes[0]) {
+                if (text) {
+                    if (text.length < node.ownedAttributes[0].length) {
+                        text = node.ownedAttributes[0];
+                    }
+                } else {
+                    text = node.ownedAttributes[0];
+                }
+            }
+        }
         if (quad.point && (quad.point !== node)) {
             var x = node.x - quad.point.x;
             var y = node.initialY - quad.point.initialY;
             var l = Math.sqrt(x * x + y * y);
-            var r = 30;
+            var r;
+            if (text)
+                r = 30 + text.length * 6;
+            else
+                r = 30;
+        }
 
-            if (l < r && l > 0) {
-                l = (l - r) / l * .5;
-                node.x -= x *= l;
-                quad.point.x += x;
-            }
+        if (l < r && l > 0) {
+            l = (l - r) / l * .5;
+            node.x -= x *= l;
+            quad.point.x += x;
         }
 
         return x1 > nx2 || x2 < nx1;
