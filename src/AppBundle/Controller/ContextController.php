@@ -42,7 +42,7 @@ class ContextController extends BaseController
             'isPublic' => true
         ));
 
-        return $this->render('@App/Context/index.html.twig', array(
+        return $this->render('@App/Context/publicContexts.html.twig', array(
             'activeMenu' => "public_contexts",
             'contexts' => $contexts,
         ));
