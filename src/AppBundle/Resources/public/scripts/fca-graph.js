@@ -1,5 +1,41 @@
 $.extend(true, conceptLattice, {});
 
+function collide(node) {
+    var textLength = 0;
+    if (conceptLattice.settings.collapseLabels && conceptLattice.settings.showLabels) {
+        textLength = Math.max(conceptLattice.bottomLabels[0][node.index].getComputedTextLength(),
+            conceptLattice.topLabels[0][node.index].getComputedTextLength());
+    }
+
+    var nodeRadius = Math.max(15, textLength / 2) + 7;
+    var nx1 = node.x - nodeRadius;
+    var nx2 = node.x + nodeRadius;
+
+    return function (quad, x1, y1, x2, y2) {
+        if (quad.point && (quad.point !== node)) {
+            var x = node.x - quad.point.x;
+            var y = node.initialY - quad.point.initialY;
+            var distanceBetweenNodes = Math.sqrt(x * x + y * y);
+            var quadTextLength = 0;
+            if (conceptLattice.settings.collapseLabels && conceptLattice.settings.showLabels) {
+                quadTextLength = Math.max(conceptLattice.bottomLabels[0][quad.point.index].getComputedTextLength(),
+                    conceptLattice.topLabels[0][quad.point.index].getComputedTextLength());
+            }
+
+            var quadRadius = Math.max(15, quadTextLength / 2) + 7;
+            var distanceBetweenColliders = nodeRadius + quadRadius;
+        }
+
+        if (distanceBetweenNodes > 0 && distanceBetweenColliders - distanceBetweenNodes > 0) {
+            var lerpDistance = (distanceBetweenNodes - distanceBetweenColliders) / distanceBetweenNodes * .5;
+            node.x -= x *= lerpDistance;
+            quad.point.x += x;
+        }
+
+        return x1 > nx2 || x2 < nx1;
+    };
+}
+
 function drawGraph(graph) {
     conceptLattice.graph = graph;
     var lastNode = graph.nodes[graph.lastNode];
@@ -172,9 +208,9 @@ function drawGraph(graph) {
         .attr("text-anchor", "middle")
         .text(function (d) {
             if (conceptLattice.settings.collapseLabels) {
-                return d.ownedObjects.join(" | ");
+                return d.ownedAttributes.join(" | ");
             } else {
-                return d.objects.join(" | ");
+                return d.attributes.join(" | ");
             }
         });
 
@@ -184,9 +220,9 @@ function drawGraph(graph) {
         .attr("text-anchor", "middle")
         .text(function (d) {
             if (conceptLattice.settings.collapseLabels) {
-                return d.ownedAttributes.join(" | ");
+                return d.ownedObjects.join(" | ");
             } else {
-                return d.attributes.join(" | ");
+                return d.objects.join(" | ");
             }
         });
 
