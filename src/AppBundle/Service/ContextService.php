@@ -137,7 +137,7 @@ class ContextService
      */
     public function generateMultiDimensionalConcepts($context)
     {
-        return $this->generateTriadicConceptsUsingTrias($context);
+        return $this->generateTriadicConceptsUsingDataPeeler($context);
     }
 
     /**
