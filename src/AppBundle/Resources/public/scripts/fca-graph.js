@@ -12,7 +12,7 @@ function collide(node) {
     var nx2 = node.x + nodeRadius;
 
     return function (quad, x1, y1, x2, y2) {
-        if (quad.point && (quad.point !== node)) {
+        if (quad.point && (quad.point !== node) && (quad.point.level == node.level)) {
             var x = node.x - quad.point.x;
             var y = node.initialY - quad.point.initialY;
             var distanceBetweenNodes = Math.sqrt(x * x + y * y);
