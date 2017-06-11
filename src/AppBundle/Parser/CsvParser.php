@@ -5,6 +5,8 @@ namespace AppBundle\Parser;
 
 use AppBundle\Document\Context;
 use AppBundle\Helper\CommonUtils;
+use AppBundle\Parser\Exception\InvalidNumericDimensionException;
+use AppBundle\Parser\Exception\InvalidTemporalDimensionException;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -31,6 +33,8 @@ class CsvParser implements FcaParser
      * @param array $temporalDimensions
      * @param string $dateFormat
      * @return Context
+     * @throws InvalidNumericDimensionException
+     * @throws InvalidTemporalDimensionException
      */
     public function parseContext($uploadedFile, $numericalDimensions, $temporalDimensions, $dateFormat = "Y/m/d")
     {
@@ -82,7 +86,23 @@ class CsvParser implements FcaParser
         foreach ($dimensions as $index => $dimension) {
             if (in_array($index, $numericalDimensions)) {
                 foreach ($dimension as $key => $elem) {
-                    $dimensions[$index][$key] = (int) $elem;
+                    try {
+                        if (!is_numeric($elem)) {
+                            throw new InvalidNumericDimensionException("The dimension with index \"" . $index . "\" is not a valid numeric dimension.");
+                        }
+
+                        $dimensions[$index][$key] = (int)$elem;
+                    } catch (\Exception $exception) {
+                        throw new InvalidNumericDimensionException("The dimension with index \"" . $index . "\" is not a valid numeric dimension.");
+                    }
+                }
+            } else if (in_array($index, $temporalDimensions)) {
+                foreach ($dimension as $key => $elem) {
+                    try {
+                        $dimensions[$index][$key] = \DateTime::createFromFormat("Y-m-d h:i:s", $elem)->format($dateFormat);
+                    } catch (\Exception $exception) {
+                        throw new InvalidTemporalDimensionException("The dimension with index \"" . $index . "\" is not a valid temporal dimension.");
+                    }
                 }
             }
         }

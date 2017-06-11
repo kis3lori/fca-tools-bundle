@@ -1004,7 +1004,7 @@ class ContextService
     {
         return array(
             "main" => $dimKey,
-            "other" => array_diff(range(0, $dimCount - 1, 1), array($dimKey)),
+            "other" => array_values(array_diff(range(0, $dimCount - 1, 1), array($dimKey))),
         );
     }
 }

@@ -4,6 +4,8 @@ namespace AppBundle\Controller;
 
 use AppBundle\Document\Context;
 use AppBundle\Helper\CommonUtils;
+use AppBundle\Parser\Exception\InvalidNumericDimensionException;
+use AppBundle\Parser\Exception\InvalidTemporalDimensionException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -192,30 +194,39 @@ class ContextImportExportController extends BaseController
                     }
                 }
 
-                $context = $parser->parseContext($uploadedFile, $numericalDimensions, $temporalDimensions, $dateFormat);
-                $context->setName($request->request->get("name"));
-                $context->setDescription($request->request->get("description"));
-                $context->setUser($this->getUser());
-                $context->setIsPublic(false);
-                $context->setContextFile(null);
+                try {
+                    $context = $parser->parseContext($uploadedFile, $numericalDimensions, $temporalDimensions, $dateFormat);
+                } catch (InvalidNumericDimensionException $exception) {
+                    $errors["numericalDimensions"] = $exception->getMessage();
+                } catch (InvalidTemporalDimensionException $exception) {
+                    $errors["temporalDimensions"] = $exception->getMessage();
+                }
 
-                $fileName = uniqid() . ".cxt";
-                $context->setContextFileName($fileName);
+                if (empty($errors)) {
+                    $context->setName($request->request->get("name"));
+                    $context->setDescription($request->request->get("description"));
+                    $context->setUser($this->getUser());
+                    $context->setIsPublic(false);
+                    $context->setContextFile(null);
 
-                $contextService = $this->get("app.context_service");
-                $contextService->generateContextFile($context);
+                    $fileName = uniqid() . ".cxt";
+                    $context->setContextFileName($fileName);
 
-                $em = $this->getManager();
-                $em->persist($context);
-                $em->flush();
+                    $contextService = $this->get("app.context_service");
+                    $contextService->generateContextFile($context);
 
-                $this->stopCounterAndLogStatistics("import context", $context, array(
-                    'e' => $extension,
-                ));
+                    $em = $this->getManager();
+                    $em->persist($context);
+                    $em->flush();
 
-                return $this->redirect($this->generateUrl("view_context", array(
-                    "id" => $context->getId(),
-                )));
+                    $this->stopCounterAndLogStatistics("import context", $context, array(
+                        'e' => $extension,
+                    ));
+
+                    return $this->redirect($this->generateUrl("view_context", array(
+                        "id" => $context->getId(),
+                    )));
+                }
             }
         }
 

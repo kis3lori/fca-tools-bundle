@@ -42,7 +42,7 @@
         {% endif %}
 
         <p>
-            {% if context.temporalDimensions is not null and context.dimCount > 2 %}
+            {% if context.temporalDimensions is not null and context.dimCount > 2 and false %}
                 <a class="btn btn-primary" href="{{ path("temporal_context", {"id": context.id}) }}">
                     Temporal context dashboard
                 </a>

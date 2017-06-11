@@ -19,6 +19,8 @@ class TemporalContextController extends BaseController
      */
     public function indexAction($id)
     {
+        exit;
+
         $context = $this->getRepo("AppBundle:Context")->find($id);
 
         if (!$this->isValidContext($context, array("not null", "can view"))) {
