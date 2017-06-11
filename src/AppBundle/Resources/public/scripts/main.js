@@ -28,12 +28,13 @@ $(document).ready(function () {
     });
 
     $('#choose_share_group').change(function () {
-        var value = $('#choose_share_group').val();
-        if (value.split("|")[1] == '1') {
-            $('#choose_share_group_submit').removeClass("btn-primary").addClass("btn-danger").val("Unshare context");
-        }
-        else {
-            $('#choose_share_group_submit').removeClass("btn-danger").addClass("btn-primary").val("Share context to a group");
+        var submitBtn = $(this).parent().find(".submit-btn").removeClass("disabled").removeAttr("disabled");
+        var hasContext = $(this).find(":selected").data("has-context");
+
+        if (hasContext == "1") {
+            submitBtn.removeClass("btn-primary").addClass("btn-danger").val("Remove context from group");
+        } else {
+            submitBtn.removeClass("btn-danger").addClass("btn-primary").val("Add context to group");
         }
     });
 

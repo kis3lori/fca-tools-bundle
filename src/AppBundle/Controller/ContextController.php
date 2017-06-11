@@ -3,7 +3,10 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Document\Context;
+use AppBundle\Document\Group;
 use AppBundle\Document\User;
+use AppBundle\Helper\CommonUtils;
+use AppBundle\Repository\ContextRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -18,26 +21,9 @@ class ContextController extends BaseController
     public function indexAction()
     {
         $user = $this->getUser();
-        $groups = $user->getGroups();
-
-        $ids = $this->filterIds($groups);
-
-
-        $contexts = $this->getRepo("AppBundle:Context")->findBy(array(
-            'isPublic' => true
-        ));
-
-        $privates = $this->getRepo("AppBundle:Context")->findBy(array(
-            'isPublic' => false
-        ));
-
-        foreach ($privates as $pr) {
-            $pr_ids = $this->filterIds($pr->getGroups());
-            if (sizeof(array_intersect($pr_ids, $ids)) > 0) {
-                $contexts[] = $pr;
-            }
-        }
-
+        /** @var ContextRepository $contextRepo */
+        $contextRepo = $this->getRepo("AppBundle:Context");
+        $contexts = $contextRepo->getAllViewableByUser($user);
 
         return $this->render('@App/Context/index.html.twig', array(
             'activeMenu' => "contexts",
@@ -45,13 +31,21 @@ class ContextController extends BaseController
         ));
     }
 
-    private function filterIds($groups)
+    /**
+     * @Route("/public-contexts", name="public_contexts")
+     *
+     * @return Response
+     */
+    public function publicContextsAction()
     {
-        $ids = array();
-        foreach ($groups as $group) {
-            $ids[] = $group->getId();
-        }
-        return $ids;
+        $contexts = $this->getRepo("AppBundle:Context")->findBy(array(
+            'isPublic' => true
+        ));
+
+        return $this->render('@App/Context/index.html.twig', array(
+            'activeMenu' => "public_contexts",
+            'contexts' => $contexts,
+        ));
     }
 
     /**

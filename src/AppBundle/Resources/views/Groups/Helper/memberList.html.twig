@@ -1,0 +1,18 @@
+<table class="table table-bordered table-striped sort-filter">
+    <thead>
+    <tr>
+        <th>Name</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {# member \AppBundle\Document\user #}
+    {% for member in members %}
+        <tr>
+            <td>
+                {{ member.fullName }}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

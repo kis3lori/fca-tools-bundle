@@ -1,7 +1,7 @@
 {% extends "@App/layout.html.twig" %}
 
 {% block body %}
-    <div>
+    <div class="list-groups-page">
         <h1 class="page-header">Groups</h1>
 
         <ol class="breadcrumb">
@@ -9,14 +9,11 @@
             <li class="active">Groups</li>
         </ol>
 
-
-        <div class="sharing">
-            <button class="btn btn-primary expand-button pull-left" type="button" data-toggle="collapse"
+        <div class="create-group">
+            <button class="btn btn-primary expand-button" type="button" data-toggle="collapse"
                     data-target="#create-group" aria-expanded="false" aria-controls="collapse">
                 Create group
             </button>
-
-            <div class="clearfix"></div>
 
             <div class="collapse" id="create-group">
                 <form action="{{ path("create_new_group") }}" method="post" class="create-context-form">
@@ -36,10 +33,12 @@
                         <button class="btn btn-primary">Submit</button>
                     </p>
                 </form>
+
+                <div class="clearfix"></div>
             </div>
         </div>
 
-        <h1 class="page-header">Your groups</h1>
+        <h2>Your groups</h2>
 
         <div class="table-responsive">
             <table class="table table-bordered table-striped">
@@ -53,37 +52,38 @@
                 </thead>
 
                 <tbody>
-                {# context \AppBundle\Document\Group #}
+                {# group \AppBundle\Document\Group #}
                 {% for group in groups %}
                     <tr>
                         <td>
                             {{ group.name }}
                         </td>
                         <td>
-                            {{ group.numberOfUsers() }}
+                            {{ group.users|length }}
                         </td>
                         <td>
-                            <form action="{{ path("add_member") }}" method="post">
+                            <form class="add-member-form" action="{{ path("add_member") }}" method="post">
                                 <input type="hidden" name="group-id" value="{{ group.id }}"/>
-                                <label class="col-sm-2" for="username">Name:</label>
-                                <div class="col-sm-2">
-                                    <input class="form-control" type="text" name="username" id="name"
-                                           required="required"
-                                    />
+                                <div class="row">
+                                    <div class="col-sm-2">
+                                        <label for="username">Username: </label>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <input class="form-control input-sm" type="text" name="username" id="name"
+                                               required="required"/>
+                                    </div>
+                                    <div class="col-sm-4    "></div>
+                                    <div class="col-sm-2">
+                                        <button class="btn btn-primary btn-sm">Submit</button>
+                                    </div>
                                 </div>
-
-                                <div class="col-sm-2">
-                                    <button class="btn btn-primary">Submit</button>
-                                </div>
-
                             </form>
-
-
                         </td>
                         <td>
-                            {% if group.creator == app.user %}
-                                <a class="btn btn-danger" href="{{ path('delete_group', {'id': group.id}) }}">Delete</a>
+                            {% if group.owner == app.user %}
+                                <a class="btn btn-danger btn-sm" href="{{ path('delete_group', {'id': group.id}) }}">Delete</a>
                             {% endif %}
+                            <a class="btn btn-primary btn-sm" href="{{ path('group', {'id': group.id}) }}">View</a>
                         </td>
                     </tr>
                 {% endfor %}
@@ -97,7 +97,5 @@
                 <p class="bg-danger error-message">{{ errors['group'] }}</p>
             {% endif %}
         </div>
-
-
     </div>
 {% endblock %}

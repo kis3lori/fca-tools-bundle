@@ -45,8 +45,7 @@ class ContextSettingsController extends BaseController
     {
         $em = $this->getManager();
         $context = $em->getRepository("AppBundle:Context")->find($id);
-
-
+        
         if (!$this->isValidContext($context, array("not null", "is own"))) {
             return $this->renderFoundError("my_contexts");
         }

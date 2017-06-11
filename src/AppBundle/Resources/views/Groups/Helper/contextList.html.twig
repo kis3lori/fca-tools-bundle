@@ -39,10 +39,6 @@
 
             <td>
                 <a class="btn btn-primary btn-xs" href="{{ path('view_context', {'id': context.id}) }}">View</a>
-
-                {% if context.user == app.user %}
-                    <a class="btn btn-danger btn-xs" href="{{ path('delete_context', {'id': context.id}) }}">Delete</a>
-                {% endif %}
             </td>
         </tr>
     {% endfor %}

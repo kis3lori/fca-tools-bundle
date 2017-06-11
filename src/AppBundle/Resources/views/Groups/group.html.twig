@@ -1,0 +1,39 @@
+{% extends "@App/layout.html.twig" %}
+
+{% block body %}
+    {# group \AppBundle\Document\Group #}
+
+    <div class="group-page">
+        <h1 class="page-header">{{ group.name }}</h1>
+
+        <ol class="breadcrumb">
+            <li><a href="{{ path("homepage") }}">Home</a></li>
+            <li><a href="{{ path("list_user_groups") }}">Groups</a></li>
+            <li class="active">{{ group.name }}</li>
+        </ol>
+
+        <h2>Actions</h2>
+
+        <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#contexts-tab">Contexts</a></li>
+            <li><a data-toggle="tab" href="#members-tab">Members</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div id="contexts-tab" class="tab-pane fade in active">
+                <br />
+                <div class="table-responsive">
+                    {% set contexts = group.contexts %}
+                    {{ include("@App/Groups/Helper/contextList.html.twig") }}
+                </div>
+            </div>
+            <div id="members-tab" class="tab-pane fade">
+                <br />
+                <div class="table-responsive">
+                    {% set members = group.users %}
+                    {{ include("@App/Groups/Helper/memberList.html.twig") }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

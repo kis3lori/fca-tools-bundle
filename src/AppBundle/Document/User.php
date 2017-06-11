@@ -3,9 +3,9 @@
 namespace AppBundle\Document;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @MongoDB\Document
@@ -66,14 +66,14 @@ class User implements UserInterface, \Serializable
     /**
      * @MongoDB\ReferenceMany(targetDocument="Group", mappedBy="creator")
      */
-    protected $groupsCreated;
-
+    protected $groupsOwned;
 
     public function __construct()
     {
         $this->contexts = new ArrayCollection();
         $this->conceptFinderBookmarks = new ArrayCollection();
-        $this->groupsCreated = new ArrayCollection();
+        $this->groupsOwned = new ArrayCollection();
+        $this->groups = new ArrayCollection();
     }
 
     public function getSalt()
@@ -106,6 +106,16 @@ class User implements UserInterface, \Serializable
             $this->username,
             $this->password,
             ) = unserialize($serialized);
+    }
+
+    /**
+     * Get full name
+     *
+     * @return string
+     */
+    public function getFullName()
+    {
+        return $this->firstName . " " . $this->lastName;
     }
 
     /**
@@ -280,18 +290,6 @@ class User implements UserInterface, \Serializable
         return $this->contexts;
     }
 
-
-    /**
-     * Get groups
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getGroups()
-    {
-        return $this->groups;
-    }
-
-
     /**
      * Add conceptFinderBookmark
      *
@@ -322,5 +320,63 @@ class User implements UserInterface, \Serializable
         return $this->conceptFinderBookmarks;
     }
 
+    /**
+     * Add group
+     *
+     * @param Group $group
+     */
+    public function addGroup(Group $group)
+    {
+        $this->groups[] = $group;
+    }
 
+    /**
+     * Remove group
+     *
+     * @param Group $group
+     */
+    public function removeGroup(Group $group)
+    {
+        $this->groups->removeElement($group);
+    }
+
+    /**
+     * Get groups
+     *
+     * @return \Doctrine\Common\Collections\Collection $groups
+     */
+    public function getGroups()
+    {
+        return $this->groups;
+    }
+
+    /**
+     * Add groupsOwned
+     *
+     * @param Group $groupsOwned
+     */
+    public function addGroupsOwned(Group $groupsOwned)
+    {
+        $this->groupsOwned[] = $groupsOwned;
+    }
+
+    /**
+     * Remove groupsOwned
+     *
+     * @param Group $groupsOwned
+     */
+    public function removeGroupsOwned(Group $groupsOwned)
+    {
+        $this->groupsOwned->removeElement($groupsOwned);
+    }
+
+    /**
+     * Get groupsOwned
+     *
+     * @return Collection $groupsOwned
+     */
+    public function getGroupsOwned()
+    {
+        return $this->groupsOwned;
+    }
 }

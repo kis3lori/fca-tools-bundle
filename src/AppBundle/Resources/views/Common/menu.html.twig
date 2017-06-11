@@ -20,7 +20,13 @@
 
                 <li{{ activeMenu == "contexts" ? " class=\"active\"" : "" }}>
                     <a href="{{ path("context_homepage") }}">
-                        Contexts
+                        All Contexts
+                    </a>
+                </li>
+
+                <li{{ activeMenu == "public_contexts" ? " class=\"active\"" : "" }}>
+                    <a href="{{ path("public_contexts") }}">
+                        Public Contexts
                     </a>
                 </li>
 

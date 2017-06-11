@@ -3,9 +3,8 @@
 namespace AppBundle\Document;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-use Symfony\Component\HttpFoundation\File\File;
-use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @MongoDB\Document
@@ -24,10 +23,9 @@ class Group
     protected $name;
 
     /**
-     * @MongoDB\ReferenceOne(targetDocument="User", inversedBy="groupsCreated")
+     * @MongoDB\ReferenceOne(targetDocument="User", inversedBy="groupsOwned")
      */
-    protected $creator;
-
+    protected $owner;
 
     /**
      * @MongoDB\ReferenceMany(targetDocument="User", inversedBy="groups")
@@ -44,12 +42,14 @@ class Group
      */
     public function __construct()
     {
-        $this->users = array();
-        $this->contexts = array();
+        $this->users = new ArrayCollection();
+        $this->contexts = new ArrayCollection();
     }
-
+    
     /**
-     * @return mixed
+     * Get id
+     *
+     * @return string $id
      */
     public function getId()
     {
@@ -57,15 +57,21 @@ class Group
     }
 
     /**
-     * @param mixed $id
+     * Set name
+     *
+     * @param string $name
+     * @return self
      */
-    public function setId($id)
+    public function setName($name)
     {
-        $this->id = $id;
+        $this->name = $name;
+        return $this;
     }
 
     /**
-     * @return mixed
+     * Get name
+     *
+     * @return string $name
      */
     public function getName()
     {
@@ -73,15 +79,51 @@ class Group
     }
 
     /**
-     * @param mixed $name
+     * Set owner
+     *
+     * @param $owner
+     * @return self
      */
-    public function setName($name)
+    public function setOwner($owner)
     {
-        $this->name = $name;
+        $this->owner = $owner;
+        return $this;
     }
 
     /**
-     * @return mixed
+     * Get owner
+     *
+     * @return $owner
+     */
+    public function getOwner()
+    {
+        return $this->owner;
+    }
+
+    /**
+     * Add user
+     *
+     * @param $user
+     */
+    public function addUser($user)
+    {
+        $this->users[] = $user;
+    }
+
+    /**
+     * Remove user
+     *
+     * @param $user
+     */
+    public function removeUser($user)
+    {
+        $this->users->removeElement($user);
+    }
+
+    /**
+     * Get users
+     *
+     * @return Collection $users
      */
     public function getUsers()
     {
@@ -89,62 +131,54 @@ class Group
     }
 
     /**
-     * @param mixed $users
+     * Has user
+     *
+     * @param User $user
+     * @return bool
      */
-    public function setUsers($users)
-    {
-        $this->users = $users;
-    }
-
-    public function addUser(User $user)
-    {
-        $this->users[] = $user;
-        return $this;
-    }
-
-    public function removeContext(Context $context)
-    {
-        if (($key = array_search($context, $this->contexts->toArray())) !== false) {
-            unset($this->contexts[$key]);
-        }
-    }
-
-    public function addContext(Context $context)
-    {
-        $this->contexts[] = $context;
-        return $this;
-    }
-
-    public function hasContext(Context $context)
-    {
-        return in_array($context, $this->contexts->toArray());
-    }
-
     public function hasUser(User $user)
     {
-        return in_array($user, $this->users->toArray());
-    }
-
-    public function numberOfUsers()
-    {
-        return sizeof($this->users->toArray());
+        return $this->users->contains($user);
     }
 
     /**
-     * @return mixed
+     * Add context
+     *
+     * @param $context
      */
-    public function getCreator()
+    public function addContext($context)
     {
-        return $this->creator;
+        $this->contexts[] = $context;
     }
 
     /**
-     * @param $creator
+     * Remove context
+     *
+     * @param $context
      */
-    public function setCreator(User $creator)
+    public function removeContext($context)
     {
-        $this->creator = $creator;
-        return $this;
+        $this->contexts->removeElement($context);
     }
 
+    /**
+     * Get contexts
+     *
+     * @return Collection $contexts
+     */
+    public function getContexts()
+    {
+        return $this->contexts;
+    }
+
+    /**
+     * Has contexts
+     *
+     * @param Context $context
+     * @return bool
+     */
+    public function hasContext(Context $context)
+    {
+        return $this->contexts->contains($context);
+    }
 }

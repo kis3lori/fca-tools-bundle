@@ -57,7 +57,7 @@ class ContextService
     }
 
     /**
-     * Generate the concepts of a dyadic context using the InClose2 algorithm.
+     * Generate the concepts of a dyadic context using the InClose4 algorithm.
      *
      * @param Context $context
      * @return array
@@ -75,7 +75,7 @@ class ContextService
         copy($cxtFilePath, $dataFilePath);
 
         // Execute the first script that generate the concepts
-        $scriptPath = $this->scriptDir . "InClose2.exe " . $dataFilePath . " " . $resultFilePath;
+        $scriptPath = $this->scriptDir . "InClose4.exe " . $dataFilePath . " " . $resultFilePath;
 
         $this->statisticsService->startStatisticsCounter();
         exec("cd " . $this->scriptDir . " && " . $scriptPath);
@@ -137,7 +137,7 @@ class ContextService
      */
     public function generateMultiDimensionalConcepts($context)
     {
-        return $this->generateTriadicConceptsUsingDataPeeler($context);
+        return $this->generateTriadicConceptsUsingTrias($context);
     }
 
     /**

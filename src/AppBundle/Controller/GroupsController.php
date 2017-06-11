@@ -2,7 +2,9 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Document\Context;
 use AppBundle\Document\Group;
+use AppBundle\Document\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,7 +17,7 @@ class GroupsController extends BaseController
      *
      * @return Response
      */
-    public function listGroups()
+    public function listGroupsAction()
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -28,13 +30,28 @@ class GroupsController extends BaseController
     }
 
     /**
+     * @Route("/group/{id}", name="group")
+     *
+     * @param $id
+     * @return Response
+     */
+    public function groupAction($id)
+    {
+        $group = $this->getRepo("AppBundle:Group")->find($id);
+
+        return $this->render('@App/Groups/group.html.twig', array(
+            'activeMenu' => "group",
+            'group' => $group,
+        ));
+    }
+
+    /**
      * @Route("/new-group", name="create_new_group")
      * @param Request $request
      * @return Response
      */
-    public function createNewGroup(Request $request)
+    public function createNewGroupAction(Request $request)
     {
-
         $errors = array();
 
         if ($request->isMethod("POST")) {
@@ -57,7 +74,7 @@ class GroupsController extends BaseController
             if (empty($errors)) {
                 $group = new Group();
                 $group->setName($postData->get("name"));
-                $group->setCreator($this->getUser());
+                $group->setOwner($this->getUser());
                 $group->addUser($this->getUser());
 
                 $em->persist($group);
@@ -74,22 +91,21 @@ class GroupsController extends BaseController
         ));
     }
 
-
     /**
-     * @Route("/share_context?context={context_id}", name="share_context")
+     * @Route("/share-context/{id}", name="share_context")
      *
-     * @param $context_id
+     * @param $id
+     * @param Request $request
      * @return Response
-     * @internal param Request $request
      */
-    public function shareContextToGroup($context_id, Request $request)
+    public function shareContextToGroupAction($id, Request $request)
     {
-
         $em = $this->getManager();
-        $context = $em->getRepository("AppBundle:Context")->find($context_id);
+        /** @var Context $context */
+        $context = $em->getRepository("AppBundle:Context")->find($id);
         $errors = array();
-        if ($request->isMethod("POST")) {
 
+        if ($request->isMethod("POST")) {
             $postData = $request->request;
 
             if (!$this->isValidContext($context, array("not null", "is own"))) {
@@ -100,11 +116,12 @@ class GroupsController extends BaseController
                 $errors['group'] = "Group not found";
             }
 
-            $group_id = explode("|", $postData->get("group"), 2)[0];
-            $group = $em->getRepository("AppBundle:Group")->find($group_id);
+            $groupId = $postData->get("group");
+            /** @var Group $group */
+            $group = $em->getRepository("AppBundle:Group")->find($groupId);
 
             if ($group == null) {
-                $errors['group'] = "Group" . $group_id . " not found";
+                $errors['group'] = "Group" . $groupId . " not found";
             } else {
                 if (empty($errors)) {
                     if ($group->hasContext($context)) {
@@ -121,10 +138,7 @@ class GroupsController extends BaseController
                     )));
                 }
             }
-
-
         }
-
 
         return $this->render("@App/Context/context.html.twig", array(
             'context' => $context,
@@ -133,14 +147,13 @@ class GroupsController extends BaseController
         ));
     }
 
-
     /**
      * @Route("/add-member", name="add_member")
      * @param $request
      * @return Response
      * @internal param Request $request
      */
-    public function addMemberToGroup(Request $request)
+    public function addMemberToGroupAction(Request $request)
     {
         $errors = array();
         $requester = $this->getUser();
@@ -157,6 +170,7 @@ class GroupsController extends BaseController
                 $errors["group"] = "The id of the group cannot be empty.";
             }
 
+            /** @var Group $group */
             $group = $em->getRepository("AppBundle:Group")->find($postData->get("group-id"));
 
             if ($group == null) {
@@ -209,6 +223,7 @@ class GroupsController extends BaseController
         $em = $this->getManager();
         /** @var User $user */
         $user = $this->getUser();
+        /** @var Group $group */
         $group = $em->getRepository("AppBundle:Group")->find($id);
 
         $groups = $user->getGroups();
@@ -217,7 +232,7 @@ class GroupsController extends BaseController
             $errors['group'] = "Group not found.";
         }
 
-        if ($group->getCreator() != $user) {
+        if ($group->getOwner() != $user) {
             $errors['group'] = "Not authorised.";
         }
 
@@ -226,7 +241,6 @@ class GroupsController extends BaseController
             $em->flush();
             return $this->redirect($this->generateUrl("list_user_groups"));
         }
-
 
         return $this->render('@App/Groups/listGroups.html.twig', array(
             'activeMenu' => "groups",

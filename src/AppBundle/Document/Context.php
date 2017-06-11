@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
- * @MongoDB\Document
+ * @MongoDB\Document(repositoryClass="AppBundle\Repository\ContextRepository")
  * @Vich\Uploadable
  */
 class Context
@@ -109,7 +109,7 @@ class Context
         $this->elements = array();
         $this->relations = array();
         $this->concepts = array();
-        $this->groups = array();
+        $this->groups = new ArrayCollection();
 
         if ($temp) {
             $this->baseFilePath = "bin/temp/context/files/";
@@ -551,22 +551,40 @@ class Context
     {
         return $this->description;
     }
+    
+    /**
+     * Add group
+     *
+     * @param $group
+     */
+    public function addGroup($group)
+    {
+        $this->groups[] = $group;
+    }
 
     /**
-     * @return mixed
+     * Remove group
+     *
+     * @param $group
+     */
+    public function removeGroup($group)
+    {
+        $this->groups->removeElement($group);
+    }
+
+    /**
+     * Get groups
+     *
+     * @return \Doctrine\Common\Collections\Collection $groups
      */
     public function getGroups()
     {
         return $this->groups;
     }
 
-    /**
-     * @param mixed $groups
-     */
-    public function setGroups($groups)
+    public function __toString()
     {
-        $this->groups = $groups;
+        return $this->id;
     }
-
 
 }
