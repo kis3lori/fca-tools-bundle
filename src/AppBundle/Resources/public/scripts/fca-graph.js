@@ -208,9 +208,9 @@ function drawGraph(graph) {
         .attr("text-anchor", "middle")
         .text(function (d) {
             if (conceptLattice.settings.collapseLabels) {
-                return d.ownedObjects.join(" | ");
+                return d.ownedAttributes.join(" | ");
             } else {
-                return d.objects.join(" | ");
+                return d.attributes.join(" | ");
             }
         });
 
@@ -220,9 +220,9 @@ function drawGraph(graph) {
         .attr("text-anchor", "middle")
         .text(function (d) {
             if (conceptLattice.settings.collapseLabels) {
-                return d.ownedAttributes.join(" | ");
+                return d.ownedObjects.join(" | ");
             } else {
-                return d.attributes.join(" | ");
+                return d.objects.join(" | ");
             }
         });
 
