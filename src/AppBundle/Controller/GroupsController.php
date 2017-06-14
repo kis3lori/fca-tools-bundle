@@ -6,6 +6,7 @@ use AppBundle\Document\Context;
 use AppBundle\Document\Group;
 use AppBundle\Document\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -37,7 +38,12 @@ class GroupsController extends BaseController
      */
     public function groupAction($id)
     {
+        /** @var Group $group */
         $group = $this->getRepo("AppBundle:Group")->find($id);
+
+        if (!$this->isValidGroup($group, array("not null", "can view"))) {
+            return $this->renderFoundError("groups");
+        }
 
         return $this->render('@App/Groups/group.html.twig', array(
             'activeMenu' => "group",
@@ -55,28 +61,20 @@ class GroupsController extends BaseController
         $errors = array();
 
         if ($request->isMethod("POST")) {
-            $em = $this->getManager();
-
             $postData = $request->request;
 
-            if (!$postData->has("name") || $postData->get("name") == "") {
+            $groupName = $postData->get("name");
+            if (!$groupName) {
                 $errors["group"] = "The name of the group cannot be empty.";
-            }
-
-            $group_name = $postData->get("name");
-
-            $group = $em->getRepository("AppBundle:Group")->findOneBy(array('name' => $group_name));
-
-            if ($group != null) {
-                $errors["group"] = "A group with name \"" . $group_name . "\" already exists.";
             }
 
             if (empty($errors)) {
                 $group = new Group();
-                $group->setName($postData->get("name"));
+                $group->setName($groupName);
                 $group->setOwner($this->getUser());
                 $group->addUser($this->getUser());
 
+                $em = $this->getManager();
                 $em->persist($group);
                 $em->flush();
 
@@ -112,31 +110,25 @@ class GroupsController extends BaseController
                 return $this->renderFoundError("my_contexts");
             }
 
-            if (!$postData->has("group")) {
-                $errors['group'] = "Group not found";
+            /** @var Group $group */
+            $group = $em->getRepository("AppBundle:Group")->find($postData->get("group"));
+            if (!$this->isValidGroup($group, array("not null", "is member"))) {
+                return $this->renderFoundError("groups");
             }
 
-            $groupId = $postData->get("group");
-            /** @var Group $group */
-            $group = $em->getRepository("AppBundle:Group")->find($groupId);
-
-            if ($group == null) {
-                $errors['group'] = "Group" . $groupId . " not found";
-            } else {
-                if (empty($errors)) {
-                    if ($group->hasContext($context)) {
-                        $group->removeContext($context);
-                    } else {
-                        $group->addContext($context);
-                    }
-
-                    $em->persist($group);
-                    $em->flush();
-
-                    return $this->redirect($this->generateUrl("view_context", array(
-                        "id" => $context->getId(),
-                    )));
+            if (empty($errors)) {
+                if ($group->hasContext($context)) {
+                    $group->removeContext($context);
+                } else {
+                    $group->addContext($context);
                 }
+
+                $em->persist($group);
+                $em->flush();
+
+                return $this->redirect($this->generateUrl("view_context", array(
+                    "id" => $context->getId(),
+                )));
             }
         }
 
@@ -156,7 +148,7 @@ class GroupsController extends BaseController
     public function addMemberToGroupAction(Request $request)
     {
         $errors = array();
-        $requester = $this->getUser();
+
         if ($request->isMethod("POST")) {
             $em = $this->getManager();
 
@@ -170,47 +162,76 @@ class GroupsController extends BaseController
                 $errors["group"] = "The id of the group cannot be empty.";
             }
 
-            /** @var Group $group */
-            $group = $em->getRepository("AppBundle:Group")->find($postData->get("group-id"));
-
-            if ($group == null) {
-                $errors["group"] = "The group doesn't exist.";
-            } else {
-                if (!$group->hasUser($requester)) {
-                    $errors["group"] = "The user can't add member to this group.";
-                }
-            }
-
-            $userName = $postData->get("username");
-            $user = $em->getRepository("AppBundle:User")->findOneBy(array('username' => $userName));
-
-            if ($user == null) {
-                $errors["username"] = "Username \"" . $userName . "\" does not exist.";
-            } else {
-                if ($group->hasUser($user)) {
-                    $errors["group"] = "User \"" . $userName . "\" is already registered to the group \"" . $group->getName() . "\"";
-                }
-            }
             if (empty($errors)) {
-                $group->addUser($user);
-                $em->persist($group);
-                $em->flush();
+                /** @var Group $group */
+                $group = $em->getRepository("AppBundle:Group")->find($postData->get("group-id"));
+                if (!$this->isValidGroup($group, array("not null", "is own"))) {
+                    return $this->renderFoundError("groups");
+                }
 
-                return $this->redirect($this->generateUrl("list_user_groups"));
+                $userName = $postData->get("username");
+                $user = $em->getRepository("AppBundle:User")->findOneBy(array('username' => $userName));
+
+                if ($user == null) {
+                    $errors["username"] = "No user was found with the username: \"" . $userName . "\".";
+                } else if ($group->hasUser($user)) {
+                    $errors["group"] = "The specified user is already a member of the group.";
+                }
+
+                if (empty($errors)) {
+                    $group->addUser($user);
+                    $em->persist($group);
+                    $em->flush();
+
+                    return $this->redirect($this->generateUrl("list_user_groups"));
+                }
             }
         }
 
-
-        /** @var User $user */
-        $user = $this->getUser();
-        $groups = $user->getGroups();
         return $this->render('@App/Groups/listGroups.html.twig', array(
             'activeMenu' => "groups",
             'errors' => $errors,
-            'groups' => $groups
+            'groups' => $this->getUser()->getGroups(),
         ));
     }
 
+    /**
+     * @Route("/group/{id}/remove-member/{memberId}", name="remove_member")
+     *
+     * @param $id
+     * @param $memberId
+     * @param Request $request
+     * @return Response
+     * @internal param Request $request
+     */
+    public function removeMemberFromGroupAction($id, $memberId, Request $request)
+    {
+        /** @var Group $group */
+        $group = $this->getRepo("AppBundle:Group")->find($id);
+        if (!$this->isValidGroup($group, array("not null", "is own"))) {
+            return $this->renderFoundErrorAsJson();
+        }
+
+        $member = $this->getRepo("AppBundle:User")->find($memberId);
+
+        if ($member == null) {
+            return $this->renderErrorAsJson("No member was found with the given id.");
+        } else if (!$group->getUsers()->contains($member)) {
+            return $this->renderErrorAsJson("The member does not belong to the given group.");
+        } else if ($member == $this->getUser()) {
+            return $this->renderErrorAsJson("You can't remove yourself from the group.");
+        }
+
+        $group->removeUser($member);
+
+        $em = $this->getManager();
+        $em->persist($group);
+        $em->flush();
+
+        return new JsonResponse(array(
+            "success" => true,
+        ));
+    }
 
     /**
      * @Route("/delete-group/{id}", name="delete_group")
@@ -220,33 +241,17 @@ class GroupsController extends BaseController
      */
     public function deleteGroupAction($id)
     {
-        $em = $this->getManager();
-        /** @var User $user */
-        $user = $this->getUser();
         /** @var Group $group */
-        $group = $em->getRepository("AppBundle:Group")->find($id);
-
-        $groups = $user->getGroups();
-
-        if ($group == null) {
-            $errors['group'] = "Group not found.";
+        $group = $this->getRepo("AppBundle:Group")->find($id);
+        if (!$this->isValidGroup($group, array("not null", "is own"))) {
+            return $this->renderFoundError("groups");
         }
 
-        if ($group->getOwner() != $user) {
-            $errors['group'] = "Not authorised.";
-        }
+        $em = $this->getManager();
+        $em->remove($group);
+        $em->flush();
 
-        if (empty($errors)) {
-            $em->remove($group);
-            $em->flush();
-            return $this->redirect($this->generateUrl("list_user_groups"));
-        }
-
-        return $this->render('@App/Groups/listGroups.html.twig', array(
-            'activeMenu' => "groups",
-            'errors' => $errors,
-            'groups' => $groups
-        ));
+        return $this->redirect($this->generateUrl("list_user_groups"));
     }
 
 }

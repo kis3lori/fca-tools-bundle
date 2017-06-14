@@ -2,6 +2,9 @@
     <thead>
     <tr>
         <th>Name</th>
+        {% if group.owner == app.user %}
+            <th>Actions</th>
+        {% endif %}
     </tr>
     </thead>
 
@@ -12,6 +15,18 @@
             <td>
                 {{ member.fullName }}
             </td>
+            {% if group.owner == app.user %}
+                <td>
+                    {% if member != app.user %}
+                        <a class="btn btn-danger btn-xs remove-member-btn" href="{{ path("remove_member", {
+                            "id": group.id,
+                            "memberId": member.id
+                        }) }}">
+                            Remove from group
+                        </a>
+                    {% endif %}
+                </td>
+            {% endif %}
         </tr>
     {% endfor %}
     </tbody>

@@ -77,6 +77,7 @@ class ConceptLatticeController extends BaseController
 
         $contextService = $this->get("app.context_service");
         $parsedConceptLattice = $contextService->generateParsedConceptLattice($context);
+        $parsedConceptLattice["analogicalComplexes"] = $contextService->generateWeakAnalogicalProportions($context);
 
         return new JsonResponse($parsedConceptLattice);
     }

@@ -36,6 +36,27 @@ function collide(node) {
     };
 }
 
+function getNodeColor(node) {
+    var graph = conceptLattice.graph;
+
+    if (conceptLattice.settings.analogicalComplexId != -1) {
+        var analogicalComplex = graph.analogicalComplexes[conceptLattice.settings.analogicalComplexId];
+        if (node.index == analogicalComplex[0] ||
+            node.index == analogicalComplex[2]) {
+            return "red";
+        }
+
+        if (node.index == analogicalComplex[1] ||
+            node.index == analogicalComplex[3]) {
+            return "green";
+        }
+    }
+
+    var ramp = d3.scale.linear().domain([0, graph.nodes[graph.lastNode].level]).range(["white", "blue"]);
+
+    return ramp(node.level);
+}
+
 function drawGraph(graph) {
     conceptLattice.graph = graph;
     var lastNode = graph.nodes[graph.lastNode];
@@ -88,7 +109,7 @@ function drawGraph(graph) {
                 conceptLattice.nodes
                     .attr("r", conceptLattice.settings.circleRadius)
                     .style("fill", function (d) {
-                        return ramp(d.level);
+                        return getNodeColor(d);
                     });
 
                 conceptLattice.force.resume();
@@ -180,7 +201,7 @@ function drawGraph(graph) {
                         return conceptLattice.settings.circleRadius - (conceptLattice.settings.circleRadiusVariation);
                     })
                     .style("fill", function (d) {
-                        return ramp(d.level);
+                        return getNodeColor(d);
                     });
 
                 d3.select(this).select("circle")
@@ -193,13 +214,11 @@ function drawGraph(graph) {
         .call(conceptLattice.force.drag)
     ;
 
-    var ramp = d3.scale.linear().domain([0, lastNode.level]).range(["white", "blue"]);
-
     conceptLattice.nodes = conceptLattice.gnodes.append("circle")
         .attr("class", "node")
         .attr("r", conceptLattice.settings.circleRadius)
         .style("fill", function (d) {
-            return ramp(d.level);
+            return getNodeColor(d);
         });
 
     conceptLattice.topLabels = conceptLattice.gnodes.append("text")
@@ -255,6 +274,11 @@ function drawGraph(graph) {
                 return d.target.initialY;
             });
 
+        conceptLattice.nodes
+            .style("fill", function (d) {
+                return getNodeColor(d);
+            });
+
         // Translate the groups
         conceptLattice.gnodes.attr("transform", function (d) {
             return 'translate(' + [d.x, d.initialY] + ')';
@@ -308,5 +332,14 @@ function drawGraph(graph) {
 
             lockList.append("button").attr("class", "btn btn-primary apply-dimensions-lock").text("Lock");
         });
+    }
+
+    if (typeof graph.analogicalComplexes != 'undefined') {
+        var select = $("#choose_complex");
+        for (var index in graph.analogicalComplexes) {
+            $("<option>").text(index).val(index).appendTo(select);
+        }
+    } else {
+        $(".complex-selector").remove();
     }
 }

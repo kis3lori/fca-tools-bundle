@@ -66,23 +66,23 @@
                                        value="{{ condition }}" {{ contextType == "triadic"?"style=\"display: block\"":"" }}/>
                             </td>
 
-                            {% for object in app.request.request.get("objects", []) %}
+                            {% for attribute in app.request.request.get("attributes", []) %}
                                 <td class="top-head-cell">
-                                    <input type="text" class="item-name-input" value="{{ object }}"/>
+                                    <input type="text" class="item-name-input" value="{{ attribute }}"/>
                                 </td>
                             {% endfor %}
 
-                            <td class="top-head-cell add-object-cell">
-                                <input type="text" class="item-name-input" placeholder="Add object..."/>
+                            <td class="top-head-cell add-attribute-cell">
+                                <input type="text" class="item-name-input" placeholder="Add attribute..."/>
                             </td>
                         </tr>
 
-                        {% for attribute in app.request.request.get("attributes", []) %}
+                        {% for object in app.request.request.get("objects", []) %}
                             <tr>
                                 <td class="left-head-cell">
-                                    <input type="text" class="item-name-input" value="{{ attribute }}"/>
+                                    <input type="text" class="item-name-input" value="{{ object }}"/>
                                 </td>
-                                {% for object in app.request.request.get("objects", []) %}
+                                {% for attribute in app.request.request.get("attributes", []) %}
                                     <td class="data-cell">
                                         {% set tuple1 = object ~ "###" ~ attribute ~ "###" ~ condition %}
                                         {% set tuple2 = object ~ "###" ~ attribute %}
@@ -100,12 +100,12 @@
                         {% endfor %}
 
                         <tr>
-                            <td class="left-head-cell add-attribute-cell">
-                                <input type="text" class="item-name-input" placeholder="Add attribute..."/>
+                            <td class="left-head-cell add-object-cell">
+                                <input type="text" class="item-name-input" placeholder="Add object..."/>
                             </td>
-                            {% set nrObjects = app.request.request.get("objects", [])|length %}
-                            {% if nrObjects >= 1 %}
-                                {% for index in 1..nrObjects %}
+                            {% set nrAttributes = app.request.request.get("attributes", [])|length %}
+                            {% if nrAttributes >= 1 %}
+                                {% for index in 1..nrAttributes %}
                                     <td class="data-cell">&nbsp;</td>
                                 {% endfor %}
                             {% endif %}
@@ -125,23 +125,23 @@
                                                style="display: block" value="{{ condition }}"/>
                                     </td>
 
-                                    {% for object in app.request.request.get("objects", []) %}
+                                    {% for attribute in app.request.request.get("attributes", []) %}
                                         <td class="top-head-cell">
-                                            <input type="text" class="item-name-input" value="{{ object }}"/>
+                                            <input type="text" class="item-name-input" value="{{ attribute }}"/>
                                         </td>
                                     {% endfor %}
 
-                                    <td class="top-head-cell add-object-cell">
-                                        <input type="text" class="item-name-input" placeholder="Add object..."/>
+                                    <td class="top-head-cell add-attribute-cell">
+                                        <input type="text" class="item-name-input" placeholder="Add attribute..."/>
                                     </td>
                                 </tr>
 
-                                {% for attribute in app.request.request.get("attributes", []) %}
+                                {% for object in app.request.request.get("objects", []) %}
                                     <tr>
                                         <td class="left-head-cell">
-                                            <input type="text" class="item-name-input" value="{{ attribute }}"/>
+                                            <input type="text" class="item-name-input" value="{{ object }}"/>
                                         </td>
-                                        {% for object in app.request.request.get("objects", []) %}
+                                        {% for attribute in app.request.request.get("attributes", []) %}
                                             <td class="data-cell">
                                                 {% set tuple = object ~ "###" ~ attribute ~ "###" ~ condition %}
                                                 {% if tuple in app.request.request.get("relation_tuples") %}
@@ -156,10 +156,10 @@
                                 {% endfor %}
 
                                 <tr>
-                                    <td class="left-head-cell add-attribute-cell">
-                                        <input type="text" class="item-name-input" placeholder="Add attribute..."/>
+                                    <td class="left-head-cell add-object-cell">
+                                        <input type="text" class="item-name-input" placeholder="Add object..."/>
                                     </td>
-                                    {% for index in 1..(app.request.request.get("objects", [])|length) %}
+                                    {% for index in 1..(app.request.request.get("attributes", [])|length) %}
                                         <td class="data-cell">&nbsp;</td>
                                     {% endfor %}
                                     <td>&nbsp;</td>

@@ -2,6 +2,7 @@ var conceptLattice = {
     settings: {
         collisionDetection: false,
         showLabels: true,
+        analogicalComplexId: -1,
         collapseLabels: true,
         circleRadius: 15,
         circleRadiusVariation: 7,
@@ -27,6 +28,22 @@ $(document).ready(function () {
 
     $.extend(conceptLattice, {
         container: $(".concept-lattice-container")
+    });
+
+    $(".remove-member-btn").click(function(event) {
+        event.preventDefault();
+        var memberContainer = $(this).closest("tr");
+
+        var url = $(this).attr("href");
+        $.ajax(url, {
+            success: function(response) {
+                if (response.success == true) {
+                    memberContainer.remove();
+                } else {
+                    alert(response.error);
+                }
+            }
+        })
     });
 
     $('#choose_share_group').change(function () {
@@ -152,7 +169,7 @@ $(document).ready(function () {
                 $(this).text("X");
             }
         })
-        .on("change", ".add-attribute-cell input", function () {
+        .on("change", ".add-object-cell input", function () {
             var name = $(this).val();
             $(this).val("");
 
@@ -184,7 +201,7 @@ $(document).ready(function () {
                 $(this).find("tr:last").before(newRow.clone());
             });
         })
-        .on("change", ".left-head-cell:not(.add-attribute-cell) input", function () {
+        .on("change", ".left-head-cell:not(.add-object-cell) input", function () {
             var val = $(this).val();
             var index = $(this).closest("tr").index();
 
@@ -193,7 +210,7 @@ $(document).ready(function () {
                 $(this).find("tbody tr").eq(index).find(".left-head-cell input").val(val);
             });
         })
-        .on("change", ".add-object-cell input", function () {
+        .on("change", ".add-attribute-cell input", function () {
             var name = $(this).val();
             $(this).val("");
 
@@ -213,7 +230,7 @@ $(document).ready(function () {
 
             var tablesContainer = $(this).closest(".relation-tables");
             tablesContainer.find(".create-context-table").each(function () {
-                $(this).find(".first-row .add-object-cell").before(firstCell.clone());
+                $(this).find(".first-row .add-attribute-cell").before(firstCell.clone());
 
                 var rows = $(this).find("tbody tr:not(:first)");
                 var nrRows = rows.length;
@@ -227,7 +244,7 @@ $(document).ready(function () {
                 });
             });
         })
-        .on("change", ".top-head-cell:not(.add-object-cell) input", function () {
+        .on("change", ".top-head-cell:not(.add-attribute-cell) input", function () {
             var val = $(this).val();
             var index = $(this).closest(".top-head-cell").index() - 1;
 
@@ -251,14 +268,14 @@ $(document).ready(function () {
 
             table.find(".top-head-cell:not(:last)").each(function () {
                 var val = $.trim($(this).find("input").val());
-                var input = $("<input>").attr("type", "hidden").attr("name", "objects[]").val(val);
+                var input = $("<input>").attr("type", "hidden").attr("name", "attributes[]").val(val);
 
                 form.append(input);
             });
 
             table.find(".left-head-cell:not(:last)").each(function () {
                 var val = $.trim($(this).find("input").val());
-                var input = $("<input>").attr("type", "hidden").attr("name", "attributes[]").val(val);
+                var input = $("<input>").attr("type", "hidden").attr("name", "objects[]").val(val);
 
                 form.append(input);
             });
@@ -276,12 +293,12 @@ $(document).ready(function () {
                 var firstRow = table.find(".first-row");
                 table.find("tr:not(.first-row)").each(function () {
                     var row = $(this);
-                    var attributeName = row.find(".left-head-cell input").val();
+                    var objectName = row.find(".left-head-cell input").val();
 
                     row.find(".data-cell").each(function (i) {
                         if ($.trim($(this).text()) == "X") {
-                            var objectCell = firstRow.find(".top-head-cell").eq(i);
-                            var objectName = objectCell.find("input").val();
+                            var attributeCell = firstRow.find(".top-head-cell").eq(i);
+                            var attributeName = attributeCell.find("input").val();
 
                             var val = objectName + "###" + attributeName;
                             var input = $("<input>").attr("type", "hidden").attr("name", "relation_tuples[]").val(val);
@@ -297,12 +314,12 @@ $(document).ready(function () {
                     var firstRow = table.find(".first-row");
                     table.find("tr:not(.first-row)").each(function () {
                         var row = $(this);
-                        var attributeName = row.find(".left-head-cell input").val();
+                        var objectName = row.find(".left-head-cell input").val();
 
                         row.find(".data-cell").each(function (i) {
                             if ($.trim($(this).text()) == "X") {
-                                var objectCell = firstRow.find(".top-head-cell").eq(i);
-                                var objectName = objectCell.find("input").val();
+                                var attributeCell = firstRow.find(".top-head-cell").eq(i);
+                                var attributeName = attributeCell.find("input").val();
 
                                 var val = objectName + "###" + attributeName + "###" + conditionName;
                                 var input = $("<input>").attr("type", "hidden").attr("name", "relation_tuples[]").val(val);
@@ -345,6 +362,11 @@ $(document).ready(function () {
                 break;
         }
     });
+
+    $(".concept-lattice-settings").on('change', "#choose_complex", function () {
+        conceptLattice.settings.analogicalComplexId = parseInt($(this).val());
+        conceptLattice.force.resume();
+    })
 });
 
 function adjustTablesScroll() {

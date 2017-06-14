@@ -3,8 +3,10 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Document\Context;
+use AppBundle\Document\Group;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\CssSelector\Exception\InternalErrorException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class BaseController extends Controller
@@ -46,15 +48,28 @@ class BaseController extends Controller
         ));
     }
 
+    protected function renderErrorAsJson($error)
+    {
+        return new JsonResponse(array(
+            "success" => false,
+            "error" => $error
+        ));
+    }
+
     protected function renderFoundError($activeMenu)
     {
         return $this->renderError($this->error, $activeMenu);
     }
 
+    protected function renderFoundErrorAsJson()
+    {
+        return $this->renderErrorAsJson($this->error);
+    }
+
     /**
      * @param $context Context
      * @param $validations array
-     * @return Response
+     * @return bool
      * @throws InternalErrorException
      */
     protected function isValidContext($context, $validations)
@@ -131,6 +146,49 @@ class BaseController extends Controller
                 case "is triadic":
                     if ($context->getDimCount() != 3) {
                         $this->error = "This context is not a triadic context.";
+                        return false;
+                    }
+                    break;
+                default:
+                    throw new InternalErrorException();
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param $group Group
+     * @param $validations array
+     * @return bool
+     * @throws InternalErrorException
+     */
+    protected function isValidGroup($group, $validations)
+    {
+        foreach ($validations as $validation) {
+            switch ($validation) {
+                case "not null":
+                    if ($group == null) {
+                        $this->error = "No group was found with the given id.";
+                        return false;
+                    }
+                    break;
+                case "can view":
+                    $user = $this->getUser();
+                    if (!$group->getUsers()->contains($user)) {
+                        $this->error = "You don't have the permissions to view this group.";
+                        return false;
+                    }
+                    break;
+                case "is own":
+                    if ($group->getOwner() != $this->getUser()) {
+                        $this->error = "You don't have permissions to edit this group.";
+                        return false;
+                    }
+                    break;
+                case "is member":
+                    if (!$group->getUsers()->contains($this->getUser())) {
+                        $this->error = "You are not a member of this group.";
                         return false;
                     }
                     break;
