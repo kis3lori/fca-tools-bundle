@@ -2,9 +2,11 @@ $.extend(true, conceptLattice, {});
 
 function collide(node) {
     var textLength = 0;
-    if (conceptLattice.settings.collapseLabels && conceptLattice.settings.showLabels) {
-        textLength = Math.max(conceptLattice.bottomLabels[0][node.index].getComputedTextLength(),
-            conceptLattice.topLabels[0][node.index].getComputedTextLength());
+    if (conceptLattice.settings.collapseLabels && conceptLattice.settings.showTopLabels) {
+        textLength = Math.max(textLength, conceptLattice.topLabels[0][node.index].getComputedTextLength());
+    }
+    if (conceptLattice.settings.collapseLabels && conceptLattice.settings.showBottomLabels) {
+        textLength = Math.max(conceptLattice.bottomLabels[0][node.index].getComputedTextLength(), textLength);
     }
 
     var nodeRadius = Math.max(15, textLength / 2) + 7;
@@ -17,9 +19,11 @@ function collide(node) {
             var y = node.initialY - quad.point.initialY;
             var distanceBetweenNodes = Math.sqrt(x * x + y * y);
             var quadTextLength = 0;
-            if (conceptLattice.settings.collapseLabels && conceptLattice.settings.showLabels) {
-                quadTextLength = Math.max(conceptLattice.bottomLabels[0][quad.point.index].getComputedTextLength(),
-                    conceptLattice.topLabels[0][quad.point.index].getComputedTextLength());
+            if (conceptLattice.settings.collapseLabels && conceptLattice.settings.showTopLabels) {
+                quadTextLength = Math.max(quadTextLength, conceptLattice.topLabels[0][quad.point.index].getComputedTextLength());
+            }
+            if (conceptLattice.settings.collapseLabels && conceptLattice.settings.showBottomLabels) {
+                quadTextLength = Math.max(conceptLattice.bottomLabels[0][quad.point.index].getComputedTextLength(), quadTextLength);
             }
 
             var quadRadius = Math.max(15, quadTextLength / 2) + 7;
@@ -135,13 +139,19 @@ function drawGraph(graph) {
         .append('g')
         .classed('gnode', true)
         .on("mouseover", function () {
-            if (!conceptLattice.settings.showLabels) {
-                return d3.select(this).selectAll("text").style("visibility", "visible");
+            if (!conceptLattice.settings.showTopLabels) {
+                return d3.select(this).select("text").style("visibility", "visible");
+            }
+            if (!conceptLattice.settings.showBottomLabels) {
+                return d3.select(d3.select(this).selectAll("text")[0][1]).style("visibility", "visible");
             }
         })
         .on("mouseout", function () {
-            if (!conceptLattice.settings.showLabels) {
-                return d3.select(this).selectAll("text").style("visibility", "hidden");
+            if (!conceptLattice.settings.showTopLabels) {
+                return d3.select(this).select("text").style("visibility", "hidden");
+            }
+            if (!conceptLattice.settings.showBottomLabels) {
+                return d3.select(d3.select(this).selectAll("text")[0][1]).style("visibility", "hidden");
             }
         })
         .on("dblclick", function (d, i) {
@@ -245,9 +255,11 @@ function drawGraph(graph) {
             }
         });
 
-    if (!conceptLattice.settings.showLabels) {
-        conceptLattice.bottomLabels.style("visibility", "hidden");
+    if (!conceptLattice.settings.showTopLabels) {
         conceptLattice.topLabels.style("visibility", "hidden");
+    }
+    if (!conceptLattice.settings.showBottomLabels) {
+        conceptLattice.bottomLabels.style("visibility", "hidden");
     }
 
     conceptLattice.force.on("tick", function () {

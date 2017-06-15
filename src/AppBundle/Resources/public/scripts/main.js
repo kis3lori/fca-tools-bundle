@@ -1,7 +1,8 @@
 var conceptLattice = {
     settings: {
         collisionDetection: false,
-        showLabels: true,
+        showTopLabels: true,
+        showBottomLabels: true,
         analogicalComplexId: -1,
         collapseLabels: true,
         circleRadius: 15,
@@ -76,16 +77,24 @@ $(document).ready(function () {
         conceptLattice.force.resume();
     });
 
-    $(".show-labels-btn").click(function () {
-        if (conceptLattice.settings.showLabels) {
-            conceptLattice.bottomLabels.style("visibility", "hidden");
+    $(".show-top-labels-btn").click(function () {
+        if (conceptLattice.settings.showTopLabels) {
             conceptLattice.topLabels.style("visibility", "hidden");
         } else {
-            conceptLattice.bottomLabels.style("visibility", "visible");
             conceptLattice.topLabels.style("visibility", "visible");
         }
 
-        conceptLattice.settings.showLabels = !conceptLattice.settings.showLabels;
+        conceptLattice.settings.showTopLabels = !conceptLattice.settings.showTopLabels;
+    });
+
+    $(".show-bottom-labels-btn").click(function () {
+        if (conceptLattice.settings.showBottomLabels) {
+            conceptLattice.bottomLabels.style("visibility", "hidden");
+        } else {
+            conceptLattice.bottomLabels.style("visibility", "visible");
+        }
+
+        conceptLattice.settings.showBottomLabels = !conceptLattice.settings.showBottomLabels;
     });
 
     $(".collapse-labels-btn").click(function () {
