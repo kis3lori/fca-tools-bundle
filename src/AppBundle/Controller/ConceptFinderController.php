@@ -170,7 +170,7 @@ class ConceptFinderController extends BaseController
      */
     public function conceptFinderBookmarkAction($id, Request $request)
     {
-        if ($this->getUser()) {
+        if (!$this->getUser()) {
             return new JsonResponse(array(
                 "status" => "success",
                 "error" => "You have to be logged in in order to create bookmarks.",
