@@ -18,11 +18,13 @@
                     <a href="{{ path("homepage") }}">Home</a>
                 </li>
 
-                <li{{ activeMenu == "contexts" ? " class=\"active\"" : "" }}>
-                    <a href="{{ path("context_homepage") }}">
-                        All Contexts
-                    </a>
-                </li>
+                {% if app.user %}
+                    <li{{ activeMenu == "contexts" ? " class=\"active\"" : "" }}>
+                        <a href="{{ path("context_homepage") }}">
+                            All Contexts
+                        </a>
+                    </li>
+                {% endif %}
 
                 <li{{ activeMenu == "public_contexts" ? " class=\"active\"" : "" }}>
                     <a href="{{ path("public_contexts") }}">
@@ -30,24 +32,32 @@
                     </a>
                 </li>
 
-                <li{{ activeMenu == "my_contexts" ? " class=\"active\"" : "" }}>
-                    <a href="{{ path("list_user_contexts") }}">
-                        My Contexts
-                    </a>
-                </li>
+                {% if app.user %}
+                    <li{{ activeMenu == "my_contexts" ? " class=\"active\"" : "" }}>
+                        <a href="{{ path("list_user_contexts") }}">
+                            My Contexts
+                        </a>
+                    </li>
 
-                <li{{ activeMenu == "groups" ? " class=\"active\"" : "" }}>
-                    <a href="{{ path("list_user_groups") }}">
-                        Groups
-                    </a>
-                </li>
+                    <li{{ activeMenu == "groups" ? " class=\"active\"" : "" }}>
+                        <a href="{{ path("list_user_groups") }}">
+                            Groups
+                        </a>
+                    </li>
+                {% endif %}
             </ul>
 
             <ul class="nav navbar-nav pull-right">
                 <li>
-                    <a href="{{ path("logout") }}">
-                        Logout
-                    </a>
+                    {% if app.user %}
+                        <a href="{{ path("logout") }}">
+                            Logout
+                        </a>
+                    {% else %}
+                        <a href="{{ path("login") }}">
+                            Login
+                        </a>
+                    {% endif %}
                 </li>
             </ul>
         </div><!--/.nav-collapse -->

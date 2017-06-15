@@ -170,6 +170,13 @@ class ConceptFinderController extends BaseController
      */
     public function conceptFinderBookmarkAction($id, Request $request)
     {
+        if ($this->getUser()) {
+            return new JsonResponse(array(
+                "status" => "success",
+                "error" => "You have to be logged in in order to create bookmarks.",
+            ));
+        }
+
         $em = $this->getManager();
         $context = $em->getRepository("AppBundle:Context")->find($id);
 
@@ -182,7 +189,7 @@ class ConceptFinderController extends BaseController
 
         unset($searchContext['bookmarks']);
         $name = $request->query->get("name", "");
-        
+
         $conceptFinderBookmark = new ConceptFinderBookmark();
         $conceptFinderBookmark->setUser($this->getUser());
         $conceptFinderBookmark->setContext($context);
@@ -285,7 +292,8 @@ class ConceptFinderController extends BaseController
      * @param Context $context
      * @return array
      */
-    private function getDefaultSearchContext($context) {
+    private function getDefaultSearchContext($context)
+    {
 
         return array(
             'id' => $context->getId(),
@@ -299,7 +307,10 @@ class ConceptFinderController extends BaseController
      * @param Context $context
      * @return array
      */
-    private function getUserBookmarks($context) {
+    private function getUserBookmarks($context)
+    {
+        if (!$this->getUser()) return array();
+
         $bookmarks = $this->getRepo("AppBundle:ConceptFinderBookmark")
             ->findBy(array(
                 "user.id" => $this->getUser()->getId(),
@@ -370,7 +381,8 @@ class ConceptFinderController extends BaseController
      * @param Request $request
      * @return array|null
      */
-    private function getActiveSate($context, $searchContext, $request) {
+    private function getActiveSate($context, $searchContext, $request)
+    {
         $currentState = null;
 
         if (count($searchContext['states']) > 0) {

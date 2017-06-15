@@ -86,18 +86,24 @@ class BaseController extends Controller
                     break;
                 case "can view":
                     $user = $this->getUser();
-                    if (!$context->getIsPublic() && $context->getUser() != $user) {
-
-                        $canView = false;
-                        foreach ($user->getGroups() as $group) {
-                            if ($group->hasContext($context)) {
-                                $canView = true;
-                                break;
-                            }
-                        }
-                        if (!$canView) {
+                    if (!$context->getIsPublic()) {
+                        if (!$user) {
                             $this->error = "You don't have the permissions to view this context.";
                             return false;
+                        }
+
+                        if ($context->getUser() != $user) {
+                            $canView = false;
+                            foreach ($user->getGroups() as $group) {
+                                if ($group->hasContext($context)) {
+                                    $canView = true;
+                                    break;
+                                }
+                            }
+                            if (!$canView) {
+                                $this->error = "You don't have the permissions to view this context.";
+                                return false;
+                            }
                         }
                     }
                     break;
@@ -175,7 +181,7 @@ class BaseController extends Controller
                     break;
                 case "can view":
                     $user = $this->getUser();
-                    if (!$group->getUsers()->contains($user)) {
+                    if ($user && !$group->getUsers()->contains($user)) {
                         $this->error = "You don't have the permissions to view this group.";
                         return false;
                     }

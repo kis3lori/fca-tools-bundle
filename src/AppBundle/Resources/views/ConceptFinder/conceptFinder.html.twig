@@ -35,13 +35,15 @@
             </ul>
 
             <div class="concept-finder-actions pull-right">
-                <button class="btn btn-primary btn-xs save-concept-finder-bookmark"
-                        data-url="{{ url("concept_finder_bookmark", {"id": context.id}) }}">
-                    Save
-                </button>
-                <button class="btn btn-primary btn-xs view-concept-finder-bookmarks" data-url="#">
-                    Bookmarks
-                </button>
+                {% if app.user %}
+                    <button class="btn btn-primary btn-xs save-concept-finder-bookmark"
+                            data-url="{{ url("concept_finder_bookmark", {"id": context.id}) }}">
+                        Save
+                    </button>
+                    <button class="btn btn-primary btn-xs view-concept-finder-bookmarks" data-url="#">
+                        Bookmarks
+                    </button>
+                {% endif %}
                 <button class="btn btn-danger btn-xs reset-concept-finder"
                         data-url="{{ url("concept_finder_reset", {"id": context.id}) }}">
                     Reset
@@ -73,7 +75,7 @@
                 <ul class="filter col-sm-{{ 12 / context.dimCount }}" data-dim="{{ dimKey }}">
                     <li class="form-group-sm">
                         <input type="text" placeholder="filter..." name="filter"
-                               class="filter form-control" />
+                               class="filter form-control"/>
                     </li>
                     <li class="pull-right">
                         <button class="apply-filter btn btn-sm btn-primary">Apply</button>

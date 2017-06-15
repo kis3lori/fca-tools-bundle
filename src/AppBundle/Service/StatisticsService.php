@@ -36,14 +36,27 @@ class StatisticsService
      */
     public function __construct(ContainerInterface $container)
     {
-        $this->user = null;
         $this->counters = array();
         $this->fcaParams = $container->getParameter("fca");
         $this->manager = $container->get("doctrine.odm.mongodb.document_manager");
-        $token = $container->get('security.token_storage')->getToken();
-        if ($token) {
-            $this->user = $token->getUser();
+        $this->user = $this->getUser($container);
+    }
+
+    private function getUser(ContainerInterface $container) {
+        if (!$container->has('security.token_storage')) {
+            throw new \LogicException('The SecurityBundle is not registered in your application.');
         }
+
+        if (null === $token = $container->get('security.token_storage')->getToken()) {
+            return;
+        }
+
+        if (!is_object($user = $token->getUser())) {
+            // e.g. anonymous authentication
+            return;
+        }
+
+        return $user;
     }
 
     /**
@@ -104,7 +117,9 @@ class StatisticsService
         }
 
         $statistics = new Statistics();
-        $statistics->setUser($this->user);
+        if ($this->user) {
+            $statistics->setUser($this->user);
+        }
         $statistics->setOperation($operationId);
         $statistics->setDuration($duration);
         $statistics->setData($actualData);

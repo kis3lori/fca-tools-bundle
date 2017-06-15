@@ -34,6 +34,7 @@ security:
             logout:
                 path:   /logout
                 target: /
+            anonymous: true
             # activate different ways to authenticate
 
             # http_basic: ~

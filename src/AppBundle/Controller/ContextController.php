@@ -21,6 +21,8 @@ class ContextController extends BaseController
     public function indexAction()
     {
         $user = $this->getUser();
+        if (!$user) return $this->redirect($this->generateUrl("public_contexts"));
+
         /** @var ContextRepository $contextRepo */
         $contextRepo = $this->getRepo("AppBundle:Context");
         $contexts = $contextRepo->getAllViewableByUser($user);
@@ -57,6 +59,8 @@ class ContextController extends BaseController
     {
         /** @var User $user */
         $user = $this->getUser();
+        if (!$user) return $this->redirect($this->generateUrl("public_contexts"));
+
         $contexts = $user->getContexts();
 
         return $this->render('@App/Context/listUserContexts.html.twig', array(
@@ -73,6 +77,7 @@ class ContextController extends BaseController
      */
     public function viewContextAction($id)
     {
+        /** @var Context $context */
         $context = $this->getRepo("AppBundle:Context")->find($id);
 
         if (!$this->isValidContext($context, array("not null", "can view"))) {
