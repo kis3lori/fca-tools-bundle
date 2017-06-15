@@ -5,6 +5,7 @@ namespace AppBundle\Controller;
 use AppBundle\Document\ConceptFinderBookmark;
 use AppBundle\Document\Context;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -173,7 +174,7 @@ class ConceptFinderController extends BaseController
         if (!$this->getUser()) {
             return new JsonResponse(array(
                 "status" => "success",
-                "error" => "You have to be logged in in order to create bookmarks.",
+                "error" => "You have to be logged in to manage bookmarks.",
             ));
         }
 
@@ -217,6 +218,13 @@ class ConceptFinderController extends BaseController
      */
     public function conceptFinderDeleteBookmarkAction($id, Request $request)
     {
+        if (!$this->getUser()) {
+            return new JsonResponse(array(
+                "status" => "success",
+                "error" => "You have to be logged in to manage bookmarks.",
+            ));
+        }
+
         $em = $this->getManager();
         $context = $em->getRepository("AppBundle:Context")->find($id);
 

@@ -2,7 +2,9 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Document\Context;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,6 +13,7 @@ class ConceptLatticeController extends BaseController
 {
 
     /**
+     * @Security("has_role('ROLE_USER')")
      * @Route("/generate-concept-lattice/{id}", name="generate_concept_lattice")
      *
      * @param $id
@@ -69,6 +72,7 @@ class ConceptLatticeController extends BaseController
      */
     public function getConceptLatticeDataAction($id)
     {
+        /** @var Context $context */
         $context = $this->getRepo("AppBundle:Context")->find($id);
 
         if (!$this->isValidContext($context, array("not null", "can view", "has concept lattice"))) {
@@ -92,6 +96,7 @@ class ConceptLatticeController extends BaseController
      */
     public function viewLockedConceptLatticeAction($id, $lockType, Request $request)
     {
+        /** @var Context $context */
         $context = $this->getRepo("AppBundle:Context")->find($id);
 
         if (!$this->isValidContext($context, array("not null", "can view", "has concepts", "is triadic"))) {
@@ -125,6 +130,7 @@ class ConceptLatticeController extends BaseController
         $this->startStatisticsCounter();
 
         $lockedElements = $request->query->get("lock");
+        /** @var Context $context */
         $context = $this->getRepo("AppBundle:Context")->find($id);
 
         if (!$this->isValidContext($context, array("not null", "can view", "has concepts", "is triadic"))) {
@@ -203,6 +209,7 @@ class ConceptLatticeController extends BaseController
         $this->startStatisticsCounter();
 
         $lockedElements = $request->query->get("lock");
+        /** @var Context $context */
         $context = $this->getRepo("AppBundle:Context")->find($id);
 
         if (!$this->isValidContext($context, array("not null", "can view", "not has concepts", "is triadic"))) {

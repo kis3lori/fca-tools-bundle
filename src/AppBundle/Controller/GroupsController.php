@@ -6,10 +6,17 @@ use AppBundle\Document\Context;
 use AppBundle\Document\Group;
 use AppBundle\Document\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @Security("has_role('ROLE_USER')")
+ *
+ * Class GroupsController
+ * @package AppBundle\Controller
+ */
 class GroupsController extends BaseController
 {
 

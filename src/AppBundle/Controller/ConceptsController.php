@@ -3,8 +3,15 @@
 namespace AppBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @Security("has_role('ROLE_USER')")
+ *
+ * Class ConceptsController
+ * @package AppBundle\Controller
+ */
 class ConceptsController extends BaseController
 {
 

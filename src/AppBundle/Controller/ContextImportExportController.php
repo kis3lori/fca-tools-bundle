@@ -7,17 +7,23 @@ use AppBundle\Helper\CommonUtils;
 use AppBundle\Parser\Exception\InvalidNumericDimensionException;
 use AppBundle\Parser\Exception\InvalidTemporalDimensionException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Class ContextImportExportController
+ * @package AppBundle\Controller
+ */
 class ContextImportExportController extends BaseController
 {
 
     /**
+     * @Security("has_role('ROLE_USER')")
      * @Route("/new-context", name="create_new_context")
+     *
      * @param Request $request
      * @return Response
      */
@@ -120,6 +126,7 @@ class ContextImportExportController extends BaseController
     }
 
     /**
+     * @Security("has_role('ROLE_USER')")
      * @Route("/import-context", name="import_context")
      *
      * @param Request $request
@@ -182,7 +189,7 @@ class ContextImportExportController extends BaseController
                 if ($request->request->get("numericalDimensions", "") != "") {
                     $numericalDimensions = explode(",", $request->request->get("numericalDimensions", ""));
                     foreach ($numericalDimensions as $key => $value) {
-                        $numericalDimensions[$key] = (int) CommonUtils::trim($value);
+                        $numericalDimensions[$key] = (int)CommonUtils::trim($value);
                     }
                 }
 
@@ -190,7 +197,7 @@ class ContextImportExportController extends BaseController
                 if ($request->request->get("temporalDimensions", "") != "") {
                     $temporalDimensions = explode(",", $request->request->get("temporalDimensions", ""));
                     foreach ($temporalDimensions as $key => $value) {
-                        $temporalDimensions[$key] = (int) CommonUtils::trim($value);
+                        $temporalDimensions[$key] = (int)CommonUtils::trim($value);
                     }
                 }
 
@@ -308,6 +315,7 @@ class ContextImportExportController extends BaseController
     {
         $this->startStatisticsCounter();
 
+        /** @var Context $context */
         $context = $this->getRepo("AppBundle:Context")->find($id);
 
         if (!$this->isValidContext($context, array("not null", "can view"))) {

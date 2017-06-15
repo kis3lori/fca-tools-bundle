@@ -8,6 +8,7 @@ use AppBundle\Document\User;
 use AppBundle\Helper\CommonUtils;
 use AppBundle\Repository\ContextRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
 
 class ContextController extends BaseController
@@ -51,6 +52,7 @@ class ContextController extends BaseController
     }
 
     /**
+     * @Security("has_role('ROLE_USER')")
      * @Route("/my-contexts", name="list_user_contexts")
      *
      * @return Response
@@ -91,6 +93,7 @@ class ContextController extends BaseController
     }
 
     /**
+     * @Security("has_role('ROLE_USER')")
      * @Route("/delete-context/{id}", name="delete_context")
      *
      * @param $id

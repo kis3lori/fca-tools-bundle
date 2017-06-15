@@ -2,10 +2,16 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Document\Context;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @Security("has_role('ROLE_USER')")
+ *
+ * Class ContextSettingsController
+ * @package AppBundle\Controller
+ */
 class ContextSettingsController extends BaseController
 {
 
@@ -45,7 +51,7 @@ class ContextSettingsController extends BaseController
     {
         $em = $this->getManager();
         $context = $em->getRepository("AppBundle:Context")->find($id);
-        
+
         if (!$this->isValidContext($context, array("not null", "is own"))) {
             return $this->renderFoundError("my_contexts");
         }
