@@ -8,6 +8,7 @@
         {% endif %}
         <th>Number of dimensions</th>
         <th>Number of incidences</th>
+        <th>Number of concepts</th>
         <th>Actions</th>
     </tr>
     </thead>
@@ -35,6 +36,14 @@
 
             <td>
                 {{ context.relations|length }}
+            </td>
+
+            <td>
+                {% if context.concepts %}
+                    {{ context.concepts|length }}
+                {% else %}
+                    Concepts not computed
+                {% endif %}
             </td>
 
             <td>
