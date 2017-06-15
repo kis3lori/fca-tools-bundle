@@ -70,6 +70,7 @@
             </p>
         </div>
 
+        {#
         <div class="row">
             {% for dimKey, dimension in context.dimensions %}
                 <ul class="filter col-sm-{{ 12 / context.dimCount }}" data-dim="{{ dimKey }}">
@@ -83,6 +84,7 @@
                 </ul>
             {% endfor %}
         </div>
+        #}
 
         <form action="{{ path("concept_finder", {"id": context.id}) }}" method="post"
               data-ajax-url="{{ url("concept_finder_update", {"id": context.id}) }}">
