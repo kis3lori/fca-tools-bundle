@@ -108,6 +108,16 @@ class ContextController extends BaseController
             return $this->renderFoundError("contexts");
         }
 
+        $groups = $this->getUser()->getGroups();
+        /** @var Group $group */
+        foreach ($groups as $group) {
+            if ($group->getContexts()->contains($context)) {
+                $group->removeContext($context);
+                $em->persist($group);
+                $em->flush();
+            }
+        }
+
         $em->remove($context);
         $em->flush();
 
