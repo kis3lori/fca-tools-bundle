@@ -31,6 +31,11 @@ $(document).ready(function () {
         container: $(".concept-lattice-container")
     });
 
+    $(".panel-accordion .panel").click(function() {
+        $(this).parent().find(".panel").removeClass("panel-primary").addClass("panel-default");
+        $(this).removeClass("panel-default").addClass("panel-primary");
+    });
+
     $(".remove-member-btn").click(function(event) {
         event.preventDefault();
         var memberContainer = $(this).closest("tr");
