@@ -62,22 +62,24 @@
                             {{ group.users|length }}
                         </td>
                         <td>
-                            <form class="add-member-form" action="{{ path("add_member") }}" method="post">
-                                <input type="hidden" name="group-id" value="{{ group.id }}"/>
-                                <div class="row">
-                                    <div class="col-sm-2">
-                                        <label for="username">Username: </label>
+                            {% if group.owner == app.user %}
+                                <form class="add-member-form" action="{{ path("add_member") }}" method="post">
+                                    <input type="hidden" name="group-id" value="{{ group.id }}"/>
+                                    <div class="row">
+                                        <div class="col-sm-2">
+                                            <label for="username">Username: </label>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <input class="form-control input-sm" type="text" name="username" id="name"
+                                                   required="required"/>
+                                        </div>
+                                        <div class="col-sm-4    "></div>
+                                        <div class="col-sm-2">
+                                            <button class="btn btn-primary btn-sm">Submit</button>
+                                        </div>
                                     </div>
-                                    <div class="col-sm-4">
-                                        <input class="form-control input-sm" type="text" name="username" id="name"
-                                               required="required"/>
-                                    </div>
-                                    <div class="col-sm-4    "></div>
-                                    <div class="col-sm-2">
-                                        <button class="btn btn-primary btn-sm">Submit</button>
-                                    </div>
-                                </div>
-                            </form>
+                                </form>
+                            {% endif %}
                         </td>
                         <td>
                             {% if group.owner == app.user %}
