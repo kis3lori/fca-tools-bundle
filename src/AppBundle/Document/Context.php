@@ -97,6 +97,11 @@ class Context
     protected $groups;
 
     /**
+     * @MongoDB\ReferenceOne(targetDocument="Scale", inversedBy="context")
+     */
+    protected $scale;
+
+    /**
      * @var string
      */
     protected $baseFilePath = "web/uploads/context/files/";
@@ -587,4 +592,25 @@ class Context
         return $this->id;
     }
 
+    /**
+     * Set scale
+     *
+     * @param  $scale
+     * @return self
+     */
+    public function setScale( $scale)
+    {
+        $this->scale = $scale;
+        return $this;
+    }
+
+    /**
+     * Get scale
+     *
+     * @return  $scale
+     */
+    public function getScale()
+    {
+        return $this->scale;
+    }
 }

@@ -13,6 +13,8 @@ var conceptLattice = {
     }
 };
 
+var tableData = null;
+
 $(document).ready(function () {
     var body = $("body");
     var container = $(".main-container");
@@ -31,13 +33,45 @@ $(document).ready(function () {
         container: $(".concept-lattice-container")
     });
 
-    $(".remove-member-btn").click(function(event) {
+    $(".create-new-scale-page").on("change", "#databaseConnection", function () {
+        var value = $(this).val();
+
+        if (value == "add-new-database-connection") {
+            $("#create-database-connection").collapse("show");
+        } else {
+            $("#create-database-connection").collapse("hide");
+        }
+    }).on("click", ".save-database-connection", function (event) {
+        event.preventDefault();
+
+        var form = $(this).closest(".create-database-connection-form");
+        var url = form.attr("action");
+
+        $.ajax(url, {
+            method: "post",
+            data: form.serialize(),
+            success: function (response) {
+                if (response.success) {
+                    $("#create-database-connection").collapse("hide");
+                    $("<option value=\"" + response.data.databaseConnection.id + "\">" +
+                        response.data.databaseConnection.name +
+                        "</option>").appendTo("#databaseConnection").prop('selected', true)
+                } else {
+                    alert(response.error);
+                }
+            }
+        })
+    }).on("change", "#scale-type-select-box", function() {
+        $(".scale-type-form").hide().filter("[data-scale-type='" + $(this).val() + "']").show();
+    });
+
+    $(".remove-member-btn").click(function (event) {
         event.preventDefault();
         var memberContainer = $(this).closest("tr");
 
         var url = $(this).attr("href");
         $.ajax(url, {
-            success: function(response) {
+            success: function (response) {
                 if (response.success == true) {
                     memberContainer.remove();
                 } else {
@@ -56,6 +90,10 @@ $(document).ready(function () {
         } else {
             submitBtn.removeClass("btn-danger").addClass("btn-primary").val("Add context to group");
         }
+    });
+
+    $('#choose_object_column').change(function () {
+        $(this).parent().find(".submit-btn").removeClass("disabled").removeAttr("disabled");
     });
 
     $(function () {
@@ -341,6 +379,71 @@ $(document).ready(function () {
 
             form.submit();
         })
+        .on("click", ".btn-create-custom-scale", function (event) {
+            event.preventDefault();
+
+            var form = $(this).closest("form");
+            var tablesContainer = form.find(".relation-tables");
+            var table = tablesContainer.find(".create-context-table:first");
+
+            var databaseConnection = $.trim($("#databaseConnection").val());
+            $("<input>").attr("type", "hidden").attr("name", "databaseConnection").val(databaseConnection).appendTo(form);
+            var tableName = $.trim($("#tableName").val());
+            $("<input>").attr("type", "hidden").attr("name", "tableName").val(tableName).appendTo(form);
+            var scaleName = $.trim($("#scaleName").val());
+            $("<input>").attr("type", "hidden").attr("name", "scaleName").val(scaleName).appendTo(form);
+            var scaleType = $.trim($("#scale-type-select-box").val());
+            $("<input>").attr("type", "hidden").attr("name", "scaleType").val(scaleType).appendTo(form);
+
+            table.find(".top-head-cell:not(:last)").each(function () {
+                var val = $.trim($(this).find("input").val());
+                var input = $("<input>").attr("type", "hidden").attr("name", "attributes[]").val(val);
+
+                form.append(input);
+            });
+
+            table.find(".left-head-cell:not(:last)").each(function () {
+                var val = $.trim($(this).find("input").val());
+                var input = $("<input>").attr("type", "hidden").attr("name", "objects[]").val(val);
+
+                form.append(input);
+            });
+
+            var firstRow = table.find(".first-row");
+            table.find("tr:not(.first-row)").each(function () {
+                var row = $(this);
+                var objectName = row.find(".left-head-cell input").val();
+
+                row.find(".data-cell").each(function (i) {
+                    if ($.trim($(this).text()) == "X") {
+                        var attributeCell = firstRow.find(".top-head-cell").eq(i);
+                        var attributeName = attributeCell.find("input").val();
+
+                        var val = objectName + "###" + attributeName;
+                        var input = $("<input>").attr("type", "hidden").attr("name", "relation_tuples[]").val(val);
+                        form.append(input);
+                    }
+                });
+            });
+
+            form.submit();
+        })
+        .on("click", ".btn-create-nominal-scale", function (event) {
+            event.preventDefault();
+
+            var form = $(this).closest("form");
+
+            var databaseConnection = $.trim($("#databaseConnection").val());
+            $("<input>").attr("type", "hidden").attr("name", "databaseConnection").val(databaseConnection).appendTo(form);
+            var tableName = $.trim($("#tableName").val());
+            $("<input>").attr("type", "hidden").attr("name", "tableName").val(tableName).appendTo(form);
+            var scaleName = $.trim($("#scaleName").val());
+            $("<input>").attr("type", "hidden").attr("name", "scaleName").val(scaleName).appendTo(form);
+            var scaleType = $.trim($("#scale-type-select-box").val());
+            $("<input>").attr("type", "hidden").attr("name", "scaleType").val(scaleType).appendTo(form);
+
+            form.submit();
+        })
         .on("click", ".btn-add-condition", function (event) {
             event.preventDefault();
 
@@ -351,6 +454,43 @@ $(document).ready(function () {
             table.scroll(adjustTablesScroll);
 
             tablesContainer.append(table);
+        })
+        .on("change", "input.subType", function () {
+            if ($(this).val() === "simple") {
+                $(".nominal-scale-elements-selector").hide();
+            } else {
+                $(".nominal-scale-elements-selector").show();
+
+                if (tableData === null) {
+                    var url = $(".create-new-scale-page").data("get-table-data-url");
+                    var databaseConnection = $.trim($("#databaseConnection").val());
+                    var tableName = $.trim($("#tableName").val());
+                    $.ajax(url, {
+                        method: "get",
+                        data: {
+                            'databaseConnectionId': databaseConnection,
+                            'table': tableName
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                tableData = response.data.tableData;
+
+                                var column = $("#column").val();
+                                var values = [];
+                                for (index in tableData.data) {
+                                    var value = tableData.data[index][column];
+                                    if (!(values.includes(value))) {
+                                        values.push(value);
+                                        $("<option value='" + value + "'>" + value + "</option>").appendTo($("#nominalScaleValues"));
+                                    }
+                                }
+
+                            }
+                        }
+                    });
+                }
+
+            }
         });
 
     $('input[type=radio][name=context_type]').on('change', function () {

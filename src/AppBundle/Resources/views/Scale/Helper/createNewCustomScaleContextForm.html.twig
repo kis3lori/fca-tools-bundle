@@ -1,0 +1,60 @@
+<form action="{{ path("create_new_scale") }}" method="post" class="create-context-form">
+    <div class="relation-tables">
+        <div class="table-data">
+            <table class="table table-bordered create-context-table">
+                <tr class="first-row">
+                    <td class="empty-cell"></td>
+
+                    {% for attribute in app.request.request.get("attributes", []) %}
+                        <td class="top-head-cell">
+                            <input type="text" class="item-name-input" value="{{ attribute }}"/>
+                        </td>
+                    {% endfor %}
+
+                    <td class="top-head-cell add-attribute-cell">
+                        <input type="text" class="item-name-input" placeholder="Add attribute..."/>
+                    </td>
+                </tr>
+
+                {% for object in app.request.request.get("objects", []) %}
+                    <tr>
+                        <td class="left-head-cell">
+                            <input type="text" class="item-name-input" value="{{ object }}"/>
+                        </td>
+                        {% for attribute in app.request.request.get("attributes", []) %}
+                            <td class="data-cell">
+                                {% set tuple = object ~ "###" ~ attribute %}
+
+                                {% if tuple in app.request.request.get("relation_tuples", []) %}
+                                    X
+                                {% else %}
+                                    &nbsp;
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                        <td>&nbsp;</td>
+                    </tr>
+                {% endfor %}
+
+                <tr>
+                    <td class="left-head-cell add-object-cell">
+                        <input type="text" class="item-name-input" placeholder="Add object..."/>
+                    </td>
+                    {% set nrAttributes = app.request.request.get("attributes", [])|length %}
+                    {% if nrAttributes >= 1 %}
+                        {% for index in 1..nrAttributes %}
+                            <td class="data-cell">&nbsp;</td>
+                        {% endfor %}
+                    {% endif %}
+                    <td>&nbsp;</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <p>
+        <a class="btn btn-default" data-toggle="tab" href="#step2-tab">Back</a>
+        <a class="btn btn-danger" href="{{ path("list_user_scales") }}">Cancel</a>
+        <button class="btn btn-primary btn-create-custom-scale">Submit</button>
+    </p>
+</form>

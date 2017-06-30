@@ -44,6 +44,12 @@
                             Groups
                         </a>
                     </li>
+
+                    <li{{ activeMenu == "my_scales" ? " class=\"active\"" : "" }}>
+                        <a href="{{ path("list_user_scales") }}">
+                            Scales
+                        </a>
+                    </li>
                 {% endif %}
             </ul>
 

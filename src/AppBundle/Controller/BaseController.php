@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Document\Context;
 use AppBundle\Document\Group;
+use AppBundle\Document\Scale;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\CssSelector\Exception\InternalErrorException;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -92,7 +93,7 @@ class BaseController extends Controller
                             return false;
                         }
 
-                        if ($context->getUser() != $user) {
+                        if ($context->getUser() && $context->getUser() != $user) {
                             $canView = false;
                             foreach ($user->getGroups() as $group) {
                                 if ($group->hasContext($context)) {
@@ -105,10 +106,19 @@ class BaseController extends Controller
                                 return false;
                             }
                         }
+
+                        if ($context->getScale() && $context->getScale()->getUser() != $user) {
+                            $this->error = "You don't have the permissions to view this context.";
+                            return false;
+                        }
                     }
                     break;
                 case "is own":
-                    if ($context->getUser() != $this->getUser()) {
+                    if ($context->getUser() && $context->getUser() != $this->getUser()) {
+                        $this->error = "You don't have permissions to edit this context.";
+                        return false;
+                    }
+                    if ($context->getScale() && $context->getScale()->getUser() != $this->getUser()) {
                         $this->error = "You don't have permissions to edit this context.";
                         return false;
                     }
@@ -152,6 +162,48 @@ class BaseController extends Controller
                 case "is triadic":
                     if ($context->getDimCount() != 3) {
                         $this->error = "This context is not a triadic context.";
+                        return false;
+                    }
+                    break;
+                default:
+                    throw new InternalErrorException();
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param $scale Scale
+     * @param $validations array
+     * @return bool
+     * @throws InternalErrorException
+     */
+    protected function isValidScale($scale, $validations)
+    {
+        foreach ($validations as $validation) {
+            switch ($validation) {
+                case "not null":
+                    if ($scale == null) {
+                        $this->error = "No scale was found with the given id.";
+                        return false;
+                    }
+                    break;
+                case "can view":
+                    $user = $this->getUser();
+                    if (!$user) {
+                        $this->error = "You don't have the permissions to view this scale.";
+                        return false;
+                    }
+
+                    if ($scale->getUser() != $user) {
+                        $this->error = "You don't have the permissions to view this scale.";
+                        return false;
+                    }
+                    break;
+                case "is own":
+                    if ($scale->getUser() != $this->getUser()) {
+                        $this->error = "You do not have ownershi of this scale.";
                         return false;
                     }
                     break;

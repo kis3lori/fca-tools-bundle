@@ -1,0 +1,148 @@
+{% extends "@App/layout.html.twig" %}
+
+{% block body %}
+    {# scale \AppBundle\Document\Scale #}
+
+    {# context \AppBundle\Document\Context #}
+    {% set context = scale.context %}
+
+    <div class="scale-page">
+        <h1 class="page-header">{{ scale.name }}</h1>
+
+        <ol class="breadcrumb">
+            <li><a href="{{ path("homepage") }}">Home</a></li>
+            <li><a href="{{ path("list_user_scales") }}">Scales</a></li>
+            <li class="active">{{ scale.name }}</li>
+        </ol>
+
+        <h2>Actions</h2>
+
+        <p>
+            <a class="btn btn-primary" href="{{ path("export_context_cxt", {"id": context.id}) }}">
+                Export scale context as cxt
+            </a>
+
+            <a class="btn btn-primary" href="{{ path("export_context_csv", {"id": context.id}) }}">
+                Export scale context as csv
+            </a>
+
+            <a class="btn btn-primary" href="{{ path("view_concept_lattice", {"id": context.id}) }}">
+                View Scale Concept Lattice
+            </a>
+        </p>
+
+        <div>
+            <form action="{{ path("apply_scale", {"id": scale.id}) }}" method="get">
+                <div class="input-group pull-left">
+                    <select id="choose_object_column" name="objectColumn" class="form-control">
+                        <option value="" disabled selected>Select the object column</option>
+                        {% for column in tableData.columns %}
+                            <option value="{{ column }}">{{ column }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <span class="input-group-btn">
+                        <input disabled="disabled" class="submit-btn btn btn-primary disabled"
+                               type="submit" value="Apply Scale">
+                    </span>
+                </div>
+            </form>
+
+            <div class="clearfix"></div>
+            <br />
+        </div>
+
+        {% for index, elements in context.dimensions %}
+            {% set dimension = fcaParams['dimensionsPlural'][index] %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title has-badge pull-left text-capitalize">
+                        <strong>{{ dimension|capitalize }}</strong> <span class="badge">{{ elements|length }}</span>
+                    </h3>
+
+                    <button class="btn btn-primary btn-xs pull-right" type="button" data-toggle="collapse"
+                            data-target="#{{ dimension }}-list" aria-expanded="false" aria-controls="collapse">
+                        Show
+                    </button>
+
+                    <div class="clearfix"></div>
+                </div>
+
+                <ul class="list-group collapse" id="{{ dimension }}-list">
+                    {% for elem in elements|slice(0, 100) %}
+                        <li class="list-group-item">
+                            {{ elem }}
+                        </li>
+                    {% endfor %}
+                    {% if (elements|length) > 100 %}
+                        <li class="list-group-item">...</li>
+                    {% endif %}
+                </ul>
+            </div>
+        {% endfor %}
+
+        <div class="relations panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title has-badge pull-left text-capitalize">
+                    <strong>Incidences</strong> <span class="badge">{{ context.relations|length }}</span>
+                </h3>
+
+                <button class="btn btn-primary btn-xs pull-right" type="button" data-toggle="collapse"
+                        data-target="#relation-list" aria-expanded="false" aria-controls="collapse">
+                    Show
+                </button>
+
+                <div class="clearfix"></div>
+            </div>
+
+            <ul class="list-group collapse" id="relation-list">
+                {% for relation in context.relations|slice(0, 100) %}
+                    <li class="list-group-item">
+                        {% for index, elemId in relation %}
+                            {{ context.element(index, elemId) }} {{ loop.last ? "" : "-" }}
+                        {% endfor %}
+                    </li>
+                {% endfor %}
+                {% if (context.relations|length) > 100 %}
+                    <li class="list-group-item">...</li>
+                {% endif %}
+            </ul>
+        </div>
+
+        {% if context.concepts is not empty %}
+            <div class="concepts panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title has-badge pull-left text-capitalize">
+                        <strong>Concepts</strong> <span class="badge">{{ context.concepts|length }}</span>
+                    </h3>
+
+                    <button class="btn btn-primary btn-xs pull-right" type="button" data-toggle="collapse"
+                            data-target="#concept-list" aria-expanded="false" aria-controls="collapse">
+                        Show
+                    </button>
+
+                    <div class="clearfix"></div>
+                </div>
+
+                <ul class="list-group collapse" id="concept-list">
+                    {% for concept in context.concepts|slice(0, 100) %}
+                        <li class="list-group-item">
+                            {% for index, elements in concept %}
+                                <ul class="list-inline">
+                                    <li><strong>{{ fcaParams['dimensionsPlural'][index]|capitalize }}:</strong></li>
+
+                                    {% for elemId in elements %}
+                                        <li>{{ context.element(index, elemId) }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endfor %}
+                        </li>
+                    {% endfor %}
+                    {% if (context.concepts|length) > 100 %}
+                        <li class="list-group-item">...</li>
+                    {% endif %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

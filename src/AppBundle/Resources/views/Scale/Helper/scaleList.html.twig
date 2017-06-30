@@ -1,0 +1,28 @@
+<table class="table table-bordered table-striped sort-filter">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {# scale \AppBundle\Document\Scale #}
+    {% for scale in scales %}
+        <tr>
+            <td>
+                {{ scale.name }}
+            </td>
+
+            <td>
+                {{ scale.type }}
+            </td>
+
+            <td>
+                <a class="btn btn-primary btn-xs" href="{{ path('view_scale', {'id': scale.id}) }}">View</a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
