@@ -31,18 +31,21 @@ $(document).ready(function () {
         container: $(".concept-lattice-container")
     });
 
-    $(".panel-accordion .panel").click(function() {
-        $(this).parent().find(".panel").removeClass("panel-primary").addClass("panel-default");
-        $(this).removeClass("panel-default").addClass("panel-primary");
-    });
+    $(".panel-collapse")
+        .on('show.bs.collapse', function () {
+            $(this).closest(".panel").removeClass("panel-default").addClass("panel-primary");
+        })
+        .on('hide.bs.collapse', function () {
+            $(this).closest(".panel").removeClass("panel-primary").addClass("panel-default");
+        });
 
-    $(".remove-member-btn").click(function(event) {
+    $(".remove-member-btn").click(function (event) {
         event.preventDefault();
         var memberContainer = $(this).closest("tr");
 
         var url = $(this).attr("href");
         $.ajax(url, {
-            success: function(response) {
+            success: function (response) {
                 if (response.success == true) {
                     memberContainer.remove();
                 } else {

@@ -21,20 +21,20 @@
         {title: "Create dyadic or triadic contexts", descriptionFile: "context_creation"},
         {title: "Import polyadic contexts", descriptionFile: "context_import"},
         {title: "Generate the concepts of a polyadic context", descriptionFile: "concept_generation"},
-        {title: "View the concept lattice of a dyadic context", descriptionFile: "concept_generation"},
-        {title: "View WAP (weak analogical proportions) in your dyadic contexts", descriptionFile: "concept_generation"},
-        {title: "Find a concept in a polyadic context without having to generate all its concepts", descriptionFile: "concept_generation"},
-        {title: "Analyze a triadic context using a <strong>novel triadic navigation method</strong> that uses perspectives", descriptionFile: "concept_generation"},
-        {title: "The above navigation can be used on large triadic context for which the full list of concepts cannot be computed", descriptionFile: "concept_generation"},
-        {title: "Create groups in which you can share contexts", descriptionFile: "concept_generation"},
-        {title: "Make your own context public so that all the users can see it", descriptionFile: "concept_generation"}
+        {title: "View the concept lattice of a dyadic context", descriptionFile: "concept_lattice"},
+        {title: "View WAP (weak analogical proportions) in your dyadic contexts", descriptionFile: "todo"},
+        {title: "Find a concept in a polyadic context without having to generate all its concepts", descriptionFile: "todo"},
+        {title: "Analyze a triadic context using a <strong>novel triadic navigation method</strong> that uses perspectives", descriptionFile: "todo"},
+        {title: "The above navigation can be used on large triadic context for which the full list of concepts cannot be computed", descriptionFile: "todo"},
+        {title: "Create groups in which you can share contexts", descriptionFile: "todo"},
+        {title: "Make your own context public so that all the users can see it", descriptionFile: "todo"},
+        {title: "Restrictions", descriptionFile: "todo"}
         ] %}
 
         <div class="panel-group panel-accordion" id="collapse-features">
             {% for feature in features %}
                 <div class="panel panel-{{ loop.index == 1 ? "primary" : "default" }}">
-                    <div class="panel-heading" data-toggle="collapse" data-parent="#collapse-features"
-                         data-target="#collapse-{{ loop.index }}">
+                    <div class="panel-heading" data-toggle="collapse" data-target="#collapse-{{ loop.index }}">
                         <h4 class="panel-title">
                             {{ feature.title | raw }}
                         </h4>
