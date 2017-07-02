@@ -4,26 +4,95 @@
     <div>
         <h1 class="page-header">Welcome</h1>
 
-        <p>This website was built in order to provide users with a diverse set of tools used in Formal Concept Analysis.</p>
+        <p>
+            This website was built in order to provide users with a diverse set of tools used in Formal Concept
+            Analysis.
+        </p>
 
-        <p>It supports the following features:</p>
+        <p>
+            If you are new to FCA you can find an
+            <a href="https://en.wikipedia.org/wiki/Formal_concept_analysis">introduction</a>
+            at Wikipedia.
+        </p>
 
-        <ul>
-            <li>Create dyadic contexts</li>
-            <li>Import dyadic contexts</li>
-            <li>Generate a dyadic context's concepts</li>
-            <li>Find a concept in a dyadic context without generating all its concepts</li>
-            <li>Generate and navigate a dyadic context's concept concepts</li>
-            <li>Create triadic contexts</li>
-            <li>Import triadic contexts</li>
-            <li>Generate a triadic context's concepts</li>
-            <li>Find a concept in a triadic context without generating all its concepts</li>
-            <li>Navigate a triadic context by using perspectives</li>
-            <li>Navigate on a large triadic context by using perspectives for which the full list of concepts cannot be computed</li>
-            <li>View and interact with all the public contexts uploaded by other users</li>
-            <li>Make your own context public to other users</li>
-            <li>Create groups in order to share your contexts</li>
-            <li>View WAP (weak analogical proportions) in your context.</li>
-        </ul>
+        <h3>Features</h3>
+        <p class="bg-info message">
+            Below you can find a list of all the features of this website.
+            Each feature comes with a detailed description which can be accessed by clicking on it.
+        </p>
+
+        {% set features = [
+        {title: "Create dyadic or triadic contexts", descriptionFile: "context_creation"},
+        {title: "Import polyadic contexts", descriptionFile: "context_import"},
+        {title: "Generate the concepts of a polyadic context", descriptionFile: "concept_generation"},
+        {title: "View the concept lattice of a dyadic context", descriptionFile: "concept_lattice"},
+        {title: "View WAP (weak analogical proportions) in your dyadic contexts", descriptionFile: "analogical_complexes"},
+        {title: "Find a concept in a polyadic context without having to generate all its concepts", descriptionFile: "concept_finder"},
+        {title: "Analyze a triadic context using a <strong>novel triadic navigation method</strong> that uses perspectives", descriptionFile: "triadic_navigation"},
+        {title: "Create groups in which you can share contexts", descriptionFile: "groups"},
+        {title: "Make your own context public so that all the users can see it", descriptionFile: "public_context"},
+        {title: "Restrictions", descriptionFile: "restrictions"}
+        ] %}
+
+        <div class="panel-group panel-accordion panel-caret" id="collapse-features">
+            {% for feature in features %}
+                <div class="panel panel-default">
+                    <div class="panel-heading collapsed" data-toggle="collapse"
+                         data-target="#collapse-{{ loop.index }}">
+                        <h4 class="panel-title">
+                            {{ feature.title | raw }}
+                        </h4>
+                    </div>
+
+                    <div id="collapse-{{ loop.index }}"
+                         class="panel-collapse collapse">
+                        <div class="panel-body">
+                            {% include("@App/Default/Features/" ~ feature.descriptionFile ~ ".html.twig") %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <h3>Useful Links</h3>
+        <div class="useful-links">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th width="250px">Website</th>
+                    <th>Description</th>
+                    <th width="100px">Author</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr>
+                    <td>
+                        <a href="http://www.upriss.org.uk/fca/fca.html">Formal Concept Analysis Homepage</a>
+                    </td>
+                    <td>
+                        A great resource for any FCA related information.<br/>
+                        Contains:
+                        <ul>
+                            <li>examples and introductory materials about FCA</li>
+                            <li>links to tools used in FCA</li>
+                            <li>links to other websites related to FCA</li>
+                            <li>open problems in FCA</li>
+                            <li>related disciplines to FCA</li>
+                            <li>current conferences on FCA</li>
+                            <li>and everything you can think of related to FCA</li>
+                        </ul>
+
+                        <div class="message bg-info">
+                            <strong>Note:</strong> It really helped me a lot since I started out with FCA by reading online materials.
+                        </div>
+                    </td>
+                    <td>
+                        Uta Priss
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 {% endblock %}
