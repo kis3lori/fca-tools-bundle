@@ -1,0 +1,74 @@
+<p>
+    One common problem with triadic contexts is that it is hard to analyze them. <br/>
+    This is because once you generate the concepts you cannot view them in a concept lattice like in the case of a
+    dyadic context.
+</p>
+
+<p>
+    In order to solve this issue, analyzing triadic contexts is done by deriving dyadic contexts from them and
+    analyzing the concept lattices of the simpler contexts. <br/>
+    The derivation of dyadic contexts is done by projecting along one of the dimensions of a triadic concept,
+    that is: the extent, the intent or the modus. <br/>
+    The component along which the projection is done is called the
+    perspective.
+</p>
+
+<p>
+    First a concept of the triadic concept is chosen. <br/>
+    After that, the projected dyadic context is built along
+    one of the perspectives of the triadic concept and its concept lattice is computed. <br/>
+    It can be proved that
+    every dyadic concept of this projected context corresponds to exactly one tri-concept in the original
+    tri-lattice. <br/>
+    These tri-concepts are called directly reachable and navigation among them is performed in the underlying
+    dyadic concept lattice. <br/>
+    The navigation is done by selecting one of the dyadic concepts of the dyadic context and computing the
+    associated triadic concept. <br/>
+    By choosing different perspectives of that triadic concept one can navigate through the triadic context
+    obtaining a different dyadic concept lattice and so on.
+</p>
+
+<p>&nbsp;</p>
+<p><strong>Step by Step Example</strong></p>
+
+<div class="row">
+    <div class="col-sm-5">
+        <p>
+            <strong>Step 1</strong> <br/>
+            In order to start analysing the context you first go to the list of concepts and select a starting point
+            for your navigation. <br/>
+            Then you lock in on one of the dimensions of the concept by clicking the "Lock" button. <br/>
+            This will generate a dyadic context and show you its concept lattice.
+        </p>
+
+        <img src="{{ asset("bundles/app/images/features/triadic_context/concept_selection.png") }}"
+             alt="concept selection"/>
+    </div>
+
+    <div class="col-sm-7">
+        <p>
+            <strong>Step 2</strong> <br/>
+            Once you have the dyadic concept lattice you can right-click one of the concepts in order to view the
+            triadic concept associated with it. <br/>
+            This way you can view information regarding the triadic context through the underlying dyadic context.
+        </p>
+        <img src="{{ asset("bundles/app/images/features/triadic_context/triadic_context_navigation.png") }}"
+             alt="triadic context navigation"/>
+    </div>
+</div>
+
+<p>
+    <strong>Step 3</strong> <br/>
+    After right-clicking a concept you can select a different dimension of that triadic concept and change the
+    perspective by locking in on that one. <br/>
+    This will generate a new dyadic context with its own concept lattice.
+</p>
+
+<p>
+    By repeating this process you can analyze the triadic context.
+</p>
+
+<p class="message bg-primary">
+    The above navigation works even if the context is too big to generate all its concepts. <br/>
+    The only difference is that in the first step you have to find a concept using the <strong>Concept Finder</strong>.
+</p>
