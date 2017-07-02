@@ -16,6 +16,10 @@
         </p>
 
         <h3>Features</h3>
+        <p class="bg-info message">
+            Below you can find a list of all the features of this website.
+            Each feature comes with a detailed description which can be accessed by clicking on it.
+        </p>
 
         {% set features = [
         {title: "Create dyadic or triadic contexts", descriptionFile: "context_creation"},
@@ -31,17 +35,17 @@
         {title: "Restrictions", descriptionFile: "todo"}
         ] %}
 
-        <div class="panel-group panel-accordion" id="collapse-features">
+        <div class="panel-group panel-accordion panel-caret" id="collapse-features">
             {% for feature in features %}
-                <div class="panel panel-{{ loop.index == 1 ? "primary" : "default" }}">
-                    <div class="panel-heading" data-toggle="collapse" data-target="#collapse-{{ loop.index }}">
+                <div class="panel panel-default">
+                    <div class="panel-heading collapsed" data-toggle="collapse" data-target="#collapse-{{ loop.index }}">
                         <h4 class="panel-title">
                             {{ feature.title | raw }}
                         </h4>
                     </div>
 
                     <div id="collapse-{{ loop.index }}"
-                         class="panel-collapse collapse{{ loop.index == 1 ? " in" : "" }}">
+                         class="panel-collapse collapse">
                         <div class="panel-body">
                             {% include("@App/Default/Features/" ~ feature.descriptionFile ~ ".html.twig") %}
                         </div>
@@ -50,12 +54,14 @@
             {% endfor %}
         </div>
 
+        {#
         <div class="useful-links">
             <ul>
                 <li>
-                    <a href="http://www.upriss.org.uk/fca/fca.html">Uta Priss</a> - TODO..
+                    <a href="http://www.upriss.org.uk/fca/fca.html">Uta Priss</a> - TODO
                 </li>
             </ul>
         </div>
+        #}
     </div>
 {% endblock %}
