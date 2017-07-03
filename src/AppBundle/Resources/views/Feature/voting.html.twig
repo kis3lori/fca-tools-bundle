@@ -1,0 +1,104 @@
+{% extends "@App/layout.html.twig" %}
+
+{% block body %}
+    <style>
+
+        .chart div {
+            font: 12px sans-serif;
+            background-color: steelblue;
+            text-align: right;
+            padding: 3px;
+            margin: 1px;
+            color: white;
+        }
+
+    </style>
+    <div>
+        <h1 class="page-header"></h1>
+
+        <ol class="breadcrumb">
+            <li><a href="{{ path("homepage") }}">Home</a></li>
+            <li><a href="{{ path("voting_feature") }}">Vote Most Wanted Feature</a></li>
+        </ol>
+
+        <a class="btn btn-primary"
+           href="{{ path('newFeature', {}) }}">
+            Add new feature
+        </a><br><br>
+
+        <table class="table table-bordered table-striped">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Number of votes</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            {% for key, value in voteArray %}
+                {% set voteNr = key | split('/') %}
+                {% if (admin == false and value.approved == 1) or admin == true %}
+                    <tr>
+                        <td>
+                            {{ voteNr[1] }}
+                        </td>
+                        <td>
+                            {{ value.description }}
+                        </td>
+                        <td>
+                            <div class="chart">
+                                <div style="width: {{ voteNr[0] + 1 * 10 }}px;">{{ voteNr[0] }}</div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if voteNr[2] == 1 %}
+                                <a class="btn btn-primary disabled"
+                                   href="{{ path('vote', {'featureId': value.id, 'userId': app.user.id}) }}">
+                                    Vote
+                                </a>
+                            {% else %}
+                                <a class="btn btn-primary"
+                                   href="{{ path('vote', {'featureId': value.id, 'userId': app.user.id}) }}">
+                                    Vote
+                                </a>
+                            {% endif %}
+
+                            {% if admin == true %}
+                                {% if not value.approved %}
+                                    <a class="btn btn-primary"
+                                       href="{{ path('approveFeature', {'featureId': value.id, 'userId': app.user.id}) }}">
+                                        Approve
+                                    </a>
+                                    <a class="btn btn-primary disabled"
+                                       href="{{ path('rejectFeature', {'featureId': value.id, 'userId': app.user.id}) }}">
+                                        Reject
+                                    </a>
+                                {% else %}
+                                    <a class="btn btn-primary disabled"
+                                       href="{{ path('approveFeature', {'featureId': value.id, 'userId': app.user.id}) }}">
+                                        Approve
+                                    </a>
+                                    <a class="btn btn-primary"
+                                       href="{{ path('rejectFeature', {'featureId': value.id, 'userId': app.user.id}) }}">
+                                        Reject
+                                    </a>
+                                {% endif %}
+                                <a class="btn btn-primary"
+                                   href="{{ path('deleteFeature', {'featureId': value.id, 'userId': app.user.id}) }}">
+                                    Delete
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+
+            </tbody>
+        </table>
+
+    </div>
+
+{% endblock %}
