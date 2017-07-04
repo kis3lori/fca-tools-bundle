@@ -44,6 +44,12 @@
                             Groups
                         </a>
                     </li>
+
+                    <li{{ activeMenu == "feature_voting" ? " class=\"active\"" : "" }}>
+                        <a href="{{ path("feature_voting") }}">
+                            Feature Voting
+                        </a>
+                    </li>
                 {% endif %}
             </ul>
 

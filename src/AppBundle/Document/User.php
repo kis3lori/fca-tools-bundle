@@ -68,12 +68,31 @@ class User implements UserInterface, \Serializable
      */
     protected $groupsOwned;
 
+    /**
+     * @MongoDB\ReferenceMany(targetDocument="Feature", mappedBy="user")
+     */
+    protected $proposedFeatures;
+
+    /**
+     * @MongoDB\ReferenceMany(targetDocument="Vote", mappedBy="user")
+     */
+    protected $votes;
+
     public function __construct()
     {
         $this->contexts = new ArrayCollection();
         $this->conceptFinderBookmarks = new ArrayCollection();
         $this->groupsOwned = new ArrayCollection();
+        $this->proposedFeatures = new ArrayCollection();
         $this->groups = new ArrayCollection();
+        $this->votes = new ArrayCollection();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAdmin() {
+        return in_array("ROLE_ADMIN", $this->getRoles());
     }
 
     public function getSalt()
@@ -81,6 +100,9 @@ class User implements UserInterface, \Serializable
         return null;
     }
 
+    /**
+     * @return array
+     */
     public function getRoles()
     {
         return array('ROLE_USER');
@@ -283,7 +305,7 @@ class User implements UserInterface, \Serializable
     /**
      * Get contexts
      *
-     * @return \Doctrine\Common\Collections\Collection $contexts
+     * @return Collection $contexts
      */
     public function getContexts()
     {
@@ -313,7 +335,7 @@ class User implements UserInterface, \Serializable
     /**
      * Get conceptFinderBookmarks
      *
-     * @return \Doctrine\Common\Collections\Collection $conceptFinderBookmarks
+     * @return Collection $conceptFinderBookmarks
      */
     public function getConceptFinderBookmarks()
     {
@@ -343,7 +365,7 @@ class User implements UserInterface, \Serializable
     /**
      * Get groups
      *
-     * @return \Doctrine\Common\Collections\Collection $groups
+     * @return Collection $groups
      */
     public function getGroups()
     {
@@ -378,5 +400,65 @@ class User implements UserInterface, \Serializable
     public function getGroupsOwned()
     {
         return $this->groupsOwned;
+    }
+
+    /**
+     * Add vote
+     *
+     * @param $vote
+     */
+    public function addVote($vote)
+    {
+        $this->votes[] = $vote;
+    }
+
+    /**
+     * Remove vote
+     *
+     * @param $vote
+     */
+    public function removeVote($vote)
+    {
+        $this->votes->removeElement($vote);
+    }
+
+    /**
+     * Get votes
+     *
+     * @return Collection $votes
+     */
+    public function getVotes()
+    {
+        return $this->votes;
+    }
+
+    /**
+     * Add proposedFeature
+     *
+     * @param $proposedFeature
+     */
+    public function addProposedFeature($proposedFeature)
+    {
+        $this->proposedFeatures[] = $proposedFeature;
+    }
+
+    /**
+     * Remove proposedFeature
+     *
+     * @param $proposedFeature
+     */
+    public function removeProposedFeature($proposedFeature)
+    {
+        $this->proposedFeatures->removeElement($proposedFeature);
+    }
+
+    /**
+     * Get proposedFeatures
+     *
+     * @return Collection $proposedFeatures
+     */
+    public function getProposedFeatures()
+    {
+        return $this->proposedFeatures;
     }
 }

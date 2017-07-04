@@ -1,0 +1,94 @@
+{% extends "@App/layout.html.twig" %}
+
+{% block body %}
+    <div class="feature-list-page">
+        <h1 class="page-header">Feature Voting</h1>
+
+        <ol class="breadcrumb">
+            <li><a href="{{ path("homepage") }}">Home</a></li>
+            <li>Feature Voting</li>
+        </ol>
+
+
+        <p class="message bg-info">
+            In this section you can vote for the features that you would want most to be implemented. <br/>
+            You can also propose new features which will be added to the list below.
+            <span class="text-danger">(after an admin has reviewed them)</span>
+        </p>
+
+        <a class="btn btn-primary" href="{{ path("create_new_feature") }}">
+            Propose a new feature
+        </a><br/><br/>
+
+        <table class="table table-bordered table-striped">
+            <thead>
+            <tr>
+                <th width="200px">Name</th>
+                <th>Description</th>
+                <th width="220px">Number of votes</th>
+                <th width="250px">Actions</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for item in featureVotesArray %}
+                {# feature \AppBundle\Document\Feature #}
+                {% set feature = item['feature'] %}
+                {% set nrVotes = item['nrVotes'] %}
+                {% set ratio = item['ratio'] %}
+                {% set userVoted = item['userVoted'] %}
+
+                {% if feature.approved == 1 or app.user.isAdmin == true %}
+                    <tr>
+                        <td>
+                            {{ feature.name }}
+                        </td>
+                        <td>
+                            {{ feature.description|raw }}
+                        </td>
+                        <td>
+                            <div class="chart">
+                                <div style="width: {{ max(12, ratio * 200) }}px;">{{ nrVotes }}</div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if feature.approvedFeature %}
+                                <a class="btn btn-xs{{ userVoted == 0 ? " btn-primary" : " btn-danger" }}"
+                                   href="{{ path('toggle_vote', {'featureId': feature.id}) }}">
+                                    {{ userVoted == 0 ? "Vote" : "Withdraw Vote" }}
+                                </a>
+                            {% endif %}
+
+                            {% if app.user.isAdmin == true %}
+                                {% if not feature.approvedFeature %}
+                                    <a class="btn btn-xs btn-success"
+                                       href="{{ path('approve_feature', {'featureId': feature.id}) }}">
+                                        Approve
+                                    </a>
+                                {% endif %}
+
+                                {% if not feature.rejectedFeature %}
+                                    <a class="btn btn-xs btn-warning"
+                                       href="{{ path('reject_feature', {'featureId': feature.id}) }}">
+                                        Reject
+                                    </a>
+                                {% endif %}
+
+                                {% if feature.approvedFeature %}
+                                    <a class="btn btn-xs btn-danger"
+                                       href="{{ path('deleteFeature', {'featureId': feature.id}) }}">
+                                        Delete
+                                    </a>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+
+            </tbody>
+        </table>
+
+    </div>
+
+{% endblock %}
