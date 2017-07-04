@@ -53,7 +53,7 @@
                         </td>
                         <td>
                             {% if feature.approvedFeature %}
-                                <a class="btn btn-sm{{ userVoted == 0 ? " btn-primary" : " btn-danger" }}"
+                                <a class="btn btn-xs{{ userVoted == 0 ? " btn-primary" : " btn-danger" }}"
                                    href="{{ path('toggle_vote', {'featureId': feature.id}) }}">
                                     {{ userVoted == 0 ? "Vote" : "Withdraw Vote" }}
                                 </a>
@@ -61,21 +61,21 @@
 
                             {% if app.user.isAdmin == true %}
                                 {% if not feature.approvedFeature %}
-                                    <a class="btn btn-sm btn-success"
+                                    <a class="btn btn-xs btn-success"
                                        href="{{ path('approve_feature', {'featureId': feature.id}) }}">
                                         Approve
                                     </a>
                                 {% endif %}
 
                                 {% if not feature.rejectedFeature %}
-                                    <a class="btn btn-sm btn-warning"
+                                    <a class="btn btn-xs btn-warning"
                                        href="{{ path('reject_feature', {'featureId': feature.id}) }}">
                                         Reject
                                     </a>
                                 {% endif %}
 
                                 {% if feature.approvedFeature %}
-                                    <a class="btn btn-sm btn-danger"
+                                    <a class="btn btn-xs btn-danger"
                                        href="{{ path('deleteFeature', {'featureId': feature.id}) }}">
                                         Delete
                                     </a>
