@@ -401,24 +401,34 @@ body {
 }
 
 /* line 281, ../../sass/main.sass */
+.feature-list-page .chart div {
+  font: 12px sans-serif;
+  background-color: steelblue;
+  text-align: right;
+  padding: 3px;
+  margin: 1px;
+  color: white;
+}
+
+/* line 289, ../../sass/main.sass */
 .operation-history, .bookmark-item {
   position: relative;
   min-height: 42px;
 }
-/* line 284, ../../sass/main.sass */
+/* line 292, ../../sass/main.sass */
 .operation-history .operation-tooltip, .bookmark-item .operation-tooltip {
   position: absolute;
   top: -25px;
   border-radius: 3px;
   height: 22px;
 }
-/* line 289, ../../sass/main.sass */
+/* line 297, ../../sass/main.sass */
 .operation-history .operation-tooltip p, .bookmark-item .operation-tooltip p {
   margin: 2px 5px;
   font-size: 12px;
   color: white;
 }
-/* line 293, ../../sass/main.sass */
+/* line 301, ../../sass/main.sass */
 .operation-history .operation-tooltip .arrow, .bookmark-item .operation-tooltip .arrow {
   position: absolute;
   left: 50%;
@@ -428,59 +438,59 @@ body {
   height: 0;
   border: 7px solid transparent;
 }
-/* line 301, ../../sass/main.sass */
+/* line 309, ../../sass/main.sass */
 .operation-history .operation-tooltip.tooltip-info, .bookmark-item .operation-tooltip.tooltip-info {
   background-image: linear-gradient(to bottom, #5bc0de 0%, #2aabd2 100%);
   border-color: #2aabd2;
 }
-/* line 304, ../../sass/main.sass */
+/* line 312, ../../sass/main.sass */
 .operation-history .operation-tooltip.tooltip-info .arrow, .bookmark-item .operation-tooltip.tooltip-info .arrow {
   border-top-color: #2aabd2;
 }
-/* line 306, ../../sass/main.sass */
+/* line 314, ../../sass/main.sass */
 .operation-history .operation-tooltip.tooltip-warning, .bookmark-item .operation-tooltip.tooltip-warning {
   background-image: linear-gradient(to bottom, #f0ad4e 0%, #eb9316 100%);
   border-color: #e38d13;
 }
-/* line 309, ../../sass/main.sass */
+/* line 317, ../../sass/main.sass */
 .operation-history .operation-tooltip.tooltip-warning .arrow, .bookmark-item .operation-tooltip.tooltip-warning .arrow {
   border-top-color: #eb9316;
 }
-/* line 311, ../../sass/main.sass */
+/* line 319, ../../sass/main.sass */
 .operation-history .operation-tooltip.tooltip-purple, .bookmark-item .operation-tooltip.tooltip-purple {
   background-image: linear-gradient(to bottom, #e727c1 0%, #c516a2 100%);
   border-color: #c516a2;
 }
-/* line 314, ../../sass/main.sass */
+/* line 322, ../../sass/main.sass */
 .operation-history .operation-tooltip.tooltip-purple .arrow, .bookmark-item .operation-tooltip.tooltip-purple .arrow {
   border-top-color: #c516a2;
 }
-/* line 316, ../../sass/main.sass */
+/* line 324, ../../sass/main.sass */
 .operation-history .operation-tooltip.tooltip-brown, .bookmark-item .operation-tooltip.tooltip-brown {
   background-image: linear-gradient(to bottom, #AD5632 0%, #8B4513 100%);
   border-color: #8B4513;
 }
-/* line 319, ../../sass/main.sass */
+/* line 327, ../../sass/main.sass */
 .operation-history .operation-tooltip.tooltip-brown .arrow, .bookmark-item .operation-tooltip.tooltip-brown .arrow {
   border-top-color: #8B4513;
 }
-/* line 321, ../../sass/main.sass */
+/* line 329, ../../sass/main.sass */
 .operation-history::after, .bookmark-item::after {
   display: block;
   clear: both;
   content: " ";
 }
-/* line 325, ../../sass/main.sass */
+/* line 333, ../../sass/main.sass */
 .operation-history ul, .bookmark-item ul {
   margin: 0;
   padding: 0;
 }
-/* line 328, ../../sass/main.sass */
+/* line 336, ../../sass/main.sass */
 .operation-history ul li, .bookmark-item ul li {
   float: left;
   display: block;
 }
-/* line 331, ../../sass/main.sass */
+/* line 339, ../../sass/main.sass */
 .operation-history ul .arrow-right, .bookmark-item ul .arrow-right {
   width: 0;
   height: 0;
@@ -489,115 +499,115 @@ body {
   border-left: 7px solid green;
   margin: 4px 7px;
 }
-/* line 341, ../../sass/main.sass */
+/* line 349, ../../sass/main.sass */
 .operation-history ul .btn-group .btn.btn-success:hover, .operation-history ul .btn-group .btn.btn-success:focus, .operation-history ul .btn-group .btn.btn-success:active, .operation-history ul .btn-group .btn.btn-danger:hover, .operation-history ul .btn-group .btn.btn-danger:focus, .operation-history ul .btn-group .btn.btn-danger:active, .operation-history ul .btn-group .btn.btn-info:hover, .operation-history ul .btn-group .btn.btn-info:focus, .operation-history ul .btn-group .btn.btn-info:active, .operation-history ul .btn-group .btn.btn-warning:hover, .operation-history ul .btn-group .btn.btn-warning:focus, .operation-history ul .btn-group .btn.btn-warning:active, .operation-history ul .btn-group .btn.btn-purple:hover, .operation-history ul .btn-group .btn.btn-purple:focus, .operation-history ul .btn-group .btn.btn-purple:active, .bookmark-item ul .btn-group .btn.btn-success:hover, .bookmark-item ul .btn-group .btn.btn-success:focus, .bookmark-item ul .btn-group .btn.btn-success:active, .bookmark-item ul .btn-group .btn.btn-danger:hover, .bookmark-item ul .btn-group .btn.btn-danger:focus, .bookmark-item ul .btn-group .btn.btn-danger:active, .bookmark-item ul .btn-group .btn.btn-info:hover, .bookmark-item ul .btn-group .btn.btn-info:focus, .bookmark-item ul .btn-group .btn.btn-info:active, .bookmark-item ul .btn-group .btn.btn-warning:hover, .bookmark-item ul .btn-group .btn.btn-warning:focus, .bookmark-item ul .btn-group .btn.btn-warning:active, .bookmark-item ul .btn-group .btn.btn-purple:hover, .bookmark-item ul .btn-group .btn.btn-purple:focus, .bookmark-item ul .btn-group .btn.btn-purple:active {
   outline: none 0;
   box-shadow: none;
   background-position: 0 0;
   z-index: initial;
 }
-/* line 347, ../../sass/main.sass */
+/* line 355, ../../sass/main.sass */
 .operation-history ul .btn-group .btn.btn-success:hover, .operation-history ul .btn-group .btn.btn-success:focus, .operation-history ul .btn-group .btn.btn-success:active, .bookmark-item ul .btn-group .btn.btn-success:hover, .bookmark-item ul .btn-group .btn.btn-success:focus, .bookmark-item ul .btn-group .btn.btn-success:active {
   background-image: linear-gradient(to bottom, #5cb85c 0%, #419641 100%);
   border-color: #3e8f3e;
 }
-/* line 351, ../../sass/main.sass */
+/* line 359, ../../sass/main.sass */
 .operation-history ul .btn-group .btn.btn-danger:hover, .operation-history ul .btn-group .btn.btn-danger:focus, .operation-history ul .btn-group .btn.btn-danger:active, .bookmark-item ul .btn-group .btn.btn-danger:hover, .bookmark-item ul .btn-group .btn.btn-danger:focus, .bookmark-item ul .btn-group .btn.btn-danger:active {
   background-image: linear-gradient(to bottom, #d9534f 0%, #c12e2a 100%);
   border-color: #b92c28;
 }
-/* line 355, ../../sass/main.sass */
+/* line 363, ../../sass/main.sass */
 .operation-history ul .btn-group .btn.btn-info:hover, .operation-history ul .btn-group .btn.btn-info:focus, .operation-history ul .btn-group .btn.btn-info:active, .bookmark-item ul .btn-group .btn.btn-info:hover, .bookmark-item ul .btn-group .btn.btn-info:focus, .bookmark-item ul .btn-group .btn.btn-info:active {
   background-image: linear-gradient(to bottom, #5bc0de 0%, #2aabd2 100%);
   border-color: #28a4c9;
 }
-/* line 359, ../../sass/main.sass */
+/* line 367, ../../sass/main.sass */
 .operation-history ul .btn-group .btn.btn-warning:hover, .operation-history ul .btn-group .btn.btn-warning:focus, .operation-history ul .btn-group .btn.btn-warning:active, .bookmark-item ul .btn-group .btn.btn-warning:hover, .bookmark-item ul .btn-group .btn.btn-warning:focus, .bookmark-item ul .btn-group .btn.btn-warning:active {
   background-image: linear-gradient(to bottom, #f0ad4e 0%, #eb9316 100%);
   border-color: #e38d13;
 }
-/* line 363, ../../sass/main.sass */
+/* line 371, ../../sass/main.sass */
 .operation-history ul .btn-group .btn.btn-purple:hover, .operation-history ul .btn-group .btn.btn-purple:focus, .operation-history ul .btn-group .btn.btn-purple:active, .bookmark-item ul .btn-group .btn.btn-purple:hover, .bookmark-item ul .btn-group .btn.btn-purple:focus, .bookmark-item ul .btn-group .btn.btn-purple:active {
   background-image: linear-gradient(to bottom, #e727c1 0%, #c516a2 100%);
   border-color: #c516a2;
 }
-/* line 368, ../../sass/main.sass */
+/* line 376, ../../sass/main.sass */
 .operation-history ul .btn-group.btn-group-hover .btn.btn-success, .operation-history ul .btn-group.btn-group-hover .btn.btn-danger, .operation-history ul .btn-group.btn-group-hover .btn.btn-info, .operation-history ul .btn-group.btn-group-hover .btn.btn-warning, .operation-history ul .btn-group.btn-group-hover .btn.btn-purple, .bookmark-item ul .btn-group.btn-group-hover .btn.btn-success, .bookmark-item ul .btn-group.btn-group-hover .btn.btn-danger, .bookmark-item ul .btn-group.btn-group-hover .btn.btn-info, .bookmark-item ul .btn-group.btn-group-hover .btn.btn-warning, .bookmark-item ul .btn-group.btn-group-hover .btn.btn-purple {
   background-position: 0 -15px;
 }
-/* line 370, ../../sass/main.sass */
+/* line 378, ../../sass/main.sass */
 .operation-history ul .btn-group.btn-group-hover .btn.btn-success, .bookmark-item ul .btn-group.btn-group-hover .btn.btn-success {
   background-color: #419641;
 }
-/* line 372, ../../sass/main.sass */
+/* line 380, ../../sass/main.sass */
 .operation-history ul .btn-group.btn-group-hover .btn.btn-danger, .bookmark-item ul .btn-group.btn-group-hover .btn.btn-danger {
   background-color: #c12e2a;
 }
-/* line 374, ../../sass/main.sass */
+/* line 382, ../../sass/main.sass */
 .operation-history ul .btn-group.btn-group-hover .btn.btn-info, .bookmark-item ul .btn-group.btn-group-hover .btn.btn-info {
   background-color: #2aabd2;
 }
-/* line 376, ../../sass/main.sass */
+/* line 384, ../../sass/main.sass */
 .operation-history ul .btn-group.btn-group-hover .btn.btn-warning, .bookmark-item ul .btn-group.btn-group-hover .btn.btn-warning {
   background-color: #eb9316;
 }
-/* line 378, ../../sass/main.sass */
+/* line 386, ../../sass/main.sass */
 .operation-history ul .btn-group.btn-group-hover .btn.btn-purple, .bookmark-item ul .btn-group.btn-group-hover .btn.btn-purple {
   background-color: #c516a2;
 }
-/* line 382, ../../sass/main.sass */
+/* line 390, ../../sass/main.sass */
 .operation-history ul .btn-group.btn-group-active .btn.btn-success, .operation-history ul .btn-group.btn-group-active .btn.btn-danger, .operation-history ul .btn-group.btn-group-active .btn.btn-info, .operation-history ul .btn-group.btn-group-active .btn.btn-warning, .operation-history ul .btn-group.btn-group-active .btn.btn-purple, .bookmark-item ul .btn-group.btn-group-active .btn.btn-success, .bookmark-item ul .btn-group.btn-group-active .btn.btn-danger, .bookmark-item ul .btn-group.btn-group-active .btn.btn-info, .bookmark-item ul .btn-group.btn-group-active .btn.btn-warning, .bookmark-item ul .btn-group.btn-group-active .btn.btn-purple {
   box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
 }
-/* line 384, ../../sass/main.sass */
+/* line 392, ../../sass/main.sass */
 .operation-history ul .btn-group.btn-group-active .btn.btn-success, .bookmark-item ul .btn-group.btn-group-active .btn.btn-success {
   background-color: #419641;
   border-color: #3e8f3e;
 }
-/* line 387, ../../sass/main.sass */
+/* line 395, ../../sass/main.sass */
 .operation-history ul .btn-group.btn-group-active .btn.btn-danger, .bookmark-item ul .btn-group.btn-group-active .btn.btn-danger {
   background-color: #c12e2a;
   border-color: #b92c28;
 }
-/* line 390, ../../sass/main.sass */
+/* line 398, ../../sass/main.sass */
 .operation-history ul .btn-group.btn-group-active .btn.btn-info, .bookmark-item ul .btn-group.btn-group-active .btn.btn-info {
   background-color: #2aabd2;
   border-color: #28a4c9;
 }
-/* line 393, ../../sass/main.sass */
+/* line 401, ../../sass/main.sass */
 .operation-history ul .btn-group.btn-group-active .btn.btn-warning, .bookmark-item ul .btn-group.btn-group-active .btn.btn-warning {
   background-color: #eb9316;
   border-color: #e38d13;
 }
-/* line 396, ../../sass/main.sass */
+/* line 404, ../../sass/main.sass */
 .operation-history ul .btn-group.btn-group-active .btn.btn-purple, .bookmark-item ul .btn-group.btn-group-active .btn.btn-purple {
   background-color: #c516a2;
   border-color: #c516a2;
 }
 
-/* line 401, ../../sass/main.sass */
+/* line 409, ../../sass/main.sass */
 .bookmark-item ul {
   width: 790px;
   float: left;
 }
-/* line 404, ../../sass/main.sass */
+/* line 412, ../../sass/main.sass */
 .bookmark-item.item-hover {
   cursor: pointer;
 }
-/* line 406, ../../sass/main.sass */
+/* line 414, ../../sass/main.sass */
 .bookmark-item.item-active {
   background-image: linear-gradient(to bottom, #A8C0FE 0%, #C9DDF7 100%);
   border-color: #A8C0FE;
 }
 
-/* line 411, ../../sass/main.sass */
+/* line 419, ../../sass/main.sass */
 .pager .pager-input {
   border: 0;
   height: 16px;
   width: 20px;
 }
 
-/* line 416, ../../sass/main.sass */
+/* line 424, ../../sass/main.sass */
 .ribbon {
   position: absolute;
   right: -5px;
@@ -608,7 +618,7 @@ body {
   height: 55px;
   text-align: right;
 }
-/* line 425, ../../sass/main.sass */
+/* line 433, ../../sass/main.sass */
 .ribbon span {
   font-size: 10px;
   font-weight: bold;
@@ -627,7 +637,7 @@ body {
   top: 9px;
   right: -17px;
 }
-/* line 442, ../../sass/main.sass */
+/* line 450, ../../sass/main.sass */
 .ribbon span::before {
   content: "";
   position: absolute;
@@ -639,7 +649,7 @@ body {
   border-bottom: 3px solid transparent;
   border-top: 3px solid #79A70A;
 }
-/* line 452, ../../sass/main.sass */
+/* line 460, ../../sass/main.sass */
 .ribbon span::after {
   content: "";
   position: absolute;
@@ -652,26 +662,26 @@ body {
   border-top: 3px solid #79A70A;
 }
 
-/* line 465, ../../sass/main.sass */
+/* line 473, ../../sass/main.sass */
 .find-concept-page .hint-message .message {
   display: none;
 }
-/* line 467, ../../sass/main.sass */
+/* line 475, ../../sass/main.sass */
 .find-concept-page .hint-message .message.active {
   display: block;
 }
-/* line 469, ../../sass/main.sass */
+/* line 477, ../../sass/main.sass */
 .find-concept-page .filter {
   list-style: none;
 }
-/* line 471, ../../sass/main.sass */
+/* line 479, ../../sass/main.sass */
 .find-concept-page .filter li {
   display: inline-block;
   padding: 0;
   margin: 0;
 }
 
-/* line 476, ../../sass/main.sass */
+/* line 484, ../../sass/main.sass */
 .spinner {
   position: fixed;
   top: 0;
@@ -682,14 +692,14 @@ body {
   z-index: 9999;
 }
 
-/* line 485, ../../sass/main.sass */
+/* line 493, ../../sass/main.sass */
 .sk-fading-circle {
   margin: 100px auto;
   width: 60px;
   height: 60px;
   position: relative;
 }
-/* line 490, ../../sass/main.sass */
+/* line 498, ../../sass/main.sass */
 .sk-fading-circle .sk-circle {
   width: 100%;
   height: 100%;
@@ -697,7 +707,7 @@ body {
   left: 0;
   top: 0;
 }
-/* line 496, ../../sass/main.sass */
+/* line 504, ../../sass/main.sass */
 .sk-fading-circle .sk-circle:before {
   content: "";
   display: block;
@@ -708,91 +718,91 @@ body {
   border-radius: 100%;
   animation: sk-circleFadeDelay 1.2s infinite ease-in-out both;
 }
-/* line 506, ../../sass/main.sass */
+/* line 514, ../../sass/main.sass */
 .sk-fading-circle .sk-circle2 {
   transform: rotate(30deg);
 }
-/* line 508, ../../sass/main.sass */
+/* line 516, ../../sass/main.sass */
 .sk-fading-circle .sk-circle2:before {
   animation-delay: -1.1s;
 }
-/* line 510, ../../sass/main.sass */
+/* line 518, ../../sass/main.sass */
 .sk-fading-circle .sk-circle3 {
   transform: rotate(60deg);
 }
-/* line 512, ../../sass/main.sass */
+/* line 520, ../../sass/main.sass */
 .sk-fading-circle .sk-circle3:before {
   animation-delay: -1s;
 }
-/* line 514, ../../sass/main.sass */
+/* line 522, ../../sass/main.sass */
 .sk-fading-circle .sk-circle4 {
   transform: rotate(90deg);
 }
-/* line 516, ../../sass/main.sass */
+/* line 524, ../../sass/main.sass */
 .sk-fading-circle .sk-circle4:before {
   animation-delay: -0.9s;
 }
-/* line 518, ../../sass/main.sass */
+/* line 526, ../../sass/main.sass */
 .sk-fading-circle .sk-circle5 {
   transform: rotate(120deg);
 }
-/* line 520, ../../sass/main.sass */
+/* line 528, ../../sass/main.sass */
 .sk-fading-circle .sk-circle5:before {
   animation-delay: -0.8s;
 }
-/* line 522, ../../sass/main.sass */
+/* line 530, ../../sass/main.sass */
 .sk-fading-circle .sk-circle6 {
   transform: rotate(150deg);
 }
-/* line 524, ../../sass/main.sass */
+/* line 532, ../../sass/main.sass */
 .sk-fading-circle .sk-circle6:before {
   animation-delay: -0.7s;
 }
-/* line 526, ../../sass/main.sass */
+/* line 534, ../../sass/main.sass */
 .sk-fading-circle .sk-circle7 {
   transform: rotate(180deg);
 }
-/* line 528, ../../sass/main.sass */
+/* line 536, ../../sass/main.sass */
 .sk-fading-circle .sk-circle7:before {
   animation-delay: -0.6s;
 }
-/* line 530, ../../sass/main.sass */
+/* line 538, ../../sass/main.sass */
 .sk-fading-circle .sk-circle8 {
   transform: rotate(210deg);
 }
-/* line 532, ../../sass/main.sass */
+/* line 540, ../../sass/main.sass */
 .sk-fading-circle .sk-circle8:before {
   animation-delay: -0.5s;
 }
-/* line 534, ../../sass/main.sass */
+/* line 542, ../../sass/main.sass */
 .sk-fading-circle .sk-circle9 {
   transform: rotate(240deg);
 }
-/* line 536, ../../sass/main.sass */
+/* line 544, ../../sass/main.sass */
 .sk-fading-circle .sk-circle9:before {
   animation-delay: -0.4s;
 }
-/* line 538, ../../sass/main.sass */
+/* line 546, ../../sass/main.sass */
 .sk-fading-circle .sk-circle10 {
   transform: rotate(270deg);
 }
-/* line 540, ../../sass/main.sass */
+/* line 548, ../../sass/main.sass */
 .sk-fading-circle .sk-circle10:before {
   animation-delay: -0.3s;
 }
-/* line 542, ../../sass/main.sass */
+/* line 550, ../../sass/main.sass */
 .sk-fading-circle .sk-circle11 {
   transform: rotate(300deg);
 }
-/* line 544, ../../sass/main.sass */
+/* line 552, ../../sass/main.sass */
 .sk-fading-circle .sk-circle11:before {
   animation-delay: -0.2s;
 }
-/* line 546, ../../sass/main.sass */
+/* line 554, ../../sass/main.sass */
 .sk-fading-circle .sk-circle12 {
   transform: rotate(330deg);
 }
-/* line 548, ../../sass/main.sass */
+/* line 556, ../../sass/main.sass */
 .sk-fading-circle .sk-circle12:before {
   animation-delay: -0.1s;
 }

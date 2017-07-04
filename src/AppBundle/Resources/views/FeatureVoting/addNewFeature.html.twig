@@ -1,0 +1,44 @@
+{% extends "@App/layout.html.twig" %}
+
+{% block body %}
+    <div class="create-new-context-page">
+        <h1 class="page-header">Add a new feature</h1>
+
+        <ol class="breadcrumb">
+            <li><a href="{{ path("homepage") }}">Home</a></li>
+            <li><a href="{{ path("feature_voting") }}">Feature Voting</a></li>
+            <li class="active">Propose New Feature</li>
+        </ol>
+
+        <form action="{{ path("create_new_feature") }}" method="post" class="create-context-form">
+            <div class="form-group row">
+                <label class="col-sm-2 form-control-label" for="name">Name:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="text" name="name" id="name" required="required"
+                           value="{{ app.request.request.get("name", "") }}"/>
+                </div>
+            </div>
+            {% if errors['name'] is defined %}
+                <p class="bg-danger error-message">{{ errors['name'] }}</p>
+            {% endif %}
+
+            <div class="form-group row">
+                <label class="col-sm-2 form-control-label" for="description">Description:</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" name="description" id="description"
+                              required="required">{{ app.request.request.get("description", "")|raw }}</textarea>
+                    <p class="hint-message text-info">Inline html tags may be used.</p>
+                </div>
+            </div>
+            {% if errors['description'] is defined %}
+                <p class="bg-danger error-message">{{ errors['description'] }}</p>
+            {% endif %}
+
+            <p>
+                <button class="btn btn-primary">Submit</button>
+                <a class="btn btn-danger" href="{{ path("feature_voting") }}">Cancel</a>
+            </p>
+
+        </form>
+    </div>
+{% endblock %}

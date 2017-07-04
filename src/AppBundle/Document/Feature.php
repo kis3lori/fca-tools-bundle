@@ -3,7 +3,6 @@
 namespace AppBundle\Document;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 /**
@@ -19,7 +18,7 @@ class Feature
     /**
      * @MongoDB\Field(type="string")
      */
-    protected $title;
+    protected $name;
 
     /**
      * @MongoDB\Field(type="string")
@@ -27,13 +26,45 @@ class Feature
     protected $description;
 
     /**
-     * @MongoDB\Field(type="boolean")
+     * @MongoDB\Field(type="boolean", nullable=true)
      */
     protected $approved;
 
+    /**
+     * @MongoDB\ReferenceOne(targetDocument="User", inversedBy="proposedFeatures")
+     */
+    protected $user;
+
+    /**
+     * @MongoDB\ReferenceMany(targetDocument="Vote", mappedBy="feature")
+     */
+    protected $votes;
 
     public function __construct()
     {
+        $this->votes = new ArrayCollection();
+        $this->approved = null;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isApprovedFeature() {
+        return $this->approved === true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRejectedFeature() {
+        return $this->approved === false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNonValidatedFeature() {
+        return $this->approved === null;
     }
 
     /**
@@ -47,23 +78,43 @@ class Feature
     }
 
     /**
-     * @return mixed
+     * Set name
+     *
+     * @param string $name
+     * @return self
      */
-    public function getTitle()
+    public function setName($name)
     {
-        return $this->title;
+        $this->name = $name;
+        return $this;
     }
 
     /**
-     * @param mixed $title
+     * Get name
+     *
+     * @return string $name
      */
-    public function setTitle($title)
+    public function getName()
     {
-        $this->title = $title;
+        return $this->name;
     }
 
     /**
-     * @return mixed
+     * Set description
+     *
+     * @param string $description
+     * @return self
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string $description
      */
     public function getDescription()
     {
@@ -71,15 +122,21 @@ class Feature
     }
 
     /**
-     * @param mixed $description
+     * Set approved
+     *
+     * @param boolean $approved
+     * @return self
      */
-    public function setDescription($description)
+    public function setApproved($approved)
     {
-        $this->description = $description;
+        $this->approved = $approved;
+        return $this;
     }
 
     /**
-     * @return mixed
+     * Get approved
+     *
+     * @return boolean $approved
      */
     public function getApproved()
     {
@@ -87,10 +144,55 @@ class Feature
     }
 
     /**
-     * @param mixed $approved
+     * Add vote
+     *
+     * @param $vote
      */
-    public function setApproved($approved)
+    public function addVote($vote)
     {
-        $this->approved = $approved;
+        $this->votes[] = $vote;
     }
+
+    /**
+     * Remove vote
+     *
+     * @param $vote
+     */
+    public function removeVote($vote)
+    {
+        $this->votes->removeElement($vote);
+    }
+
+    /**
+     * Get votes
+     *
+     * @return \Doctrine\Common\Collections\Collection $votes
+     */
+    public function getVotes()
+    {
+        return $this->votes;
+    }
+
+    /**
+     * Set user
+     *
+     * @param $user
+     * @return self
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
+        return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return $user
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
 }

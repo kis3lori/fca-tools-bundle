@@ -10,6 +10,10 @@ security:
         my_mongo_provider:
             mongodb: {class: AppBundle\Document\User, property: username}
 
+    role_hierarchy:
+        ROLE_ADMIN:       ROLE_USER
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs
         dev:

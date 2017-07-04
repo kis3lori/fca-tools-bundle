@@ -2,8 +2,6 @@
 
 namespace AppBundle\Document;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 /**
@@ -16,28 +14,20 @@ class Vote
      */
     protected $id;
 
-//    /**
-//     * @MongoDB\ReferenceMany(targetDocument="User")
-//     */
     /**
-     * @MongoDB\Field(type="string")
+     * @MongoDB\ReferenceOne(targetDocument="User", inversedBy="votes")
      */
     protected $user;
-//
-//    /**
-//     * @MongoDB\ReferenceMany(targetDocument="Feature")
-//     */
+
     /**
-     * @MongoDB\Field(type="string")
+     * @MongoDB\ReferenceOne(targetDocument="Feature", inversedBy="votes")
      */
     protected $feature;
-
-    public function __construct()
-    {
-    }
-
+    
     /**
-     * @return mixed
+     * Get id
+     *
+     * @return int $id
      */
     public function getId()
     {
@@ -45,7 +35,21 @@ class Vote
     }
 
     /**
-     * @return mixed
+     * Set user
+     *
+     * @param $user
+     * @return self
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
+        return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return User $user
      */
     public function getUser()
     {
@@ -53,26 +57,24 @@ class Vote
     }
 
     /**
-     * @param mixed $user
-     */
-    public function setUser($user)
-    {
-        $this->user = $user;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getFeature()
-    {
-        return $this->feature;
-    }
-
-    /**
-     * @param mixed $feature
+     * Set feature
+     *
+     * @param $feature
+     * @return self
      */
     public function setFeature($feature)
     {
         $this->feature = $feature;
+        return $this;
+    }
+
+    /**
+     * Get feature
+     *
+     * @return $feature
+     */
+    public function getFeature()
+    {
+        return $this->feature;
     }
 }

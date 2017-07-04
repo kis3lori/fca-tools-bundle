@@ -71,7 +71,7 @@
 
         {% if context.description %}
             <h3>Description</h3>
-            <p>{{ context.description }}</p>
+            <p>{{ context.description|raw }}</p>
         {% endif %}
 
         {% if context.user == app.user %}

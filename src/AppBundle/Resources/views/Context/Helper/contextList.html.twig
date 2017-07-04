@@ -1,15 +1,15 @@
 <table class="table table-bordered table-striped sort-filter">
     <thead>
     <tr>
-        <th>Name</th>
+        <th width="150px">Name</th>
         <th>Description</th>
         {% if activeMenu == 'my_contexts' %}
-            <th>Is Public</th>
+            <th width="50px">Is Public</th>
         {% endif %}
-        <th>Number of dimensions</th>
-        <th>Number of incidences</th>
-        <th>Number of concepts</th>
-        <th>Actions</th>
+        <th width="50px">Number of dimensions</th>
+        <th width="50px">Number of incidences</th>
+        <th width="50px">Number of concepts</th>
+        <th width="70px">Actions</th>
     </tr>
     </thead>
 
@@ -22,7 +22,7 @@
             </td>
 
             <td>
-                {{ context.description }}
+                {{ context.description|raw }}
             </td>
 
             {% if activeMenu == 'my_contexts' %}

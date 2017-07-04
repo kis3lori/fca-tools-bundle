@@ -25,10 +25,10 @@
             <div class="form-group row">
                 <label class="col-sm-2 form-control-label" for="description">Description:</label>
                 <div class="col-sm-10">
-                    <input class="form-control" type="text" name="description" id="description" />
+                    <textarea class="form-control" name="description" id="description"></textarea>
+                    <p class="hint-message text-info">Inline html tags may be used.</p>
                 </div>
             </div>
-
             {% if errors['description'] is defined %}
                 <p class="bg-danger error-message">{{ errors['description'] }}</p>
             {% endif %}
