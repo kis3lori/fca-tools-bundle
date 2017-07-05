@@ -104,6 +104,11 @@ function drawGraph(graph) {
     var svg = d3.select(".concept-lattice-container").append("svg")
         .attr("width", width)
         .attr("height", height)
+        .style("font-family", '"Helvetica Neue", Helvetica, Arial, sans-serif')
+        .style("font-size", "14px")
+        .style("line-height", "1.42857143")
+        .style("color", "#333")
+        .style("background-color", "#FFF")
         .attr("class", "my-svg")
         .on("mousedown", function () {
             if (!conceptLattice.conceptClicked) {
@@ -118,8 +123,7 @@ function drawGraph(graph) {
 
                 conceptLattice.force.resume();
             }
-        })
-        ;
+        });
 
     conceptLattice.force
         .nodes(graph.nodes)
@@ -130,6 +134,8 @@ function drawGraph(graph) {
         .data(graph.links)
         .enter().append("line")
         .attr("class", "link")
+        .style("stroke-width", "0.6")
+        .style("stroke", "#999")
     ;
 
     conceptLattice.mouseMove = 0;
@@ -227,6 +233,8 @@ function drawGraph(graph) {
     conceptLattice.nodes = conceptLattice.gnodes.append("circle")
         .attr("class", "node")
         .attr("r", conceptLattice.settings.circleRadius)
+        .style("stroke", "#FFF")
+        .style("stroke-width", "1.5px")
         .style("fill", function (d) {
             return getNodeColor(d);
         });
@@ -273,7 +281,8 @@ function drawGraph(graph) {
             while (++i < n) q.visit(collide(nodes[i]));
         }
 
-        conceptLattice.links.attr("x1", function (d) {
+        conceptLattice.links
+            .attr("x1", function (d) {
                 return d.source.x;
             })
             .attr("y1", function (d) {
@@ -354,4 +363,41 @@ function drawGraph(graph) {
     } else {
         $(".complex-selector").remove();
     }
+
+    $(".printable-concept-lattice-btn").click(function () {
+        var svgString = getSVGString(svg.node());
+        svgString2Image(svgString, 8 * width, 8 * height);
+    });
+}
+
+function getSVGString(svgNode) {
+    svgNode.setAttribute('xlink', 'http://www.w3.org/2000/xlink');
+
+    var serializer = new XMLSerializer();
+    var svgString = serializer.serializeToString(svgNode);
+    svgString = svgString.replace(/(\w+)?:?xlink=/g, 'xmlns:xlink='); // Fix root xlink without namespace
+    svgString = svgString.replace(/NS\d+:href/g, 'xlink:href'); // Safari NS namespace fix
+
+    return svgString;
+}
+
+function svgString2Image(svgString, width, height) {
+    var imgsrc = 'data:image/svg+xml;base64,' + btoa(svgString);
+
+    var canvas = document.createElement("canvas");
+    var context = canvas.getContext("2d");
+    canvas.width = width;
+    canvas.height = height;
+
+    var image = new Image();
+    image.onload = function () {
+        context.clearRect(0, 0, width, height);
+        context.drawImage(image, 0, 0, width, height);
+
+        canvas.toBlob(function (blob) {
+            saveAs(blob, "ConceptLattice " + new Date().toLocaleString());
+        });
+    };
+
+    image.src = imgsrc;
 }
