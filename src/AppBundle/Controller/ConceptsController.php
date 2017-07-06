@@ -32,8 +32,8 @@ class ConceptsController extends BaseController
             return $this->renderFoundError("my_contexts");
         }
 
-        $contextService = $this->get("app.context_service");
-        $concepts = $contextService->generateConcepts($context);
+        $generateConceptService = $this->get("app.generate_concept_service");
+        $concepts = $generateConceptService->generateConcepts($context);
         $context->setConcepts($concepts);
 
         $em->persist($context);

@@ -30,7 +30,7 @@ framework:
         handler_id:  ~
     fragments:       ~
     http_method_override: true
-
+    
 # Twig Configuration
 twig:
     debug:            "%kernel.debug%"
@@ -103,3 +103,14 @@ vich_uploader:
             inject_on_load:     false
             delete_on_update:   true
             delete_on_remove:   true
+ 
+white_october_breadcrumbs:
+    separator:          '/'
+    separatorClass:     'separator'
+    listId:             'wo-breadcrumbs'
+    listClass:          'breadcrumb'
+    itemClass:          ''
+    linkRel:            ''
+    locale:             ~ # defaults to null, so the default locale is used
+    translation_domain: ~ # defaults to null, so the default domain is used
+    viewTemplate:       'WhiteOctoberBreadcrumbsBundle::breadcrumbs.html.twig'

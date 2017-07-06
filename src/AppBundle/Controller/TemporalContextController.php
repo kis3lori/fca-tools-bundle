@@ -53,10 +53,11 @@ class TemporalContextController extends BaseController
 
         $dimKey = $request->get("dimension");
         $contextService = $this->get("app.context_service");
+		$generateLatticeService = $this->get("app.generate_lattice_service");
 
         foreach ($context->getDimension($dimKey) as $dimension) {
             $childContext = $contextService->generateChildContext($context, $dimKey, $dimension);
-            $parsedConceptLattice = $contextService->generateParsedConceptLattice($childContext);
+            $parsedConceptLattice = $generateLatticeService->generateParsedConceptLattice($childContext);
 
             var_dump($childContext);
             var_dump($parsedConceptLattice);

@@ -30,8 +30,8 @@ class ConceptLatticeController extends BaseController
             return $this->renderFoundError("my_contexts");
         }
 
-        $contextService = $this->get("app.context_service");
-        $conceptLattice = $contextService->generateConceptLattice($context);
+        $generateLatticeService = $this->get("app.generate_lattice_service");
+        $conceptLattice = $generateLatticeService->generateConceptLattice($context);
         $context->setConceptLattice($conceptLattice);
 
         $em->persist($context);
@@ -79,9 +79,11 @@ class ConceptLatticeController extends BaseController
             return $this->renderFoundError("contexts");
         }
 
-        $contextService = $this->get("app.context_service");
-        $parsedConceptLattice = $contextService->generateParsedConceptLattice($context);
-        $parsedConceptLattice["analogicalComplexes"] = $contextService->generateWeakAnalogicalProportions($context);
+        $generateLatticeService = $this->get("app.generate_lattice_service");
+		$weakAnalogicalProportionsService = $this->get("app.weak_analogical_proportions_service");
+		
+        $parsedConceptLattice = $generateLatticeService->generateParsedConceptLattice($context);
+        $parsedConceptLattice["analogicalComplexes"] = $weakAnalogicalProportionsService->generateWeakAnalogicalProportions($context);
 
         return new JsonResponse($parsedConceptLattice);
     }
@@ -103,9 +105,9 @@ class ConceptLatticeController extends BaseController
             return $this->renderFoundError("contexts");
         }
 
-        $contextService = $this->get("app.context_service");
+        $triadicContextNavigationService = $this->get("app.triadic_context_navigation_service");
         $lockedElements = $request->query->get("lock");
-        $lockableElements = array_values($contextService->computeLockableElements($context));
+        $lockableElements = array_values($triadicContextNavigationService->computeLockableElements($context));
 
         return $this->render("@App/ConceptLattice/lockedConceptLattice.html.twig", array(
             'context' => $context,
@@ -137,9 +139,9 @@ class ConceptLatticeController extends BaseController
             return $this->renderFoundError("contexts");
         }
 
-        $contextService = $this->get("app.context_service");
-
-        $dyadicContext = $contextService->generateLockedContext($context, $lockType, $lockedElements);
+        $triadicContextNavigationService = $this->get("app.triadic_context_navigation_service");
+		$generateLatticeService = $this->get("app.generate_lattice_service");
+        $dyadicContext = $triadicContextNavigationService->generateLockedContext($context, $lockType, $lockedElements);
 
         if (!$dyadicContext) {
             return new JsonResponse(array(
@@ -148,9 +150,9 @@ class ConceptLatticeController extends BaseController
             ));
         }
 
-        $dyadicContext = $contextService->computeAssociatedConcepts($dyadicContext, $context, $lockType);
-        $parsedConceptLattice = $contextService->generateParsedConceptLattice($dyadicContext);
-        $parsedConceptLattice = $contextService->attachTriConcepts($parsedConceptLattice, $context);
+        $dyadicContext = $triadicContextNavigationService->computeAssociatedConcepts($dyadicContext, $context, $lockType);
+        $parsedConceptLattice = $generateLatticeService->generateParsedConceptLattice($dyadicContext);
+        $parsedConceptLattice = $triadicContextNavigationService->attachTriConcepts($parsedConceptLattice, $context);
         $parsedConceptLattice["lock"] = $lockedElements;
 
         $this->stopCounterAndLogStatistics("generate locked concept lattice", $context, null, $dyadicContext);
@@ -174,11 +176,11 @@ class ConceptLatticeController extends BaseController
             return $this->renderFoundError("contexts");
         }
 
-        $contextService = $this->get("app.context_service");
+        $triadicContextNavigationService = $this->get("app.triadic_context_navigation_service");
         $lockedElements = $request->query->get("lock");
 
         // TODO: Remove this after validation
-        $dyadicContext = $contextService->generateLockedContext($context, $lockType, $lockedElements);
+        $dyadicContext = $triadicContextNavigationService->generateLockedContext($context, $lockType, $lockedElements);
         if ($dyadicContext == null) {
             return $this->renderError(
                 "Unable to generate the locked dyadic context, most likely because it is too large.",
@@ -216,8 +218,9 @@ class ConceptLatticeController extends BaseController
             return $this->renderFoundError("contexts");
         }
 
-        $contextService = $this->get("app.context_service");
-        $dyadicContext = $contextService->generateLockedContext($context, $lockType, $lockedElements);
+        $triadicContextNavigationService = $this->get("app.triadic_context_navigation_service");
+		$generateLatticeService = $this->get("app.generate_lattice_service");
+        $dyadicContext = $triadicContextNavigationService->generateLockedContext($context, $lockType, $lockedElements);
 
         if ($dyadicContext == null) {
             return new JsonResponse(array(
@@ -226,13 +229,13 @@ class ConceptLatticeController extends BaseController
             ));
         }
 
-        $dyadicContext = $contextService->generateAssociatedConcepts($dyadicContext, $context, $lockType);
+        $dyadicContext = $triadicContextNavigationService->generateAssociatedConcepts($dyadicContext, $context, $lockType);
 
         if (!$this->isValidContext($dyadicContext, array("not null", "has concept lattice", "is dyadic"))) {
             return $this->renderFoundError("contexts");
         }
 
-        $parsedConceptLattice = $contextService->generateParsedConceptLattice($dyadicContext);
+        $parsedConceptLattice = $generateLatticeService->generateParsedConceptLattice($dyadicContext);
         $parsedConceptLattice["lock"] = $lockedElements;
 
         $this->stopCounterAndLogStatistics("generate locked concept lattice of large context",
