@@ -105,8 +105,8 @@ class ContextImportExportController extends BaseController
                 $fileName = uniqid() . ".cxt";
                 $context->setContextFileName($fileName);
 
-                $contextService = $this->get("app.context_service");
-                $contextService->generateContextFile($context);
+                $generateContextFilesService = $this->get("app.generate_context_files_service");
+                $generateContextFilesService->generateContextFile($context);
 
                 $em->persist($context);
                 $em->flush();
@@ -287,7 +287,7 @@ class ContextImportExportController extends BaseController
             return $this->renderFoundError("contexts");
         }
 
-        $contextService = $this->get("app.context_service");
+        $contextService = $this->get("app.generate_context_files_service");
         $fileName = $contextService->generateTempFileName("csv");
         $filePath = "bin/temp/cron_delete/" . $fileName;
 

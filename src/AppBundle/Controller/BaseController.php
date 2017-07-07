@@ -74,7 +74,7 @@ class BaseController extends Controller
      */
     protected function isValidContext($context, $validations)
     {
-        $contextService = $this->get("app.context_service");
+        $contextRestrictionValidationService = $this->get("app.context_restriction_validation_service");
 
         foreach ($validations as $validation) {
             switch ($validation) {
@@ -114,7 +114,7 @@ class BaseController extends Controller
                     }
                     break;
                 case "can compute concepts":
-                    if (!$contextService->canComputeConcepts($context)) {
+                    if (!$contextRestrictionValidationService->canComputeConcepts($context)) {
                         $this->error = "This context is too large to generate it's concepts.";
                         return false;
                     }
@@ -132,7 +132,7 @@ class BaseController extends Controller
                     }
                     break;
                 case "can compute concept lattice":
-                    if (!$contextService->canComputeConceptLattice($context)) {
+                    if (!$contextRestrictionValidationService->canComputeConceptLattice($context)) {
                         $this->error = "This context is too large to generate it's concept lattice.";
                         return false;
                     }
@@ -216,4 +216,5 @@ class BaseController extends Controller
         $breadcrumb = $this->get("session")->get("breadcrumb", array());
         // TODO: Finish the breadcrumb.
     }
+	
 }

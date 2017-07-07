@@ -364,6 +364,7 @@ function drawGraph(graph) {
         $(".complex-selector").remove();
     }
 
+
     $(".printable-concept-lattice-btn").click(function () {
         var svgString = getSVGString(svg.node());
         svgString2Image(svgString, 8 * width, 8 * height);
@@ -400,4 +401,5 @@ function svgString2Image(svgString, width, height) {
     };
 
     image.src = imgsrc;
+
 }

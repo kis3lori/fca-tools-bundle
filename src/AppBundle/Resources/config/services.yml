@@ -11,3 +11,24 @@ services:
     app.parser.csv_parser:
         class: AppBundle\Parser\CsvParser
         arguments: ["@service_container"]
+    app.generate_concept_service:
+        class: AppBundle\Service\GenerateConceptService
+        arguments: ["@service_container"]
+    app.generate_lattice_service:
+        class: AppBundle\Service\GenerateLatticeService
+        arguments: ["@service_container"]
+    app.find_concept_service:
+        class: AppBundle\Service\FindConceptService
+        arguments: ["@service_container"]
+    app.weak_analogical_proportions_service:
+        class: AppBundle\Service\WeakAnalogicalProportionsService
+        arguments: ["@service_container"]
+    app.generate_context_files_service:
+        class: AppBundle\Service\GenerateContextFilesService
+        arguments: ["@service_container"]
+    app.triadic_context_navigation_service:
+        class: AppBundle\Service\TriadicContextNavigationService
+        arguments: ["@service_container"]   
+    app.context_restriction_validation_service:
+        class: AppBundle\Service\ContextRestrictionValidationService
+        arguments: ["@service_container"]
