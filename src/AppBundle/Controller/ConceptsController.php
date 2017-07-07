@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Document\Context;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,6 +27,7 @@ class ConceptsController extends BaseController
         $this->startStatisticsCounter();
 
         $em = $this->getManager();
+        /** @var Context $context */
         $context = $em->getRepository("AppBundle:Context")->find($id);
 
         if (!$this->isValidContext($context, array("not null", "is own", "can compute concepts"))) {

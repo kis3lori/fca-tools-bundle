@@ -1,15 +1,40 @@
 <?php
+
 namespace AppBundle\Service;
 
 
-use AppBundle\Document\ConceptLattice;
 use AppBundle\Document\Context;
-use AppBundle\Helper\CommonUtils;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Kernel;
 
-class GenerateContextFilesService extends ContextService {
-	
+class GenerateContextFilesService
+{
+
+    /**
+     * @var Kernel
+     */
+    protected $kernel;
+
+    /**
+     * @var StatisticsService
+     */
+    protected $statisticsService;
+
+    /**
+     * @var string
+     */
+    protected $scriptDir;
+
+    /**
+     * @param $container ContainerInterface
+     */
+    public function __construct(ContainerInterface $container)
+    {
+        $this->kernel = $container->get('kernel');
+        $this->statisticsService = $container->get("app.statistics_service");
+        $this->scriptDir = $this->kernel->getRootDir() . "/../bin/fca/";
+    }
+
     /**
      * Generate the ".csv" file of a context and save it in the given path.
      *
@@ -34,13 +59,13 @@ class GenerateContextFilesService extends ContextService {
             $data
         );
     }
-	
-	/**
+
+    /**
      * Generate and save the ".cxt" file of a context.
      *
      * @param $context Context
      */
-	public function generateContextFile($context)
+    public function generateContextFile($context)
     {
         $data = "";
 
@@ -98,8 +123,8 @@ class GenerateContextFilesService extends ContextService {
             $data
         );
     }
-	
-	/**
+
+    /**
      * Generate a simplified version of the ".csv" file that is used by the data-peeler algorithm
      * and save it in the given path.
      *
@@ -119,4 +144,15 @@ class GenerateContextFilesService extends ContextService {
             $data
         );
     }
- }
+
+    /**
+     * Generate a temporary file name with the given extension.
+     *
+     * @param String $extension
+     * @return string
+     */
+    public function generateTempFileName($extension)
+    {
+        return uniqid("temp_") . "." . $extension;
+    }
+}

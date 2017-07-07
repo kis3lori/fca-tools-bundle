@@ -1,17 +1,37 @@
 <?php
+
 namespace AppBundle\Service;
 
 
-use AppBundle\Document\ConceptLattice;
 use AppBundle\Document\Context;
 use AppBundle\Helper\CommonUtils;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Kernel;
 
-class GenerateConceptService extends ContextService{
-	
-	
-	/**
+class GenerateConceptService
+{
+
+    /**
+     * @var Kernel
+     */
+    protected $kernel;
+
+    /**
+     * @var StatisticsService
+     */
+    protected $statisticsService;
+
+    /**
+     * @var string
+     */
+    protected $scriptDir;
+
+    /**
+     * @var GenerateContextFilesService
+     */
+    public $generateContextFilesService;
+
+    /**
      * @param $container ContainerInterface
      */
     public function __construct(ContainerInterface $container)
@@ -19,14 +39,14 @@ class GenerateConceptService extends ContextService{
         $this->kernel = $container->get('kernel');
         $this->statisticsService = $container->get("app.statistics_service");
         $this->scriptDir = $this->kernel->getRootDir() . "/../bin/fca/";
-		$this->generateContextFilesService = $container->get("app.generate_context_files_service");
+        $this->generateContextFilesService = $container->get("app.generate_context_files_service");
     }
-	
-	/**
+
+    /**
      * @param $context Context
      * @return array
      */
-     public function generateConcepts($context)
+    public function generateConcepts($context)
     {
         $concepts = null;
 
@@ -47,8 +67,8 @@ class GenerateConceptService extends ContextService{
      */
     public function generateDyadicConcepts($context)
     {
-        $dataFileName = $this->generateTempFileName("cxt");
-        $resultFileName = $this->generateTempFileName("json");
+        $dataFileName = $this->generateContextFilesService->generateTempFileName("cxt");
+        $resultFileName = $this->generateContextFilesService->generateTempFileName("json");
 
         $dataFilePath = $this->kernel->getRootDir() . "/../bin/temp/generate_concepts/input/" . $dataFileName;
         $resultFilePath = $this->kernel->getRootDir() . "/../bin/temp/generate_concepts/output/" . $resultFileName;
@@ -129,8 +149,8 @@ class GenerateConceptService extends ContextService{
      */
     public function generateTriadicConceptsUsingTrias($context)
     {
-        $dataFileName = $this->generateTempFileName("cxt");
-        $resultFileName = $this->generateTempFileName("json");
+        $dataFileName = $this->generateContextFilesService->generateTempFileName("cxt");
+        $resultFileName = $this->generateContextFilesService->generateTempFileName("json");
 
         $dataFilePath = $this->kernel->getRootDir() . "/../bin/temp/generate_tri_concepts/input/" . $dataFileName;
         $resultFilePath = $this->kernel->getRootDir() . "/../bin/temp/generate_tri_concepts/output/" . $resultFileName;
@@ -184,8 +204,8 @@ class GenerateConceptService extends ContextService{
      */
     public function generateTriadicConceptsUsingDataPeeler($context)
     {
-        $dataFileName = $this->generateTempFileName("csv");
-        $resultFileName = $this->generateTempFileName("txt");
+        $dataFileName = $this->generateContextFilesService->generateTempFileName("csv");
+        $resultFileName = $this->generateContextFilesService->generateTempFileName("txt");
 
         $dataRelativeFilePath = "bin/temp/generate_tri_concepts/input/" . $dataFileName;
         $dataFilePath = $this->kernel->getRootDir() . "/../" . $dataRelativeFilePath;
@@ -245,18 +265,6 @@ class GenerateConceptService extends ContextService{
         }
 
         return $concepts;
-    }
-	
-	
-	/**
-     * Generate a temporary file name with the given extension.
-     *
-     * @param String $extension
-     * @return string
-     */
-	public function generateTempFileName($extension)
-    {
-        return uniqid("temp_") . "." . $extension;
     }
 
 }

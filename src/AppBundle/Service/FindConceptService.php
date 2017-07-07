@@ -1,15 +1,48 @@
 <?php
+
 namespace AppBundle\Service;
 
 
-use AppBundle\Document\ConceptLattice;
 use AppBundle\Document\Context;
 use AppBundle\Helper\CommonUtils;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Kernel;
 
-class FindConceptService extends ContextService {
-/**
+class FindConceptService
+{
+
+    /**
+     * @var Kernel
+     */
+    protected $kernel;
+
+    /**
+     * @var StatisticsService
+     */
+    protected $statisticsService;
+
+    /**
+     * @var string
+     */
+    protected $scriptDir;
+
+    /**
+     * @var GenerateContextFilesService
+     */
+    public $generateContextFilesService;
+
+    /**
+     * @param $container ContainerInterface
+     */
+    public function __construct(ContainerInterface $container)
+    {
+        $this->kernel = $container->get('kernel');
+        $this->statisticsService = $container->get("app.statistics_service");
+        $this->scriptDir = $this->kernel->getRootDir() . "/../bin/fca/";
+        $this->generateContextFilesService = $container->get("app.generate_context_files_service");
+    }
+
+    /**
      * Find a concept using the ASP programming language.
      *
      * @param Context $context
@@ -66,8 +99,8 @@ class FindConceptService extends ContextService {
             $aspProgram .= $constraint['state'] . "(" . $constraint['dimension'] . "," . $constraint['index'] . ").\n";
         }
 
-        $dataFileName = $this->generateTempFileName("lp");
-        $resultFileName = $this->generateTempFileName("txt");
+        $dataFileName = $this->generateContextFilesService->generateTempFileName("lp");
+        $resultFileName = $this->generateContextFilesService->generateTempFileName("txt");
 
         $dataFilePath = $this->kernel->getRootDir() . "/../bin/temp/find_triadic_concept/input/" . $dataFileName;
         $resultFilePath = $this->kernel->getRootDir() . "/../bin/temp/find_triadic_concept/output/" . $resultFileName;
