@@ -13,7 +13,11 @@ var conceptLattice = {
     }
 };
 
-var tableData = null;
+var scaleCreation = {
+    'tables': null,
+    'selectedTable': null,
+    'tableData': null
+};
 
 $(document).ready(function () {
     var body = $("body");
@@ -31,6 +35,53 @@ $(document).ready(function () {
 
     $.extend(conceptLattice, {
         container: $(".concept-lattice-container")
+    });
+
+    $("#table-select-box").change(function() {
+        scaleCreation.selectedTable = $(this).val();
+    });
+
+    $(".choose-database-btn").click(function() {
+        var tabPane = $(this).closest(".tab-pane");
+        var form = tabPane.find(".form-to-validate");
+
+        if (!form[0].checkValidity()) {
+            form.find(".submit-btn").click();
+        } else {
+            showLoadingOverlay($(this), function(currentInstance) {
+                var url = $(".create-new-scale-page").data("get-tables-url");
+                var databaseConnection = $.trim($("#databaseConnection").val());
+                $.ajax(url, {
+                    method: "get",
+                    data: {
+                        'databaseConnectionId': databaseConnection
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            scaleCreation.tables = response.data.tables;
+
+                            var selectBox = $("#table-select-box");
+                            selectBox.find("option:not(:disabled)").remove();
+                            for (var index in scaleCreation.tables) {
+                                var value = scaleCreation.tables[index];
+                                $("<option value='" + value + "'>" + value + "</option>").appendTo(selectBox);
+                            }
+
+                            if ($.inArray(scaleCreation.selectedTable, scaleCreation.tables) !== -1) {
+                                selectBox.val(scaleCreation.selectedTable);
+                            }
+
+                            hideLoadingOverlay();
+
+                            var tabIndex = tabPane.index() + 1;
+                            $(".nav-tabs li").removeClass("active").addClass("disabled").eq(tabIndex)
+                                .removeClass("disabled").addClass("active");
+                            currentInstance.parent().find(".next-tab-hidden-btn").click();
+                        }
+                    }
+                });
+            });
+        }
     });
 
     $(".next-tab").click(function() {
@@ -418,7 +469,7 @@ $(document).ready(function () {
 
             var databaseConnection = $.trim($("#databaseConnection").val());
             $("<input>").attr("type", "hidden").attr("name", "databaseConnectionId").val(databaseConnection).appendTo(form);
-            var tableName = $.trim($("#tableName").val());
+            var tableName = $.trim($("#table-select-box").val());
             $("<input>").attr("type", "hidden").attr("name", "tableName").val(tableName).appendTo(form);
             var scaleName = $.trim($("#scaleName").val());
             $("<input>").attr("type", "hidden").attr("name", "scaleName").val(scaleName).appendTo(form);
@@ -465,7 +516,7 @@ $(document).ready(function () {
 
             var databaseConnection = $.trim($("#databaseConnection").val());
             $("<input>").attr("type", "hidden").attr("name", "databaseConnectionId").val(databaseConnection).appendTo(form);
-            var tableName = $.trim($("#tableName").val());
+            var tableName = $.trim($("#table-select-box").val());
             $("<input>").attr("type", "hidden").attr("name", "tableName").val(tableName).appendTo(form);
             var scaleName = $.trim($("#scaleName").val());
             $("<input>").attr("type", "hidden").attr("name", "scaleName").val(scaleName).appendTo(form);
@@ -489,37 +540,27 @@ $(document).ready(function () {
             if ($(this).val() === "simple") {
                 $(".nominal-scale-elements-selector").hide();
             } else {
-                $(".nominal-scale-elements-selector").show();
+                loadTableData($(this), function(currentInstance) {
+                    var column = $("#column").val();
+                    if ($.inArray(column, scaleCreation.tableData.columns) !== -1) {
+                        var scaleValues = $("#nominalScaleValues");
+                        scaleValues.find("option").remove();
 
-                if (tableData === null) {
-                    var url = $(".create-new-scale-page").data("get-table-data-url");
-                    var databaseConnection = $.trim($("#databaseConnection").val());
-                    var tableName = $.trim($("#tableName").val());
-                    $.ajax(url, {
-                        method: "get",
-                        data: {
-                            'databaseConnectionId': databaseConnection,
-                            'table': tableName
-                        },
-                        success: function(response) {
-                            if (response.success) {
-                                tableData = response.data.tableData;
-
-                                var column = $("#column").val();
-                                var values = [];
-                                for (index in tableData.data) {
-                                    var value = tableData.data[index][column];
-                                    if (!(values.includes(value))) {
-                                        values.push(value);
-                                        $("<option value='" + value + "'>" + value + "</option>").appendTo($("#nominalScaleValues"));
-                                    }
-                                }
-
+                        var values = [];
+                        for (var index in scaleCreation.tableData.data) {
+                            var value = scaleCreation.tableData.data[index][column];
+                            if (!(values.includes(value))) {
+                                values.push(value);
+                                $("<option value='" + value + "'>" + value + "</option>").appendTo(scaleValues);
                             }
                         }
-                    });
-                }
 
+                        $(".nominal-scale-elements-selector").show();
+                    } else {
+                        $('.subType[value="simple"]').click();
+                        alert("Please select a column.");
+                    }
+                });
             }
         });
 
@@ -604,3 +645,54 @@ function adjustMinHeight(container) {
 function showAlert(msg) {
     alert(msg);
 }
+
+function showLoadingOverlay(currentInstance, callback) {
+    LOADING = true;
+
+    var spinner = $(".spinner");
+    spinner.show();
+    if (!LOADING) {
+        spinner.hide();
+    }
+
+    if (typeof(callback) == "function") {
+        setTimeout(function () {
+            callback(currentInstance);
+        }, 100);
+    }
+}
+
+function hideLoadingOverlay() {
+    LOADING = false;
+
+    $(".spinner").hide();
+}
+
+function loadTableData(currentInstance, callback) {
+    if (scaleCreation.tableData === null) {
+        var url = $(".create-new-scale-page").data("get-table-data-url");
+        var databaseConnection = $.trim($("#databaseConnection").val());
+        var tableName = $.trim($("#table-select-box").val());
+        $.ajax(url, {
+            method: "get",
+            data: {
+                'databaseConnectionId': databaseConnection,
+                'table': tableName
+            },
+            success: function(response) {
+                if (response.success) {
+                    scaleCreation.tableData = response.data.tableData;
+
+                    if (typeof(callback) === "function") {
+                        callback(currentInstance);
+                    }
+                }
+            }
+        });
+    } else {
+        if (typeof(callback) === "function") {
+            callback(currentInstance);
+        }
+    }
+}
+

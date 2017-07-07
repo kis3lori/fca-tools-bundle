@@ -478,28 +478,6 @@ function handlePageUpdate(dimKey) {
     renderDim(dimKey);
 }
 
-function showLoadingOverlay(currentInstance, callback) {
-    LOADING = true;
-
-    var spinner = $(".spinner");
-    spinner.show();
-    if (!LOADING) {
-        spinner.hide();
-    }
-
-    if (typeof(callback) == "function") {
-        setTimeout(function () {
-            callback(currentInstance);
-        }, 100);
-    }
-}
-
-function hideLoadingOverlay() {
-    LOADING = false;
-
-    $(".spinner").hide();
-}
-
 function addOperationTooltip(operation) {
     var left = operation.position().left;
     var secondSpan = operation.find("span").eq(1);

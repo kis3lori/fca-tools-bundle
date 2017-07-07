@@ -204,6 +204,29 @@ class ScaleController extends BaseController
     }
 
     /**
+     * @Route("/get-tables", name="get_tables")
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getTablesAction(Request $request)
+    {
+        $databaseConnectionId = $request->query->get("databaseConnectionId");
+        /** @var DatabaseConnection $databaseConnection */
+        $databaseConnection = $this->getRepo("AppBundle:DatabaseConnection")->find($databaseConnectionId);
+
+        $databaseConnectionService = $this->get("app.database_connection_service");
+        $tables = $databaseConnectionService->getTables($databaseConnection);
+
+        return new JsonResponse(array(
+            "success" => true,
+            "data" => array(
+                "tables" => $tables
+            )
+        ));
+    }
+
+    /**
      * @Route("/get-table-data", name="get_table_data")
      *
      * @param Request $request

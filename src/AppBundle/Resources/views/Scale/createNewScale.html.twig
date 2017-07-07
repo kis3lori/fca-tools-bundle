@@ -1,7 +1,9 @@
 {% extends "@App/layout.html.twig" %}
 
 {% block body %}
-    <div class="create-new-scale-page" data-get-table-data-url="{{ url("get_table_data") }}">
+    <div class="create-new-scale-page"
+         data-get-table-data-url="{{ url("get_table_data") }}"
+         data-get-tables-url="{{ url("get_tables") }}">
         <h1 class="page-header">Create a new scale</h1>
 
         <ol class="breadcrumb">

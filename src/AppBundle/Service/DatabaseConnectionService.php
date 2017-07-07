@@ -52,4 +52,32 @@ class DatabaseConnectionService
 
         return $tableData;
     }
+
+    /**
+     * @param DatabaseConnection $databaseConnection
+     * @return array
+     */
+    public function getTables(DatabaseConnection $databaseConnection)
+    {
+        $config = new Configuration();
+        $connectionParams = array(
+            'dbname' => $databaseConnection->getName(),
+            'user' => $databaseConnection->getUsername(),
+            'password' => $databaseConnection->getPassword(),
+            'host' => $databaseConnection->getHost() . ':' . $databaseConnection->getPort(),
+            'driver' => ($databaseConnection->getType() == "mysql" ? 'pdo_mysql' : ''),
+        );
+
+        $conn = DriverManager::getConnection($connectionParams, $config);
+        $sql = "SHOW TABLES";
+        $stmt = $conn->query($sql);
+
+        $tables = array();
+        $result = $stmt->fetchAll();
+        foreach ($result as $item) {
+            $tables[] = array_pop($item);
+        }
+
+        return $tables;
+    }
 }
