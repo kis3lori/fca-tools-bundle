@@ -43,9 +43,9 @@ class ScaleController extends BaseController
 
             /** @var DatabaseConnection $databaseConnection */
             $databaseConnection = $this->getRepo("AppBundle:DatabaseConnection")
-                ->find($postData->get('databaseConnection'));
+                ->find($postData->get('databaseConnectionId'));
             if (!$databaseConnection) {
-                $errors["databaseConnection"] = "You have to select a database connection.";
+                $errors["databaseConnectionId"] = "You have to select a database connection.";
             }
 
             $tableName = $postData->get("tableName");
@@ -113,8 +113,14 @@ class ScaleController extends BaseController
                         if ($subType == "simple") {
                             $databaseConnection = $this->getRepo("AppBundle:DatabaseConnection")
                                 ->find($postData->get("databaseConnectionId"));
-                            $tableData = $this->getTableData($databaseConnection, $tableName);
-                            $values = $tableData[$column];
+                            $databaseConnectionService = $this->get("app.database_connection_service");
+                            $tableData = $databaseConnectionService->getTableData($databaseConnection, $tableName);
+                            $values = array();
+                            foreach ($tableData['data'] as $row) {
+                                $values[] = $row[$column];
+                            }
+
+                            $values = array_unique($values);
                         } else {
                             $values = $postData->get("nominalScaleValues");
                             $data['nominalScaleValues'] = $values;
@@ -236,7 +242,9 @@ class ScaleController extends BaseController
             return $this->renderFoundError("my_scales");
         }
 
-        $tableData = $this->getTableData($scale->getDatabaseConnection(), $scale->getTable());
+        $databaseConnectionService = $this->get("app.database_connection_service");
+        $tableData = $databaseConnectionService
+            ->getTableData($scale->getDatabaseConnection(), $scale->getTable());
 
         return $this->render("@App/Scale/scale.html.twig", array(
             'scale' => $scale,
@@ -287,7 +295,9 @@ class ScaleController extends BaseController
             return $this->renderFoundErrorAsJson();
         }
 
-        $tableData = $this->getTableData($scale->getDatabaseConnection(), $scale->getTable());
+        $databaseConnectionService = $this->get("app.database_connection_service");
+        $tableData = $databaseConnectionService
+            ->getTableData($scale->getDatabaseConnection(), $scale->getTable());
         $objects = array();
         $attributes = $scale->getContext()->getDimension(1);
         $newRelations = array();
@@ -339,6 +349,9 @@ class ScaleController extends BaseController
 
     /**
      * @Route("/get-table-data", name="get_table_data")
+     *
+     * @param Request $request
+     * @return JsonResponse
      */
     public function getTableDataAction(Request $request)
     {
@@ -347,43 +360,16 @@ class ScaleController extends BaseController
         $databaseConnection = $this->getRepo("AppBundle:DatabaseConnection")->find($databaseConnectionId);
 
         $tableName = $request->query->get("table");
+        $databaseConnectionService = $this->get("app.database_connection_service");
+        $tableData = $databaseConnectionService->getTableData($databaseConnection, $tableName);
 
         return new JsonResponse(array(
             "success" => true,
             "data" => array(
-                "tableData" => $this->getTableData($databaseConnection, $tableName)
+                "tableData" => $tableData
             )
         ));
     }
 
-    /**
-     * @param DatabaseConnection $databaseConnection
-     * @param $tableName
-     * @return array
-     */
-    private function getTableData(DatabaseConnection $databaseConnection, $tableName)
-    {
-        $config = new Configuration();
-        $connectionParams = array(
-            'dbname' => $databaseConnection->getName(),
-            'user' => $databaseConnection->getUsername(),
-            'password' => $databaseConnection->getPassword(),
-            'host' => $databaseConnection->getHost() . ':' . $databaseConnection->getPort(),
-            'driver' => ($databaseConnection->getType() == "mysql" ? 'pdo_mysql' : ''),
-        );
 
-        $conn = DriverManager::getConnection($connectionParams, $config);
-        $sql = "SELECT * FROM " . $tableName;
-        $stmt = $conn->query($sql);
-
-        $tableData = array(
-            "columns" => array(),
-        );
-        if ($stmt->rowCount() != 0) {
-            $tableData["data"] = $stmt->fetchAll();
-            $tableData["columns"] = array_keys($tableData["data"][0]);
-        }
-
-        return $tableData;
-    }
 }

@@ -387,7 +387,7 @@ $(document).ready(function () {
             var table = tablesContainer.find(".create-context-table:first");
 
             var databaseConnection = $.trim($("#databaseConnection").val());
-            $("<input>").attr("type", "hidden").attr("name", "databaseConnection").val(databaseConnection).appendTo(form);
+            $("<input>").attr("type", "hidden").attr("name", "databaseConnectionId").val(databaseConnection).appendTo(form);
             var tableName = $.trim($("#tableName").val());
             $("<input>").attr("type", "hidden").attr("name", "tableName").val(tableName).appendTo(form);
             var scaleName = $.trim($("#scaleName").val());
@@ -434,7 +434,7 @@ $(document).ready(function () {
             var form = $(this).closest("form");
 
             var databaseConnection = $.trim($("#databaseConnection").val());
-            $("<input>").attr("type", "hidden").attr("name", "databaseConnection").val(databaseConnection).appendTo(form);
+            $("<input>").attr("type", "hidden").attr("name", "databaseConnectionId").val(databaseConnection).appendTo(form);
             var tableName = $.trim($("#tableName").val());
             $("<input>").attr("type", "hidden").attr("name", "tableName").val(tableName).appendTo(form);
             var scaleName = $.trim($("#scaleName").val());
