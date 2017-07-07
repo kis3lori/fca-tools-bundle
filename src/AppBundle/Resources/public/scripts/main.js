@@ -33,6 +33,28 @@ $(document).ready(function () {
         container: $(".concept-lattice-container")
     });
 
+    $(".next-tab").click(function() {
+        var tabPane = $(this).closest(".tab-pane");
+        var form = tabPane.find(".form-to-validate");
+
+        if (!form[0].checkValidity()) {
+            form.find(".submit-btn").click();
+        } else {
+            var tabIndex = tabPane.index() + 1;
+            $(".nav-tabs li").removeClass("active").addClass("disabled").eq(tabIndex)
+                .removeClass("disabled").addClass("active");
+            $(this).parent().find(".next-tab-hidden-btn").click();
+        }
+    });
+
+    $(".prev-tab").click(function() {
+        var tabPane = $(this).closest(".tab-pane");
+        var tabIndex = tabPane.index() - 1;
+        $(".nav-tabs li").removeClass("active").addClass("disabled").eq(tabIndex)
+            .removeClass("disabled").addClass("active");
+        $(this).parent().find(".prev-tab-hidden-btn").click();
+    });
+
     $(".panel-collapse")
         .on('show.bs.collapse', function () {
             $(this).closest(".panel").removeClass("panel-default").addClass("panel-primary");

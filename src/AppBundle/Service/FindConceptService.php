@@ -27,11 +27,6 @@ class FindConceptService
     protected $scriptDir;
 
     /**
-     * @var GenerateContextFilesService
-     */
-    public $generateContextFilesService;
-
-    /**
      * @param $container ContainerInterface
      */
     public function __construct(ContainerInterface $container)
@@ -39,7 +34,6 @@ class FindConceptService
         $this->kernel = $container->get('kernel');
         $this->statisticsService = $container->get("app.statistics_service");
         $this->scriptDir = $this->kernel->getRootDir() . "/../bin/fca/";
-        $this->generateContextFilesService = $container->get("app.generate_context_files_service");
     }
 
     /**
@@ -99,8 +93,8 @@ class FindConceptService
             $aspProgram .= $constraint['state'] . "(" . $constraint['dimension'] . "," . $constraint['index'] . ").\n";
         }
 
-        $dataFileName = $this->generateContextFilesService->generateTempFileName("lp");
-        $resultFileName = $this->generateContextFilesService->generateTempFileName("txt");
+        $dataFileName = CommonUtils::generateTempFileName("lp");
+        $resultFileName = CommonUtils::generateTempFileName("txt");
 
         $dataFilePath = $this->kernel->getRootDir() . "/../bin/temp/find_triadic_concept/input/" . $dataFileName;
         $resultFilePath = $this->kernel->getRootDir() . "/../bin/temp/find_triadic_concept/output/" . $resultFileName;

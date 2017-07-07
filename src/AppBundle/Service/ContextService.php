@@ -11,28 +11,70 @@ class ContextService
 {
 
     /**
+     * @var ContainerInterface
+     */
+    private $container;
+
+    /**
      * @var Kernel
      */
-    protected $kernel;
+    private $kernel;
 
     /**
      * @var StatisticsService
      */
-    protected $statisticsService;
+    private $statisticsService;
 
     /**
      * @var string
      */
-    protected $scriptDir;
+    private $scriptDir;
 
     /**
      * @param $container ContainerInterface
      */
     public function __construct(ContainerInterface $container)
     {
+        $this->container = $container;
         $this->kernel = $container->get('kernel');
         $this->statisticsService = $container->get("app.statistics_service");
         $this->scriptDir = $this->kernel->getRootDir() . "/../bin/fca/";
+    }
+
+    /**
+     * Generate the concepts and the concept lattice of a context.
+     * It also create the cxt file for it in the process.
+     *
+     * @param $context Context
+     * @param $fileName string
+     * @param $errors array
+     * @return array
+     */
+    public function computeConceptsAndConceptLattice($context, $fileName, $errors) {
+        $context->setContextFile(null);
+        $context->setContextFileName($fileName);
+
+        $contextFileService = $this->container->get("app.generate_context_files_service");
+        $contextFileService->generateContextFile($context);
+
+        $contextRestrictionValidationService = $this->container->get("app.context_restriction_validation_service");
+        if (!$contextRestrictionValidationService->canComputeConcepts($context)) {
+            $errors["context"] = "The context is too big to compute its concepts.";
+        } else {
+            $generateConceptsService = $this->container->get("app.generate_concept_service");
+            $concepts = $generateConceptsService->generateConcepts($context);
+            $context->setConcepts($concepts);
+
+            if (!$contextRestrictionValidationService->canComputeConceptLattice($context)) {
+                $errors["context"] = "The context is too big to compute its concept lattice.";
+            } else {
+                $generateLatticeService = $this->container->get("app.generate_lattice_service");
+                $conceptLattice = $generateLatticeService->generateConceptLattice($context);
+                $context->setConceptLattice($conceptLattice);
+            }
+        }
+
+        return $errors;
     }
 
     /*

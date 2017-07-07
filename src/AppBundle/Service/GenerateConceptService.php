@@ -67,8 +67,8 @@ class GenerateConceptService
      */
     public function generateDyadicConcepts($context)
     {
-        $dataFileName = $this->generateContextFilesService->generateTempFileName("cxt");
-        $resultFileName = $this->generateContextFilesService->generateTempFileName("json");
+        $dataFileName = CommonUtils::generateTempFileName("cxt");
+        $resultFileName = CommonUtils::generateTempFileName("json");
 
         $dataFilePath = $this->kernel->getRootDir() . "/../bin/temp/generate_concepts/input/" . $dataFileName;
         $resultFilePath = $this->kernel->getRootDir() . "/../bin/temp/generate_concepts/output/" . $resultFileName;
@@ -149,8 +149,8 @@ class GenerateConceptService
      */
     public function generateTriadicConceptsUsingTrias($context)
     {
-        $dataFileName = $this->generateContextFilesService->generateTempFileName("cxt");
-        $resultFileName = $this->generateContextFilesService->generateTempFileName("json");
+        $dataFileName = CommonUtils::generateTempFileName("cxt");
+        $resultFileName = CommonUtils::generateTempFileName("json");
 
         $dataFilePath = $this->kernel->getRootDir() . "/../bin/temp/generate_tri_concepts/input/" . $dataFileName;
         $resultFilePath = $this->kernel->getRootDir() . "/../bin/temp/generate_tri_concepts/output/" . $resultFileName;
@@ -204,8 +204,8 @@ class GenerateConceptService
      */
     public function generateTriadicConceptsUsingDataPeeler($context)
     {
-        $dataFileName = $this->generateContextFilesService->generateTempFileName("csv");
-        $resultFileName = $this->generateContextFilesService->generateTempFileName("txt");
+        $dataFileName = CommonUtils::generateTempFileName("csv");
+        $resultFileName = CommonUtils::generateTempFileName("txt");
 
         $dataRelativeFilePath = "bin/temp/generate_tri_concepts/input/" . $dataFileName;
         $dataFilePath = $this->kernel->getRootDir() . "/../" . $dataRelativeFilePath;

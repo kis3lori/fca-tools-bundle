@@ -144,15 +144,4 @@ class GenerateContextFilesService
             $data
         );
     }
-
-    /**
-     * Generate a temporary file name with the given extension.
-     *
-     * @param String $extension
-     * @return string
-     */
-    public function generateTempFileName($extension)
-    {
-        return uniqid("temp_") . "." . $extension;
-    }
 }

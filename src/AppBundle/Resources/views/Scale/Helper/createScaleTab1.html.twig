@@ -1,0 +1,80 @@
+<div id="step1-tab" class="tab-pane fade in active">
+    <form action="#" class="select-database-form form-to-validate" method="post">
+        <div class="form-group">
+            <select name="databaseConnectionId" id="databaseConnection" class="form-control" required="required">
+                <option value="" selected="selected" disabled="disabled">
+                    Select the database connection to use
+                </option>
+
+                {# databaseConnection \AppBundle\Document\DatabaseConnection #}
+                {% for databaseConnection in app.user.databaseConnections %}
+                    <option value="{{ databaseConnection.id }}">{{ databaseConnection.name }}</option>
+                {% endfor %}
+                <option class="new-database-connection" value="add-new-database-connection" data-toggle="collapse"
+                        data-target="#create-database-connection" aria-controls="collapse">
+                    Add new
+                </option>
+            </select>
+
+            <input type="submit" class="submit-btn hidden"/>
+        </div>
+    </form>
+
+    <div class="collapse" id="create-database-connection">
+        <form action="{{ path("create_new_database_connection") }}" method="post"
+              class="create-database-connection-form">
+            <div class="form-group row">
+                <label class="col-sm-2 form-control-label" for="name">Name:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="text" name="name" id="name" required="required"/>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-sm-2 form-control-label" for="user">User:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="text" name="user" id="user" required="required"/>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-sm-2 form-control-label" for="password">Password:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="text" name="password" id="password" required="required"/>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-sm-2 form-control-label" for="host">Host:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="text" name="host" id="host" required="required"/>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 form-control-label" for="port">Port:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="text" name="port" id="port" required="required"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <select name="type" id="type" class="form-control">
+                    <option value="" selected="selected" disabled="disabled">Select database type</option>
+                    <option value="mysql">MySQL</option>
+                    <option value="mongodb">MongoDB</option>
+                </select>
+            </div>
+
+            <p>
+                <button class="btn btn-primary save-database-connection">Save</button>
+            </p>
+        </form>
+
+        <div class="clearfix"></div>
+    </div>
+
+    <p>
+        <a class="btn btn-danger" href="{{ path("list_user_scales") }}">Cancel</a>
+        <a class="btn btn-primary next-tab">Next</a>
+        <a class="hidden next-tab-hidden-btn" href="#step2-tab" data-toggle="tab">Next</a>
+    </p>
+</div>
