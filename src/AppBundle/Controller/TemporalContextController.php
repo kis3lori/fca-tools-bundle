@@ -2,21 +2,16 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Document\Context;
-use AppBundle\Document\User;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-
 class TemporalContextController extends BaseController
 {
 
+    /*
     /**
      * @Route("/temporal-context/{id}", name="temporal_context")
      *
      * @param $id
      * @return Response
-     */
+     * /
     public function indexAction($id)
     {
         exit;
@@ -39,12 +34,12 @@ class TemporalContextController extends BaseController
      * @param $id
      * @param $request
      * @return Response
-     */
+     * /
     public function generateTemporalAction($id, Request $request)
     {
         exit;
 
-        /** @var Context $context */
+        /** @var Context $context * /
         $context = $this->getRepo("AppBundle:Context")->find($id);
 
         if (!$this->isValidContext($context, array("not null", "can view"))) {
@@ -53,10 +48,11 @@ class TemporalContextController extends BaseController
 
         $dimKey = $request->get("dimension");
         $contextService = $this->get("app.context_service");
+		$generateLatticeService = $this->get("app.generate_lattice_service");
 
         foreach ($context->getDimension($dimKey) as $dimension) {
             $childContext = $contextService->generateChildContext($context, $dimKey, $dimension);
-            $parsedConceptLattice = $contextService->generateParsedConceptLattice($childContext);
+            $parsedConceptLattice = $generateLatticeService->generateParsedConceptLattice($childContext);
 
             var_dump($childContext);
             var_dump($parsedConceptLattice);
@@ -69,5 +65,5 @@ class TemporalContextController extends BaseController
             'context' => $context,
         ));
     }
-
+    */
 }

@@ -33,10 +33,18 @@ $(document).ready(function () {
         container: $(".concept-lattice-container")
     });
 
+    $(".panel-collapse")
+        .on('show.bs.collapse', function () {
+            $(this).closest(".panel").removeClass("panel-default").addClass("panel-primary");
+        })
+        .on('hide.bs.collapse', function () {
+            $(this).closest(".panel").removeClass("panel-primary").addClass("panel-default");
+        });
+
     $(".create-new-scale-page").on("change", "#databaseConnection", function () {
         var value = $(this).val();
 
-        if (value == "add-new-database-connection") {
+        if (value === "add-new-database-connection") {
             $("#create-database-connection").collapse("show");
         } else {
             $("#create-database-connection").collapse("hide");

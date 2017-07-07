@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Document\Context;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,14 +25,15 @@ class ContextSettingsController extends BaseController
      */
     public function markContextPublicAction($id)
     {
-        $em = $this->getManager();
-        $context = $em->getRepository("AppBundle:Context")->find($id);
+        /** @var Context $context */
+        $context = $this->getRepo("AppBundle:Context")->find($id);
 
         if (!$this->isValidContext($context, array("not null", "is own"))) {
             return $this->renderFoundError("my_contexts");
         }
 
         $context->setIsPublic(true);
+        $em = $this->getManager();
         $em->persist($context);
         $em->flush();
 
@@ -49,14 +51,15 @@ class ContextSettingsController extends BaseController
      */
     public function markContextPrivateAction($id)
     {
-        $em = $this->getManager();
-        $context = $em->getRepository("AppBundle:Context")->find($id);
+        /** @var Context $context */
+        $context = $this->getRepo("AppBundle:Context")->find($id);
 
         if (!$this->isValidContext($context, array("not null", "is own"))) {
             return $this->renderFoundError("my_contexts");
         }
 
         $context->setIsPublic(false);
+        $em = $this->getManager();
         $em->persist($context);
         $em->flush();
 

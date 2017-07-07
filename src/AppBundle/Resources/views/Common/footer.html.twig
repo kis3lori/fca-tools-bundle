@@ -1,5 +1,6 @@
 <footer class="footer">
     <div class="container">
+        {#
         <form class="pull-right donate-form"
               action="https://www.paypal.com/cgi-bin/webscr"
               method="post" target="_blank">
@@ -8,5 +9,22 @@
             <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
             <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
         </form>
+        #}
+
+        <div class="row">
+            <div class="col-sm-6"></div>
+            <div class="col-sm-2">
+                <img class="ubb-logo" src="{{ asset("bundles/app/images/UBB_Logo.png") }}"
+                     alt="Babes-Bolyai University Logo"/>
+                <div class="clearfix"></div>
+            </div>
+            <div class="col-sm-4">
+                <p class="message">
+                    <strong>Copyright</strong> &copy; {{ "now"|date("Y") }} Kis Levente Lorand <br/>
+                    <strong>Email:</strong> kis_lori[at]yahoo.com <br/>
+                    <strong>Institution: </strong> Babe&#x219;-Bolyai University of Cluj-Napoca
+                </p>
+            </div>
+        </div>
     </div>
 </footer>

@@ -6,6 +6,7 @@ use AppBundle\Document\Context;
 use AppBundle\Helper\CommonUtils;
 use AppBundle\Parser\Exception\InvalidNumericDimensionException;
 use AppBundle\Parser\Exception\InvalidTemporalDimensionException;
+use AppBundle\Parser\FcaParser;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -105,8 +106,8 @@ class ContextImportExportController extends BaseController
                 $fileName = uniqid() . ".cxt";
                 $context->setContextFileName($fileName);
 
-                $contextService = $this->get("app.context_service");
-                $contextService->generateContextFile($context);
+                $generateContextFilesService = $this->get("app.generate_context_files_service");
+                $generateContextFilesService->generateContextFile($context);
 
                 $em->persist($context);
                 $em->flush();
@@ -201,6 +202,7 @@ class ContextImportExportController extends BaseController
                     }
                 }
 
+                $context = null;
                 try {
                     $context = $parser->parseContext($uploadedFile, $numericalDimensions, $temporalDimensions, $dateFormat);
                 } catch (InvalidNumericDimensionException $exception) {
@@ -253,6 +255,7 @@ class ContextImportExportController extends BaseController
     {
         $this->startStatisticsCounter();
 
+        /** @var Context $context */
         $context = $this->getRepo("AppBundle:Context")->find($id);
 
         if (!$this->isValidContext($context, array("not null", "can view"))) {
@@ -281,13 +284,14 @@ class ContextImportExportController extends BaseController
     {
         $this->startStatisticsCounter();
 
+        /** @var Context $context */
         $context = $this->getRepo("AppBundle:Context")->find($id);
 
         if (!$this->isValidContext($context, array("not null", "can view"))) {
             return $this->renderFoundError("contexts");
         }
 
-        $contextService = $this->get("app.context_service");
+        $contextService = $this->get("app.generate_context_files_service");
         $fileName = $contextService->generateTempFileName("csv");
         $filePath = "bin/temp/cron_delete/" . $fileName;
 

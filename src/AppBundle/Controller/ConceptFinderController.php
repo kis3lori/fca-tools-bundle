@@ -23,6 +23,7 @@ class ConceptFinderController extends BaseController
     public function conceptFinderAction($id, Request $request)
     {
         $this->startStatisticsCounter();
+        /** @var Context $context */
         $context = $this->getRepo("AppBundle:Context")->find($id);
 
         if (!$this->isValidContext($context, array("not null", "can view"))) {
@@ -76,6 +77,7 @@ class ConceptFinderController extends BaseController
     public function conceptFinderUpdateAction($id, Request $request)
     {
         $this->startStatisticsCounter();
+        /** @var Context $context */
         $context = $this->getRepo("AppBundle:Context")->find($id);
 
         if (!$this->isValidContext($context, array("not null", "can view"))) {
@@ -97,8 +99,8 @@ class ConceptFinderController extends BaseController
             if (!in_array($constraint, $currentState['constraints'])) {
                 $currentState['constraints'][] = $constraint;
 
-                $contextService = $this->get("app.context_service");
-                $result = $contextService->findConcept($context, $currentState['constraints']);
+                $findConceptService = $this->get("app.find_concept_service");
+                $result = $findConceptService->findConcept($context, $currentState['constraints']);
 
                 if ($result == null) {
                     $currentState['status'] = "unsatisfiable";
@@ -265,6 +267,7 @@ class ConceptFinderController extends BaseController
      */
     public function conceptFinderResetAction($id, Request $request)
     {
+        /** @var Context $context */
         $context = $this->getRepo("AppBundle:Context")->find($id);
 
         if (!$this->isValidContext($context, array("not null", "can view"))) {
@@ -326,6 +329,7 @@ class ConceptFinderController extends BaseController
             ));
 
         $bookmarkArray = array();
+        /** @var ConceptFinderBookmark $entity */
         foreach ($bookmarks as $entity) {
             $bookmarkArray[] = array(
                 "id" => $entity->getId(),
@@ -398,7 +402,7 @@ class ConceptFinderController extends BaseController
         }
 
         if ($currentState == null) {
-            $contextService = $this->get("app.context_service");
+            $findConceptService = $this->get("app.find_concept_service");
 
             $firstState = null;
             if ($request->getSession()->has("firstState")) {
@@ -413,7 +417,7 @@ class ConceptFinderController extends BaseController
                 $firstState = array(
                     "id" => $context->getId(),
                     "status" => "start",
-                    "constraints" => $contextService->findConcept($context, array()),
+                    "constraints" => $findConceptService->findConcept($context, array()),
                     "foundConcept" => null,
                 );
                 $request->getSession()->set("firstState", $firstState);

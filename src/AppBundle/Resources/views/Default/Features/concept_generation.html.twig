@@ -1,0 +1,31 @@
+<div class="row">
+    <div class="col-sm-8">
+        <p>
+            One of the most common tasks in FCA is to generate the concepts of a context.
+        </p>
+        <p>
+            This can be done for any n-adic context after it has been created/imported by simply clicking the <br/>
+            "Generate Concepts" button from the context page.
+        </p>
+        <p>
+            Because context can be quite large we always try to use the fastest known algorithm for this purpose. <br/>
+            Currently for the generation of concepts we use:
+        </p>
+        <ul>
+            <li><strong>InClose 4</strong> - For dyadic contexts</li>
+            <li><strong>DataPeeler</strong> - For polyadic contexts</li>
+        </ul>
+
+        <p class="bg-info message">If you are aware of faster algorithms please contact us and let us know.</p>
+
+        <p>After the concepts have been generated you can view them lower on the context page.</p>
+    </div>
+
+    <div class="col-sm-4">
+        <img src="{{ asset("bundles/app/images/features/concepts_generation/generate-concepts-button.png") }}"
+             alt="generate concepts button"/>
+    </div>
+</div>
+
+<img src="{{ asset("bundles/app/images/features/concepts_generation/generated_concepts.png") }}"
+     alt="generated concepts"/>
