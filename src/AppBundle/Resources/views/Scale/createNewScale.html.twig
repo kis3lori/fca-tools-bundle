@@ -47,4 +47,15 @@
     {{ parent() }}
 
     <script src="{{ asset('bundles/app/scripts/scale-creation.js') }}"></script>
+
+    <script>
+        $(document).ready(function() {
+            scaleCreation = {
+                'tables': {{ (fillData.tables is defined ? (fillData.tables|json_encode) : "null")|raw }},
+                'selectedTable': {{ (app.request.request.get("tableName") ? (app.request.request.get("tableName")|json_encode) : "null")|raw }},
+                'tableData': {{ (fillData.tableData is defined ? (fillData.tableData|json_encode) : "null")|raw }},
+                'selectedColumn': {{ (app.request.request.get("column") ? (app.request.request.get("column")|json_encode) : "null")|raw }}
+            };
+        })
+    </script>
 {% endblock %}

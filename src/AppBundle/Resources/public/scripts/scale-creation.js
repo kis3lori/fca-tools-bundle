@@ -1,7 +1,8 @@
 var scaleCreation = {
     'tables': null,
     'selectedTable': null,
-    'tableData': null
+    'tableData': null,
+    'selectedColumn': null
 };
 
 $(document).ready(function () {
@@ -16,34 +17,14 @@ $(document).ready(function () {
         if (!form[0].checkValidity()) {
             form.find(".submit-btn").click();
         } else {
-            showLoadingOverlay($(this), function (currentInstance) {
-                var url = $(".create-new-scale-page").data("get-tables-url");
-                var databaseConnection = $.trim($("#databaseConnection").val());
-                $.ajax(url, {
-                    method: "get",
-                    data: {
-                        'databaseConnectionId': databaseConnection
-                    },
-                    success: function (response) {
-                        if (response.success) {
-                            scaleCreation.tables = response.data.tables;
+            loadTables($(this), function (currentInstance) {
+                var selectBox = $("#table-select-box");
+                fillSelectBox(selectBox, scaleCreation.tables, scaleCreation.selectedTable);
 
-                            var selectBox = $("#table-select-box");
-                            fillSelectBox(selectBox, scaleCreation.tables);
-
-                            if ($.inArray(scaleCreation.selectedTable, scaleCreation.tables) !== -1) {
-                                selectBox.val(scaleCreation.selectedTable);
-                            }
-
-                            hideLoadingOverlay();
-
-                            var tabIndex = tabPane.index() + 1;
-                            $(".nav-tabs li").removeClass("active").addClass("disabled").eq(tabIndex)
-                                .removeClass("disabled").addClass("active");
-                            currentInstance.parent().find(".next-tab-hidden-btn").click();
-                        }
-                    }
-                });
+                var tabIndex = tabPane.index() + 1;
+                $(".nav-tabs li").removeClass("active").addClass("disabled").eq(tabIndex)
+                    .removeClass("disabled").addClass("active");
+                currentInstance.parent().find(".next-tab-hidden-btn").click();
             });
         }
     });
@@ -56,6 +37,9 @@ $(document).ready(function () {
             form.find(".submit-btn").click();
         } else {
             loadTableData($(this), function (currentInstance) {
+                var value = $("#scale-type-select-box").val();
+                $(".scale-type-form").hide().filter("[data-scale-type='" + value + "']").show();
+
                 prepareScaleDefinitionForm();
 
                 var tabIndex = tabPane.index() + 1;
@@ -119,11 +103,9 @@ $(document).ready(function () {
                 }
             })
         })
-        .on("change", "#scale-type-select-box", function () {
-            $(".scale-type-form").hide().filter("[data-scale-type='" + $(this).val() + "']").show();
-        })
         .on("change", "#nominal-scale-column", function () {
             var column = $("#nominal-scale-column").val();
+            scaleCreation.selectedColumn = column;
             var scaleValues = $("#nominalScaleValues");
             scaleValues.find("option").remove();
 
@@ -136,10 +118,12 @@ $(document).ready(function () {
                 }
             }
 
+            scaleValues.val(column);
+
             $(".nominal-scale-part-2").collapse("show");
         })
         .on("change", "#ordinal-scale-column", function () {
-            var column = $("#ordinal-scale-column").val();
+            scaleCreation.selectedColumn = $("#ordinal-scale-column").val();
             var scaleValues = $("#ordinalScaleValues");
             scaleValues.find("option").remove();
 
@@ -151,12 +135,22 @@ $(document).ready(function () {
             var value = input.val();
 
             if (value !== "") {
-                $("<li>").addClass("list-group-item").text(value).appendTo($(".ordinal-scale-values-list"));
+                $("<li>").addClass("list-group-item").html($("<span>").text(value))
+                    .append("<button class=\"btn btn-xs btn-danger pull-right ordinal-scale-remove-value\">Remove</button>")
+                    .appendTo($(".ordinal-scale-values-list"));
                 $("<input>").attr("type", "hidden").attr("name", "ordinalScaleValues[]")
                     .addClass("ordinal-scale-values").val(value).appendTo($(".ordinal-scale-part-2"));
 
                 input.val("");
             }
+        })
+        .on("click", ".ordinal-scale-remove-value", function (event) {
+            event.preventDefault();
+            var listItem = $(this).parent();
+            var value = listItem.find("span").text();
+
+            listItem.remove();
+            $(".ordinal-scale-part-2").find("input[value='" + value + "']").remove();
         })
         .on("click", ".btn-create-nominal-scale", function (event) {
             event.preventDefault();
@@ -257,6 +251,37 @@ function loadTableData(currentInstance, callback) {
     }
 }
 
+function loadTables(currentInstance, callback) {
+    if (scaleCreation.tables === null) {
+        showLoadingOverlay($(this), function (currentInstance) {
+            var url = $(".create-new-scale-page").data("get-tables-url");
+            var databaseConnection = $.trim($("#databaseConnection").val());
+
+            $.ajax(url, {
+                method: "get",
+                data: {
+                    'databaseConnectionId': databaseConnection
+                },
+                success: function (response) {
+                    if (response.success) {
+                        scaleCreation.tables = response.data.tables;
+
+                        if (typeof(callback) === "function") {
+                            callback(currentInstance);
+                        }
+                    }
+
+                    hideLoadingOverlay();
+                }
+            });
+        });
+    } else {
+        if (typeof(callback) === "function") {
+            callback(currentInstance);
+        }
+    }
+}
+
 function prepareScaleDefinitionForm() {
     var scaleType = $.trim($("#scale-type-select-box").val());
     var selectBox;
@@ -264,23 +289,25 @@ function prepareScaleDefinitionForm() {
     switch (scaleType) {
         case "nominal":
             selectBox = $("#nominal-scale-column");
-            fillSelectBox(selectBox, scaleCreation.tableData.columns);
+            fillSelectBox(selectBox, scaleCreation.tableData.columns, scaleCreation.selectedColumn);
             break;
         case "ordinal":
             selectBox = $("#ordinal-scale-column");
-            fillSelectBox(selectBox, scaleCreation.tableData.columns);
+            fillSelectBox(selectBox, scaleCreation.tableData.columns, scaleCreation.selectedColumn);
             break;
         case "custom":
             break;
     }
 }
 
-function fillSelectBox(selectBox, values) {
+function fillSelectBox(selectBox, values, selectedValue) {
     selectBox.find("option:not(:disabled)").remove();
     for (var index in values) {
         var value = values[index];
         $("<option value='" + value + "'>" + value + "</option>").appendTo(selectBox);
     }
+
+    selectBox.val(selectedValue);
 }
 
 function submitScaleForm(form, currentInstance, callback) {

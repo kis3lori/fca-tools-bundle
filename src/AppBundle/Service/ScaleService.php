@@ -182,7 +182,8 @@ class ScaleService
                 foreach ($objects as $objIndex => $obj) {
                     foreach ($attributes as $attrIndex => $attr) {
                         if (($order == "decreasing" && $objIndex <= $attrIndex)
-                            || ($order == "increasing" && $objIndex > $attrIndex)) {
+                            || ($order == "increasing" && $objIndex > $attrIndex)
+                        ) {
                             $relationPairs[] = array($objIndex, $attrIndex);
                         }
                     }
@@ -241,12 +242,15 @@ class ScaleService
      * @param $tableName string
      * @param $scaleName string
      * @param $scaleType string
+     * @param $tables array
      * @return mixed
      */
-    public function validateGenericScale($errors, $tableName, $scaleName, $scaleType)
+    public function validateGenericScale($errors, $tableName, $scaleName, $scaleType, $tables)
     {
         if (!$tableName) {
             $errors["tableName"] = "You must select a table on which the scale to operate.";
+        } else if (!in_array($tableName, $tables)) {
+            $errors["tableName"] = "No table was not found with the given name in the database. Please select a valid table.";
         }
 
         if (!$scaleName) {
@@ -266,16 +270,20 @@ class ScaleService
      * @param $errors array
      * @param $scaleType string
      * @param $postData ParameterBag
+     * @param $tableData array
      * @return mixed
      */
-    public function validateScaleType($errors, $scaleType, $postData)
+    public function validateScaleType($errors, $scaleType, $postData, $tableData)
     {
         switch ($scaleType) {
             case "nominal":
                 $column = $postData->get("column");
                 if (!$column) {
-                    $errors["subType"] = "The nominal scale must have a column defined.";
+                    $errors["column"] = "The nominal scale must have a column defined.";
+                } else if (!in_array($column, $tableData['columns'])) {
+                    $errors["column"] = "No column was found with the given name. Please select a valid column.";
                 }
+
                 $subType = $postData->get("subType");
                 if (!$subType) {
                     $errors["subType"] = "The nominal scale must be simple or custom.";
@@ -288,8 +296,11 @@ class ScaleService
             case "ordinal":
                 $column = $postData->get("column");
                 if (!$column) {
-                    $errors["subType"] = "The ordinal scale must have a column defined.";
+                    $errors["column"] = "The ordinal scale must have a column defined.";
+                } else if (!in_array($column, $tableData['columns'])) {
+                    $errors["column"] = "No column was found with the given name. Please select a valid column.";
                 }
+
                 $order = $postData->get("order");
                 if (!$order || !in_array($order, array("increasing", "decreasing"))) {
                     $errors["order"] = "The nominal scale must be increasing or decreasing.";

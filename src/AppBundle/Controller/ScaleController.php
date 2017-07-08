@@ -28,12 +28,15 @@ class ScaleController extends BaseController
     {
         $this->startStatisticsCounter();
 
+        $databaseConnectionService = $this->get("app.database_connection_service");
         $tab = "select-database";
         $errors = array();
+        $fillData = array();
 
         if ($request->isMethod("POST")) {
             $scaleService = $this->get("app.scale_service");
             $postData = $request->request;
+            $postData->set("column", "asdasd");
 
             $databaseConnectionId = $postData->get('databaseConnectionId');
             $tableName = $postData->get("tableName");
@@ -46,12 +49,16 @@ class ScaleController extends BaseController
             $errors = $scaleService->validateDatabaseConnection($errors, $databaseConnection);
             if (empty($errors)) {
                 $tab = "describe-scale";
-                $errors = $scaleService->validateGenericScale($errors, $tableName, $scaleName, $scaleType);
+                $fillData['tables'] = $databaseConnectionService->getTables($databaseConnection);
+
+                $errors = $scaleService->validateGenericScale($errors, $tableName, $scaleName, $scaleType, $fillData['tables']);
             }
 
             if (empty($errors)) {
                 $tab = "define-scale";
-                $errors = $scaleService->validateScaleType($errors, $scaleType, $postData);
+
+                $fillData['tableData'] = $databaseConnectionService->getTableData($databaseConnection, $tableName);
+                $errors = $scaleService->validateScaleType($errors, $scaleType, $postData, $fillData['tableData']);
             }
 
             if (empty($errors)) {
@@ -95,6 +102,7 @@ class ScaleController extends BaseController
         return $this->render('@App/Scale/createNewScale.html.twig', array(
             'activeMenu' => "my_scales",
             'errors' => $errors,
+            'fillData' => $fillData,
             'tab' => $tab,
         ));
     }
