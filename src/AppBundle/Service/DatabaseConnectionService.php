@@ -43,6 +43,7 @@ class DatabaseConnectionService
         $stmt = $conn->query($sql);
 
         $tableData = array(
+            "table" => $tableName,
             "columns" => array(),
         );
         if ($stmt->rowCount() != 0) {

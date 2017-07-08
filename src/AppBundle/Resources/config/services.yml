@@ -2,6 +2,9 @@ services:
     app.context_service:
         class: AppBundle\Service\ContextService
         arguments: ["@service_container"]
+    app.scale_service:
+        class: AppBundle\Service\ScaleService
+        arguments: ["@service_container"]
     app.statistics_service:
         class: AppBundle\Service\StatisticsService
         arguments: ["@service_container"]

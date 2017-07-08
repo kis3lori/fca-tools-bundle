@@ -1,0 +1,76 @@
+<form action="{{ path("create_new_scale") }}" method="post" class="create-context-form">
+    <p class="message bg-info">
+        Ordinal scales are used for scaling attributes with ordered values, having the property
+        that each value implies the smaller value. <br />
+        For example: expensive, very expensive, extremely expensive.
+    </p>
+
+    <div class="form-group">
+        <select name="column" class="form-control" id="ordinal-scale-column" required="required">
+            <option value="" selected="selected" disabled="disabled">Select a column</option>
+        </select>
+    </div>
+
+    <div class="ordinal-scale-part-2 collapse">
+        <div class="form-group row">
+            <label class="col-sm-2 form-control-label">Order: </label>
+            <div class="col-sm-2">
+                <label>
+                    <input type="radio" name="order" class="ordinal-scale-order" value="increasing" checked="checked"/>
+                    Increasing
+                </label>
+            </div>
+            <div class="col-sm-2">
+                <label>
+                    <input type="radio" name="order" class="ordinal-scale-order" value="decreasing"/>
+                    Decreasing
+                </label>
+            </div>
+            <div class="col-sm-6"></div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-sm-2 form-control-label">Bounds: </label>
+            <div class="col-sm-2">
+                <label>
+                    <input type="radio" name="bounds" class="ordinal-scale-bounds" value="include" checked="checked"/>
+                    Include
+                </label>
+            </div>
+            <div class="col-sm-2">
+                <label>
+                    <input type="radio" name="bounds" class="ordinal-scale-bounds" value="exclude"/>
+                    Exclude
+                </label>
+            </div>
+            <div class="col-sm-6"></div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="input-group ordinal-scale-elements">
+                    <input class="form-control ordinal-scale-elements-input" type="number" step="any"
+                           value="" placeholder="Type in a value..."/>
+                    <div class="input-group-btn">
+                        <button class="ordinal-scale-add-value btn btn-primary">Add Value</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6">
+                <ul class="list-group ordinal-scale-values-list">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <br/>
+
+    <p>
+        <a class="btn btn-danger" href="{{ path("list_user_scales") }}">Cancel</a>
+        <a class="btn btn-default prev-tab">Back</a>
+        <button class="btn btn-primary btn-create-ordinal-scale">Submit</button>
+
+        <input class="hidden submit-btn" type="submit"/>
+        <a class="hidden prev-tab-hidden-btn" href="#step2-tab" data-toggle="tab">Back</a>
+    </p>
+</form>

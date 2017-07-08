@@ -1,32 +1,39 @@
 <form action="{{ path("create_new_scale") }}" method="post" class="create-context-form">
-    <div class="form-group row">
-        <label class="col-sm-2 form-control-label" for="column">Column:</label>
-        <div class="col-sm-10">
-            <input class="form-control" type="text" name="column" id="column" required="required"/>
-        </div>
-    </div>
+    <p class="message bg-info">
+        Nominal scales are used for scaling attributes, whose values are mutually exclusive,
+        like for example gender. <br/>
+        Having attributes that exclude each other, the concept extents build a partition of the object set.
+    </p>
 
-    <p>All values from the column are included by default.</p>
-
-    <div class="form-group row">
-        <label class="col-sm-2 form-control-label">Do you wish to customize the list of elements?</label>
-        <div class="col-sm-10">
-            <label>
-                No
-                <input type="radio" name="subType" class="subType" value="simple" checked="checked"/>
-            </label>
-            <label>
-                Yes
-                <input type="radio" name="subType" class="subType" value="custom"/>
-            </label>
-        </div>
-    </div>
-
-    <div class="form-group nominal-scale-elements-selector" style="display: none;">
-        <label for="nominalScaleValues">Select values</label>
-        <select name="nominalScaleValues[]" class="form-control" id="nominalScaleValues" multiple="multiple">
-            <option value="" selected="selected" disabled="disabled">Select elements to include</option>
+    <div class="form-group">
+        <select name="column" class="form-control" id="nominal-scale-column" required="required">
+            <option value="" selected="selected" disabled="disabled">Select a column</option>
         </select>
+    </div>
+
+    <div class="nominal-scale-part-2 collapse">
+        <p>All values from the column are included by default.</p>
+
+        <div class="form-group row">
+            <label class="col-sm-2 form-control-label">Do you wish to customize the list of elements?</label>
+            <div class="col-sm-10">
+                <label>
+                    No
+                    <input type="radio" name="subType" class="subType" value="simple" checked="checked"/>
+                </label>
+                <label>
+                    Yes
+                    <input type="radio" name="subType" class="subType" value="custom"/>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group nominal-scale-elements-selector collapse">
+            <label for="nominalScaleValues">Select values</label>
+            <select name="nominalScaleValues[]" class="form-control" id="nominalScaleValues" multiple="multiple">
+                <option value="" selected="selected" disabled="disabled">Select elements to include</option>
+            </select>
+        </div>
     </div>
 
     <p>
@@ -34,6 +41,7 @@
         <a class="btn btn-default prev-tab">Back</a>
         <button class="btn btn-primary btn-create-nominal-scale">Submit</button>
 
+        <input class="hidden submit-btn" type="submit"/>
         <a class="hidden prev-tab-hidden-btn" href="#step2-tab" data-toggle="tab">Back</a>
     </p>
 </form>

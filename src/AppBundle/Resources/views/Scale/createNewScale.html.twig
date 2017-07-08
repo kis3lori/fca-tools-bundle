@@ -13,9 +13,23 @@
         </ol>
 
         <ul class="nav nav-tabs">
-            <li class="active"><a>Select Database</a></li>
-            <li class="disabled"><a>Describe Scale</a></li>
-            <li class="disabled"><a>Define Scale</a></li>
+            <li class="active primary">
+                <a>
+                    <strong>Step 1:</strong> Select Database
+                </a>
+            </li>
+
+            <li class="disabled">
+                <a>
+                    <strong>Step 2:</strong> Provide General Scale Data
+                </a>
+            </li>
+
+            <li class="disabled">
+                <a>
+                    <strong>Step 3:</strong> Provide Type Specific Scale Data
+                </a>
+            </li>
         </ul>
         <br/>
 
@@ -27,4 +41,10 @@
             {{ include('@App/Scale/Helper/createScaleTab3.html.twig') }}
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script src="{{ asset('bundles/app/scripts/scale-creation.js') }}"></script>
 {% endblock %}

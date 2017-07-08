@@ -18,6 +18,7 @@
             <select name="scaleType" class="form-control" id="scale-type-select-box" required="required">
                 <option value="" selected="selected" disabled="disabled">Select the scale type</option>
                 <option value="nominal">Nominal</option>
+                <option value="ordinal">Ordinal</option>
                 <option value="custom">Custom</option>
             </select>
         </div>
@@ -25,7 +26,7 @@
         <p>
             <a class="btn btn-danger" href="{{ path("list_user_scales") }}">Cancel</a>
             <a class="btn btn-default prev-tab">Back</a>
-            <a class="btn btn-primary next-tab">Next</a>
+            <a class="btn btn-primary define-scale-btn">Next</a>
 
             <a class="hidden prev-tab-hidden-btn" href="#step1-tab" data-toggle="tab">Back</a>
             <a class="hidden next-tab-hidden-btn" href="#step3-tab" data-toggle="tab">Next</a>

@@ -13,11 +13,7 @@ var conceptLattice = {
     }
 };
 
-var scaleCreation = {
-    'tables': null,
-    'selectedTable': null,
-    'tableData': null
-};
+var LOADING = false;
 
 $(document).ready(function () {
     var body = $("body");
@@ -37,75 +33,6 @@ $(document).ready(function () {
         container: $(".concept-lattice-container")
     });
 
-    $("#table-select-box").change(function() {
-        scaleCreation.selectedTable = $(this).val();
-    });
-
-    $(".choose-database-btn").click(function() {
-        var tabPane = $(this).closest(".tab-pane");
-        var form = tabPane.find(".form-to-validate");
-
-        if (!form[0].checkValidity()) {
-            form.find(".submit-btn").click();
-        } else {
-            showLoadingOverlay($(this), function(currentInstance) {
-                var url = $(".create-new-scale-page").data("get-tables-url");
-                var databaseConnection = $.trim($("#databaseConnection").val());
-                $.ajax(url, {
-                    method: "get",
-                    data: {
-                        'databaseConnectionId': databaseConnection
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            scaleCreation.tables = response.data.tables;
-
-                            var selectBox = $("#table-select-box");
-                            selectBox.find("option:not(:disabled)").remove();
-                            for (var index in scaleCreation.tables) {
-                                var value = scaleCreation.tables[index];
-                                $("<option value='" + value + "'>" + value + "</option>").appendTo(selectBox);
-                            }
-
-                            if ($.inArray(scaleCreation.selectedTable, scaleCreation.tables) !== -1) {
-                                selectBox.val(scaleCreation.selectedTable);
-                            }
-
-                            hideLoadingOverlay();
-
-                            var tabIndex = tabPane.index() + 1;
-                            $(".nav-tabs li").removeClass("active").addClass("disabled").eq(tabIndex)
-                                .removeClass("disabled").addClass("active");
-                            currentInstance.parent().find(".next-tab-hidden-btn").click();
-                        }
-                    }
-                });
-            });
-        }
-    });
-
-    $(".next-tab").click(function() {
-        var tabPane = $(this).closest(".tab-pane");
-        var form = tabPane.find(".form-to-validate");
-
-        if (!form[0].checkValidity()) {
-            form.find(".submit-btn").click();
-        } else {
-            var tabIndex = tabPane.index() + 1;
-            $(".nav-tabs li").removeClass("active").addClass("disabled").eq(tabIndex)
-                .removeClass("disabled").addClass("active");
-            $(this).parent().find(".next-tab-hidden-btn").click();
-        }
-    });
-
-    $(".prev-tab").click(function() {
-        var tabPane = $(this).closest(".tab-pane");
-        var tabIndex = tabPane.index() - 1;
-        $(".nav-tabs li").removeClass("active").addClass("disabled").eq(tabIndex)
-            .removeClass("disabled").addClass("active");
-        $(this).parent().find(".prev-tab-hidden-btn").click();
-    });
-
     $(".panel-collapse")
         .on('show.bs.collapse', function () {
             $(this).closest(".panel").removeClass("panel-default").addClass("panel-primary");
@@ -114,38 +41,6 @@ $(document).ready(function () {
             $(this).closest(".panel").removeClass("panel-primary").addClass("panel-default");
         });
 
-    $(".create-new-scale-page").on("change", "#databaseConnection", function () {
-        var value = $(this).val();
-
-        if (value === "add-new-database-connection") {
-            $("#create-database-connection").collapse("show");
-        } else {
-            $("#create-database-connection").collapse("hide");
-        }
-    }).on("click", ".save-database-connection", function (event) {
-        event.preventDefault();
-
-        var form = $(this).closest(".create-database-connection-form");
-        var url = form.attr("action");
-
-        $.ajax(url, {
-            method: "post",
-            data: form.serialize(),
-            success: function (response) {
-                if (response.success) {
-                    $("#create-database-connection").collapse("hide");
-                    $("<option value=\"" + response.data.databaseConnection.id + "\">" +
-                        response.data.databaseConnection.name +
-                        "</option>").appendTo("#databaseConnection").prop('selected', true)
-                } else {
-                    alert(response.error);
-                }
-            }
-        })
-    }).on("change", "#scale-type-select-box", function() {
-        $(".scale-type-form").hide().filter("[data-scale-type='" + $(this).val() + "']").show();
-    });
-
     $(".remove-member-btn").click(function (event) {
         event.preventDefault();
         var memberContainer = $(this).closest("tr");
@@ -153,7 +48,7 @@ $(document).ready(function () {
         var url = $(this).attr("href");
         $.ajax(url, {
             success: function (response) {
-                if (response.success == true) {
+                if (response.success === true) {
                     memberContainer.remove();
                 } else {
                     alert(response.error);
@@ -166,7 +61,7 @@ $(document).ready(function () {
         var submitBtn = $(this).parent().find(".submit-btn").removeClass("disabled").removeAttr("disabled");
         var hasContext = $(this).find(":selected").data("has-context");
 
-        if (hasContext == "1") {
+        if (hasContext === "1") {
             submitBtn.removeClass("btn-primary").addClass("btn-danger").val("Remove context from group");
         } else {
             submitBtn.removeClass("btn-danger").addClass("btn-primary").val("Add context to group");
@@ -187,7 +82,7 @@ $(document).ready(function () {
 
     body.on("click", ".node-popup", function (event) {
         event.stopPropagation();
-    }).on("click", function (event) {
+    }).on("click", function () {
         $(".node-popup").remove();
     });
 
@@ -248,7 +143,7 @@ $(document).ready(function () {
 
             var group = $(this).closest(".btn-group").data("group");
             $(this).closest(".dimensions-lock-list").find(".btn-group").each(function () {
-                if ($(this).data("group") != group) {
+                if ($(this).data("group") !== group) {
                     var btn = $(this).find(".btn");
 
                     btn.removeClass("btn-success");
@@ -276,7 +171,7 @@ $(document).ready(function () {
 
         var isLockable = searchForArray(data['lock'], LOCKABLE_ELEMENTS);
 
-        if ((typeof LOCKABLE_ELEMENTS == 'undefined') || LOCKABLE_ELEMENTS.length == 0 || isLockable != -1) {
+        if ((typeof LOCKABLE_ELEMENTS === 'undefined') || LOCKABLE_ELEMENTS.length === 0 || isLockable !== -1) {
             var url = $(".main-lock-btn").attr("href").replace("_lockType_", lockType) + "?" + $.param(data);
 
             redirect(url);
@@ -291,7 +186,7 @@ $(document).ready(function () {
         .on("click", ".data-cell", function (event) {
             event.preventDefault();
 
-            if ($(this).text() == "X") {
+            if ($(this).text() === "X") {
                 $(this).html("&nbsp;");
             } else {
                 $(this).text("X");
@@ -301,7 +196,7 @@ $(document).ready(function () {
             var name = $(this).val();
             $(this).val("");
 
-            if (name == "") return;
+            if (name === "") return;
 
             var input = $("<input>");
             input.attr("type", "text")
@@ -342,7 +237,7 @@ $(document).ready(function () {
             var name = $(this).val();
             $(this).val("");
 
-            if (name == "") return;
+            if (name === "") return;
 
             var input = $("<input>");
             input.attr("type", "text")
@@ -385,12 +280,12 @@ $(document).ready(function () {
             event.preventDefault();
 
             var form = $(this).closest("form");
-            if (form.find("input[name=name]").val() == "") {
+            if (form.find("input[name=name]").val() === "") {
                 showAlert("The name of the context cannot be empty.");
                 return;
             }
 
-            var dimCount = form.find('input[type=radio][name=context_type]:checked').val() == "dyadic" ? 2 : 3;
+            var dimCount = form.find('input[type=radio][name=context_type]:checked').val() === "dyadic" ? 2 : 3;
             var tablesContainer = form.find(".relation-tables");
             var table = tablesContainer.find(".create-context-table:first");
 
@@ -408,7 +303,7 @@ $(document).ready(function () {
                 form.append(input);
             });
 
-            if (dimCount == 3) {
+            if (dimCount === 3) {
                 tablesContainer.find(".create-context-table").each(function () {
                     var val = $.trim($(this).find(".empty-cell input").val());
                     var input = $("<input>").attr("type", "hidden").attr("name", "conditions[]").val(val);
@@ -417,14 +312,14 @@ $(document).ready(function () {
                 });
             }
 
-            if (dimCount == 2) {
+            if (dimCount === 2) {
                 var firstRow = table.find(".first-row");
                 table.find("tr:not(.first-row)").each(function () {
                     var row = $(this);
                     var objectName = row.find(".left-head-cell input").val();
 
                     row.find(".data-cell").each(function (i) {
-                        if ($.trim($(this).text()) == "X") {
+                        if ($.trim($(this).text()) === "X") {
                             var attributeCell = firstRow.find(".top-head-cell").eq(i);
                             var attributeName = attributeCell.find("input").val();
 
@@ -445,7 +340,7 @@ $(document).ready(function () {
                         var objectName = row.find(".left-head-cell input").val();
 
                         row.find(".data-cell").each(function (i) {
-                            if ($.trim($(this).text()) == "X") {
+                            if ($.trim($(this).text()) === "X") {
                                 var attributeCell = firstRow.find(".top-head-cell").eq(i);
                                 var attributeName = attributeCell.find("input").val();
 
@@ -460,71 +355,6 @@ $(document).ready(function () {
 
             form.submit();
         })
-        .on("click", ".btn-create-custom-scale", function (event) {
-            event.preventDefault();
-
-            var form = $(this).closest("form");
-            var tablesContainer = form.find(".relation-tables");
-            var table = tablesContainer.find(".create-context-table:first");
-
-            var databaseConnection = $.trim($("#databaseConnection").val());
-            $("<input>").attr("type", "hidden").attr("name", "databaseConnectionId").val(databaseConnection).appendTo(form);
-            var tableName = $.trim($("#table-select-box").val());
-            $("<input>").attr("type", "hidden").attr("name", "tableName").val(tableName).appendTo(form);
-            var scaleName = $.trim($("#scaleName").val());
-            $("<input>").attr("type", "hidden").attr("name", "scaleName").val(scaleName).appendTo(form);
-            var scaleType = $.trim($("#scale-type-select-box").val());
-            $("<input>").attr("type", "hidden").attr("name", "scaleType").val(scaleType).appendTo(form);
-
-            table.find(".top-head-cell:not(:last)").each(function () {
-                var val = $.trim($(this).find("input").val());
-                var input = $("<input>").attr("type", "hidden").attr("name", "attributes[]").val(val);
-
-                form.append(input);
-            });
-
-            table.find(".left-head-cell:not(:last)").each(function () {
-                var val = $.trim($(this).find("input").val());
-                var input = $("<input>").attr("type", "hidden").attr("name", "objects[]").val(val);
-
-                form.append(input);
-            });
-
-            var firstRow = table.find(".first-row");
-            table.find("tr:not(.first-row)").each(function () {
-                var row = $(this);
-                var objectName = row.find(".left-head-cell input").val();
-
-                row.find(".data-cell").each(function (i) {
-                    if ($.trim($(this).text()) == "X") {
-                        var attributeCell = firstRow.find(".top-head-cell").eq(i);
-                        var attributeName = attributeCell.find("input").val();
-
-                        var val = objectName + "###" + attributeName;
-                        var input = $("<input>").attr("type", "hidden").attr("name", "relation_tuples[]").val(val);
-                        form.append(input);
-                    }
-                });
-            });
-
-            form.submit();
-        })
-        .on("click", ".btn-create-nominal-scale", function (event) {
-            event.preventDefault();
-
-            var form = $(this).closest("form");
-
-            var databaseConnection = $.trim($("#databaseConnection").val());
-            $("<input>").attr("type", "hidden").attr("name", "databaseConnectionId").val(databaseConnection).appendTo(form);
-            var tableName = $.trim($("#table-select-box").val());
-            $("<input>").attr("type", "hidden").attr("name", "tableName").val(tableName).appendTo(form);
-            var scaleName = $.trim($("#scaleName").val());
-            $("<input>").attr("type", "hidden").attr("name", "scaleName").val(scaleName).appendTo(form);
-            var scaleType = $.trim($("#scale-type-select-box").val());
-            $("<input>").attr("type", "hidden").attr("name", "scaleType").val(scaleType).appendTo(form);
-
-            form.submit();
-        })
         .on("click", ".btn-add-condition", function (event) {
             event.preventDefault();
 
@@ -535,33 +365,6 @@ $(document).ready(function () {
             table.scroll(adjustTablesScroll);
 
             tablesContainer.append(table);
-        })
-        .on("change", "input.subType", function () {
-            if ($(this).val() === "simple") {
-                $(".nominal-scale-elements-selector").hide();
-            } else {
-                loadTableData($(this), function(currentInstance) {
-                    var column = $("#column").val();
-                    if ($.inArray(column, scaleCreation.tableData.columns) !== -1) {
-                        var scaleValues = $("#nominalScaleValues");
-                        scaleValues.find("option").remove();
-
-                        var values = [];
-                        for (var index in scaleCreation.tableData.data) {
-                            var value = scaleCreation.tableData.data[index][column];
-                            if (!(values.includes(value))) {
-                                values.push(value);
-                                $("<option value='" + value + "'>" + value + "</option>").appendTo(scaleValues);
-                            }
-                        }
-
-                        $(".nominal-scale-elements-selector").show();
-                    } else {
-                        $('.subType[value="simple"]').click();
-                        alert("Please select a column.");
-                    }
-                });
-            }
         });
 
     $('input[type=radio][name=context_type]').on('change', function () {
@@ -621,7 +424,8 @@ function searchForArray(needle, haystack) {
     for (i = 0; i < haystack.length; ++i) {
         if (needle.length === haystack[i].length) {
             current = haystack[i];
-            for (j = 0; j < needle.length && needle[j] === current[j]; ++j);
+            j = 0;
+            while (j < needle.length && needle[j] === current[j]) j++;
             if (j === needle.length)
                 return i;
         }
@@ -655,7 +459,7 @@ function showLoadingOverlay(currentInstance, callback) {
         spinner.hide();
     }
 
-    if (typeof(callback) == "function") {
+    if (typeof(callback) === "function") {
         setTimeout(function () {
             callback(currentInstance);
         }, 100);
@@ -667,32 +471,3 @@ function hideLoadingOverlay() {
 
     $(".spinner").hide();
 }
-
-function loadTableData(currentInstance, callback) {
-    if (scaleCreation.tableData === null) {
-        var url = $(".create-new-scale-page").data("get-table-data-url");
-        var databaseConnection = $.trim($("#databaseConnection").val());
-        var tableName = $.trim($("#table-select-box").val());
-        $.ajax(url, {
-            method: "get",
-            data: {
-                'databaseConnectionId': databaseConnection,
-                'table': tableName
-            },
-            success: function(response) {
-                if (response.success) {
-                    scaleCreation.tableData = response.data.tableData;
-
-                    if (typeof(callback) === "function") {
-                        callback(currentInstance);
-                    }
-                }
-            }
-        });
-    } else {
-        if (typeof(callback) === "function") {
-            callback(currentInstance);
-        }
-    }
-}
-
