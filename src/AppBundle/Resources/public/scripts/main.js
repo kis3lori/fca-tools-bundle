@@ -88,26 +88,36 @@ $(document).ready(function () {
     $(".show-top-labels-btn").click(function () {
         if (conceptLattice.settings.showTopLabels) {
             conceptLattice.topLabels.style("visibility", "hidden");
+			conceptLattice.bBoxesTopLabels.style("visibility","hidden");
+			
         } else {
             conceptLattice.topLabels.style("visibility", "visible");
+			conceptLattice.bBoxesTopLabels.style("visibility","visible");
+				
         }
 
         conceptLattice.settings.showTopLabels = !conceptLattice.settings.showTopLabels;
+		
     });
 
     $(".show-bottom-labels-btn").click(function () {
         if (conceptLattice.settings.showBottomLabels) {
             conceptLattice.bottomLabels.style("visibility", "hidden");
+			conceptLattice.bBoxesBottomLabels.style("visibility","hidden");
+						
         } else {
             conceptLattice.bottomLabels.style("visibility", "visible");
+			conceptLattice.bBoxesBottomLabels.style("visibility","visible");
+			
         }
-
+		
         conceptLattice.settings.showBottomLabels = !conceptLattice.settings.showBottomLabels;
+		
     });
 
     $(".collapse-labels-btn").click(function () {
         conceptLattice.settings.collapseLabels = !conceptLattice.settings.collapseLabels;
-
+		
         conceptLattice.bottomLabels.text(function (d) {
             if (conceptLattice.settings.collapseLabels) {
                 return d.ownedAttributes.join(" | ");
@@ -115,7 +125,7 @@ $(document).ready(function () {
                 return d.attributes.join(" | ");
             }
         });
-
+		
         conceptLattice.topLabels.text(function (d) {
             if (conceptLattice.settings.collapseLabels) {
                 return d.ownedObjects.join(" | ");
@@ -123,7 +133,30 @@ $(document).ready(function () {
                 return d.objects.join(" | ");
             }
         });
-    });
+		appendBBox(conceptLattice.gnodes);
+		conceptLattice.bBoxesTopLabels = conceptLattice.gnodes.selectAll("rect").filter(function() {return this.y.baseVal.value < parseFloat(conceptLattice.settings.textTopOffset);});
+		conceptLattice.bBoxesBottomLabels = conceptLattice.gnodes.selectAll("rect").filter(function() {return this.y.baseVal.value > parseFloat(conceptLattice.settings.textBottomOffset);});
+		
+		if (conceptLattice.topLabels.style("visibility")=="visible")
+		{
+			
+			conceptLattice.bBoxesTopLabels.style("visibility","visible");
+		}
+		else{
+			conceptLattice.bBoxesTopLabels.style("visibility","hidden");
+			};
+		
+		if (conceptLattice.bottomLabels.style("visibility")=="visible")
+		{
+			
+		conceptLattice.bBoxesBottomLabels.style("visibility","visible");
+		
+		}
+		else{
+			conceptLattice.bBoxesBottomLabels.style("visibility","hidden");
+			};
+		
+	});
 
     container.on("click", ".dimensions-lock-list .btn:not(.btn-primary)", function (event) {
         event.preventDefault();
