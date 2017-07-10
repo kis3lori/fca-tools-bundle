@@ -1,5 +1,11 @@
 $.extend(true, conceptLattice, {});
 
+d3.selection.prototype.moveToFront = function() {
+  return this.each(function(){
+    this.parentNode.appendChild(this);
+  });
+};
+
 function collide(node) {
     var textLength = 0;
     if (conceptLattice.settings.collapseLabels && conceptLattice.settings.showTopLabels) {
@@ -124,7 +130,8 @@ function drawGraph(graph) {
                 conceptLattice.force.resume();
             }
         });
-
+		
+		
     conceptLattice.force
         .nodes(graph.nodes)
         .links(graph.links)
@@ -227,7 +234,16 @@ function drawGraph(graph) {
 
             conceptLattice.force.resume();
         })
-        .call(conceptLattice.force.drag)
+        .on("mouseover",function(){
+			var sel = d3.select(this);
+			sel.moveToFront();
+			sel.selectAll("rect").style("fill", "yellow");
+			})
+		.on("mouseout",function(){
+			var sel = d3.select(this);
+			sel.selectAll("rect").style("fill", "white");
+			})
+		.call(conceptLattice.force.drag)
     ;
 
     conceptLattice.nodes = conceptLattice.gnodes.append("circle")
@@ -257,20 +273,36 @@ function drawGraph(graph) {
         .attr("text-anchor", "middle")
         .text(function (d) {
             if (conceptLattice.settings.collapseLabels) {
-                return d.ownedObjects.join(" | ");
+                
+				return d.ownedObjects.join(" | ");
             } else {
                 return d.objects.join(" | ");
             }
+			
         });
+	
+	
+    appendBBox(conceptLattice.gnodes);
+		
+	conceptLattice.bBoxesTopLabels = conceptLattice.gnodes.selectAll("rect").filter(function() {return this.y.baseVal.value < parseFloat(conceptLattice.settings.textTopOffset);});
+	conceptLattice.bBoxesBottomLabels = conceptLattice.gnodes.selectAll("rect").filter(function() {return this.y.baseVal.value > parseFloat(conceptLattice.settings.textBottomOffset);});
+	conceptLattice.bBoxesTopLabels.style("visibility","visible");
+	conceptLattice.bBoxesBottomLabels.style("visibility","visible");
 
-    if (!conceptLattice.settings.showTopLabels) {
+    
+	if (!conceptLattice.settings.showTopLabels) {
         conceptLattice.topLabels.style("visibility", "hidden");
+		conceptLattice.bBoxes.topLabels.style("visibility","hidden");
+
     }
     if (!conceptLattice.settings.showBottomLabels) {
         conceptLattice.bottomLabels.style("visibility", "hidden");
-    }
+		conceptLattice.bBoxes.bottomLabels.style("visibility", "hidden");
 
-    conceptLattice.force.on("tick", function () {
+    }
+	
+	
+	conceptLattice.force.on("tick", function () {
         var nodes = graph.nodes;
 
         if (conceptLattice.settings.collisionDetection) {
@@ -371,6 +403,8 @@ function drawGraph(graph) {
     });
 }
 
+
+
 function getSVGString(svgNode) {
     svgNode.setAttribute('xlink', 'http://www.w3.org/2000/xlink');
 
@@ -401,5 +435,32 @@ function svgString2Image(svgString, width, height) {
     };
 
     image.src = imgsrc;
-
 }
+
+function appendBBox(x){	
+	x.each(function () { 
+		var bBox=[];
+	
+		g_node=d3.select(this)
+			
+		if (!g_node.selectAll("rect").empty()){
+			g_node.selectAll("rect").remove()};
+			
+		g_node.selectAll("text")
+			.each(function() { 
+				bBox=(this.getBBox());
+				removed=g_node.select("text").remove()
+				g_node.append("rect")
+					.attr("x", bBox.x)
+					.attr("y", bBox.y) 
+					.attr("width", bBox.width)
+					.attr("height", bBox.height)
+					.style("fill", "white")
+					.style("fill-opacity", "1")
+					.style("stroke", "black")
+							
+				g_node.append(function(){return removed.node();});
+				
+		});	
+	})
+};
