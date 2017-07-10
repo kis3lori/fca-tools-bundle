@@ -24,6 +24,7 @@ class ConceptLatticeController extends BaseController
         $this->startStatisticsCounter();
 
         $em = $this->getManager();
+        /** @var Context $context */
         $context = $em->getRepository("AppBundle:Context")->find($id);
 
         if (!$this->isValidContext($context, array("not null", "is own", "is dyadic", "has concepts", "can compute concept lattice"))) {
@@ -52,6 +53,7 @@ class ConceptLatticeController extends BaseController
      */
     public function viewConceptLatticeAction($id)
     {
+        /** @var Context $context */
         $context = $this->getRepo("AppBundle:Context")->find($id);
 
         if (!$this->isValidContext($context, array("not null", "can view", "has concept lattice"))) {
@@ -170,6 +172,7 @@ class ConceptLatticeController extends BaseController
      */
     public function viewLargeContextConceptLatticeAction($id, $lockType, Request $request)
     {
+        /** @var Context $context */
         $context = $this->getRepo("AppBundle:Context")->find($id);
 
         if (!$this->isValidContext($context, array("not null", "can view", "not has concepts", "is triadic"))) {

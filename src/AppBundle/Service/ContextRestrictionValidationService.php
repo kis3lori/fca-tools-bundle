@@ -1,15 +1,17 @@
 <?php
+
 namespace AppBundle\Service;
 
 
-use AppBundle\Document\ConceptLattice;
 use AppBundle\Document\Context;
-use AppBundle\Helper\CommonUtils;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\Kernel;
 
-class ContextRestrictionValidationService extends ContextService {
-	    /**
+class ContextRestrictionValidationService
+{
+
+    const MAX_CONCEPTS = 500;
+    const MAX_RELATIONS = 4000;
+
+    /**
      * @param Context $context
      * @return bool
      */
@@ -32,5 +34,5 @@ class ContextRestrictionValidationService extends ContextService {
 
         return true;
     }
-    
+
 }

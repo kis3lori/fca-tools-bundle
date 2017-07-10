@@ -42,7 +42,8 @@ class StatisticsService
         $this->user = $this->getUser($container);
     }
 
-    private function getUser(ContainerInterface $container) {
+    private function getUser(ContainerInterface $container)
+    {
         if (!$container->has('security.token_storage')) {
             throw new \LogicException('The SecurityBundle is not registered in your application.');
         }

@@ -1,22 +1,66 @@
 <?php
+
 namespace AppBundle\Service;
 
 
-use AppBundle\Document\ConceptLattice;
 use AppBundle\Document\Context;
 use AppBundle\Helper\CommonUtils;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Kernel;
 
-class WeakAnalogicalProportionsService extends ContextService {
-	
-	/**
+class WeakAnalogicalProportionsService
+{
+
+    /**
+     * @var Kernel
+     */
+    protected $kernel;
+
+    /**
+     * @var StatisticsService
+     */
+    protected $statisticsService;
+
+    /**
+     * @var string
+     */
+    protected $scriptDir;
+
+    /**
+     * @var ContextService
+     */
+    public $contextService;
+
+    /**
+     * @var GenerateContextFilesService
+     */
+    public $generateContextFilesService;
+
+    /**
+     * @var ContextRestrictionValidationService
+     */
+    public $contextRestrictionValidationService;
+
+    /**
+     * @param $container ContainerInterface
+     */
+    public function __construct(ContainerInterface $container)
+    {
+        $this->kernel = $container->get('kernel');
+        $this->statisticsService = $container->get("app.statistics_service");
+        $this->scriptDir = $this->kernel->getRootDir() . "/../bin/fca/";
+        $this->contextService = $container->get("app.context_service");
+        $this->generateContextFilesService = $container->get("app.generate_context_files_service");
+        $this->contextRestrictionValidationService = $container->get("app.context_restriction_validation_service");
+    }
+
+    /**
      * Find analogical complexes using the ASP programming language.
      *
      * @param Context $context
      * @return array
      */
-	public function generateWeakAnalogicalProportions($context)
+    public function generateWeakAnalogicalProportions($context)
     {
         $aspProgram = "";
         foreach ($context->getRelations() as $relation) {
@@ -76,8 +120,8 @@ admissible_attribute(Y):-  attribute(Y), optype(T), not imp_attribute(Y,T).
 #show acomp/3.
 EOT;
 
-        $dataFileName = $this->generateTempFileName("lp");
-        $resultFileName = $this->generateTempFileName("txt");
+        $dataFileName = $this->generateContextFilesService->generateTempFileName("lp");
+        $resultFileName = $this->generateContextFilesService->generateTempFileName("txt");
 
         $dataFilePath = $this->kernel->getRootDir() . "/../bin/temp/find_triadic_concept/input/" . $dataFileName;
         $resultFilePath = $this->kernel->getRootDir() . "/../bin/temp/find_triadic_concept/output/" . $resultFileName;
@@ -109,9 +153,9 @@ EOT;
                 $values = explode(",", $linePart);
 
                 if ($values[0] == "obj") {
-                    $objectSets[(int) $values[2] - 1][] = (int) $values[1];
+                    $objectSets[(int)$values[2] - 1][] = (int)$values[1];
                 } else {
-                    $attributeSets[(int) $values[2] - 1][] = (int) $values[1];
+                    $attributeSets[(int)$values[2] - 1][] = (int)$values[1];
                 }
             }
 
@@ -124,8 +168,10 @@ EOT;
                 ));
 
                 $concepts[$index] = array();
-                $concepts[$index][0] = $this->computeExtent($context, $attributesFromComplex);
-                $concepts[$index][1] = $this->computeIntent($context, $concepts[$index][0]);
+                $concepts[$index][0] = $this->contextService
+                    ->computeExtent($context, $attributesFromComplex);
+                $concepts[$index][1] = $this->contextService
+                    ->computeIntent($context, $concepts[$index][0]);
             }
 
             $conceptIds = array();

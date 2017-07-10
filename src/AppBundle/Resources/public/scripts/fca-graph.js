@@ -435,7 +435,6 @@ function svgString2Image(svgString, width, height) {
     };
 
     image.src = imgsrc;
-
 }
 
 function appendBBox(x){	

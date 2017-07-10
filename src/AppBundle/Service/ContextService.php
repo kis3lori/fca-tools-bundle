@@ -3,17 +3,12 @@
 namespace AppBundle\Service;
 
 
-use AppBundle\Document\ConceptLattice;
 use AppBundle\Document\Context;
-use AppBundle\Helper\CommonUtils;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Kernel;
 
 class ContextService
 {
-    
-	const MAX_CONCEPTS = 500;
-    const MAX_RELATIONS = 4000;
 
     /**
      * @var Kernel
@@ -39,15 +34,17 @@ class ContextService
         $this->statisticsService = $container->get("app.statistics_service");
         $this->scriptDir = $this->kernel->getRootDir() . "/../bin/fca/";
     }
-    
-	/**
+
+
+    /*
+    /**
      * Generate a child context by slicing the big context and only taking the relations that contain a given dimension.
      *
      * @param Context $context
      * @param int $dimKey
      * @param string $dimItemKey
      * @return Context
-     */
+     * /
     public function generateChildContext($context, $dimKey, $dimItemKey)
     {
         $childContext = new Context(true);
@@ -90,19 +87,7 @@ class ContextService
         return $childContext;
     }
 
-    
-    /**
-     * Generate a dyadic context from a triadic context based on a set of locked elements
-     *
-     * @param Context $context
-     * @param string $lockType
-     * @param array $lockedElements
-     * @return Context
-     */
-   public function generateTempFileName($extension)
-    {
-        return uniqid("temp_") . "." . $extension;
-    }
+    */
 
 	/**
      * @param $context Context
@@ -125,13 +110,16 @@ class ContextService
         }
 
         return $contextData;
-    } 
+
+    }
+
     /**
      * @param $context Context
      * @param $attributes array
      * @return array
      */
-    public function computeExtent($context, $attributes) {
+    public function computeExtent($context, $attributes)
+    {
         $objectsCount = array();
 
         foreach ($context->getRelations() as $relation) {
@@ -163,7 +151,8 @@ class ContextService
      * @param $objects array
      * @return array
      */
-    public function computeIntent($context, $objects) {
+    public function computeIntent($context, $objects)
+    {
         $attributesCount = array();
 
         foreach ($context->getRelations() as $relation) {

@@ -1,28 +1,66 @@
 <?php
- 
+
 namespace AppBundle\Service;
 
 
-use AppBundle\Document\ConceptLattice;
 use AppBundle\Document\Context;
 use AppBundle\Helper\CommonUtils;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Kernel;
- 
- class TriadicContextNavigationService extends ContextService{
- 
-	public function __construct(ContainerInterface $container)
+
+class TriadicContextNavigationService
+{
+
+    /**
+     * @var Kernel
+     */
+    protected $kernel;
+
+    /**
+     * @var StatisticsService
+     */
+    protected $statisticsService;
+
+    /**
+     * @var string
+     */
+    protected $scriptDir;
+
+    /**
+     * @var GenerateConceptService
+     */
+    public $generateConceptService;
+
+    /**
+     * @var GenerateContextFilesService
+     */
+    public $generateContextFilesService;
+
+    /**
+     * @var GenerateLatticeService
+     */
+    public $generateLatticeService;
+
+    /**
+     * @var ContextRestrictionValidationService
+     */
+    public $contextRestrictionValidationService;
+
+    /**
+     * @param $container ContainerInterface
+     */
+    public function __construct(ContainerInterface $container)
     {
         $this->kernel = $container->get('kernel');
         $this->statisticsService = $container->get("app.statistics_service");
         $this->scriptDir = $this->kernel->getRootDir() . "/../bin/fca/";
         $this->generateConceptService = $container->get("app.generate_concept_service");
-		$this->generateContextFilesService=$container->get("app.generate_context_files_service");
-		$this->generateLatticeService = $container->get("app.generate_lattice_service");
-        
+        $this->generateContextFilesService = $container->get("app.generate_context_files_service");
+        $this->generateLatticeService = $container->get("app.generate_lattice_service");
+        $this->contextRestrictionValidationService = $container->get("app.context_restriction_validation_service");
     }
-	
-	/**
+
+    /**
      * Generate a dyadic context from a triadic context based on a set of locked elements
      *
      * @param Context $context
@@ -30,8 +68,9 @@ use Symfony\Component\HttpKernel\Kernel;
      * @param array $lockedElements
      * @return Context
      */
-	public function generateLockedContext($context, $lockType, $lockedElements)
-    {	
+
+    public function generateLockedContext($context, $lockType, $lockedElements)
+    {
         $dyadicContext = new Context(true);
         $dyadicContext->setDimCount(2);
 
@@ -76,19 +115,19 @@ use Symfony\Component\HttpKernel\Kernel;
             }
         }
 
-        $fileName = $this->generateTempFileName("cxt");
+        $fileName = $this->generateContextFilesService->generateTempFileName("cxt");
         $dyadicContext->setContextFileName($fileName);
-		
+
         $this->generateContextFilesService->generateContextFile($dyadicContext);
 
-        if (!$this->canComputeConcepts($dyadicContext)) {
+        if (!$this->contextRestrictionValidationService->canComputeConcepts($dyadicContext)) {
             return null;
         }
-		
+
         $concepts = $this->generateConceptService->generateConcepts($dyadicContext);
         $dyadicContext->setConcepts($concepts);
 
-        if (!$this->generateLatticeService->canComputeConceptLattice($dyadicContext)) {
+        if (!$this->contextRestrictionValidationService->canComputeConceptLattice($dyadicContext)) {
             return null;
         }
 
@@ -98,7 +137,7 @@ use Symfony\Component\HttpKernel\Kernel;
         return $dyadicContext;
     }
 
-    
+
     /**
      * Attach the concepts of the triadic context to the concept lattice of the dyadic context.
      * This dyadic context should have been generated from the original triadic context
@@ -262,15 +301,15 @@ use Symfony\Component\HttpKernel\Kernel;
 
         return $lockableElements;
     }
-	
-	/**
+
+    /**
      * Useful method for perspective locking which defines which is the main dimension on which
      * the locking is done and which are the secondary dimensions (the rest) based on the lock type.
      *
      * @param $lockType
      * @return array
      */
-	private function getPerspectiveByLockType($lockType)
+    private function getPerspectiveByLockType($lockType)
     {
         switch ($lockType) {
             case "object":
@@ -290,5 +329,5 @@ use Symfony\Component\HttpKernel\Kernel;
             "other" => array_values(array_diff(range(0, $dimCount - 1, 1), array($dimKey))),
         );
     }
-	
- }
+
+}

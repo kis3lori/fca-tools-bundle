@@ -207,11 +207,10 @@ class GroupsController extends BaseController
      *
      * @param $id
      * @param $memberId
-     * @param Request $request
      * @return Response
      * @internal param Request $request
      */
-    public function removeMemberFromGroupAction($id, $memberId, Request $request)
+    public function removeMemberFromGroupAction($id, $memberId)
     {
         /** @var Group $group */
         $group = $this->getRepo("AppBundle:Group")->find($id);

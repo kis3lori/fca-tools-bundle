@@ -5,17 +5,15 @@ namespace AppBundle\Service;
 
 use AppBundle\Document\ConceptLattice;
 use AppBundle\Document\Context;
-use AppBundle\Helper\CommonUtils;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\Kernel;
 
-class GenerateLatticeService extends ContextService{
-	
-	/**
+class GenerateLatticeService
+{
+
+    /**
      * @param $context Context
      * @return ConceptLattice
      */
-	public function generateConceptLattice($context)
+    public function generateConceptLattice($context)
     {
         $conceptLattice = null;
 
@@ -93,15 +91,15 @@ class GenerateLatticeService extends ContextService{
 
         return $conceptLattice;
     }
-	
-	/**
+
+    /**
      * Generate the parsed concept lattice of a context.
      * This representation of the concept lattice is used by the javascript to display it.
      *
      * @param $context Context
      * @return array
      */
-	public function generateParsedConceptLattice($context)
+	 public function generateParsedConceptLattice($context)
     {
         $parsedConceptLattice = array(
             'nodes' => array(),
@@ -149,6 +147,5 @@ class GenerateLatticeService extends ContextService{
 
         return $parsedConceptLattice;
     }
-	
-	
+
 }
