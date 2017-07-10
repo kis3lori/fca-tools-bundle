@@ -68,7 +68,6 @@ class TriadicContextNavigationService
      * @param array $lockedElements
      * @return Context
      */
-
     public function generateLockedContext($context, $lockType, $lockedElements)
     {
         $dyadicContext = new Context(true);

@@ -3,12 +3,10 @@
 namespace AppBundle\Service;
 
 
-
 use AppBundle\Document\Context;
 use AppBundle\Helper\CommonUtils;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Kernel;
-
 
 class FindConceptService
 {

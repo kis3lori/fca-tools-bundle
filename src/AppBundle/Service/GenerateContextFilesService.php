@@ -65,7 +65,6 @@ class GenerateContextFilesService
      *
      * @param $context Context
      */
-
     public function generateContextFile($context)
     {
         $data = "";

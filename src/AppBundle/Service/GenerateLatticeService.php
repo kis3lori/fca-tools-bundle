@@ -99,7 +99,7 @@ class GenerateLatticeService
      * @param $context Context
      * @return array
      */
-	 public function generateParsedConceptLattice($context)
+    public function generateParsedConceptLattice($context)
     {
         $parsedConceptLattice = array(
             'nodes' => array(),

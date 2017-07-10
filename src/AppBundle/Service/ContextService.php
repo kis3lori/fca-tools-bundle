@@ -35,7 +35,6 @@ class ContextService
         $this->scriptDir = $this->kernel->getRootDir() . "/../bin/fca/";
     }
 
-
     /*
     /**
      * Generate a child context by slicing the big context and only taking the relations that contain a given dimension.
@@ -86,7 +85,6 @@ class ContextService
 
         return $childContext;
     }
-
     */
 
 	/**
@@ -110,7 +108,6 @@ class ContextService
         }
 
         return $contextData;
-
     }
 
     /**
