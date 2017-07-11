@@ -104,7 +104,7 @@ $(document).ready(function () {
             })
         })
         .on("change", "#nominal-scale-column", function () {
-            var column = $("#nominal-scale-column").val();
+            var column = $(this).val();
             scaleCreation.selectedColumn = column;
             var scaleValues = $("#nominalScaleValues");
             scaleValues.find("option").remove();
@@ -123,34 +123,58 @@ $(document).ready(function () {
             $(".nominal-scale-part-2").collapse("show");
         })
         .on("change", "#ordinal-scale-column", function () {
-            scaleCreation.selectedColumn = $("#ordinal-scale-column").val();
-            var scaleValues = $("#ordinalScaleValues");
-            scaleValues.find("option").remove();
+            scaleCreation.selectedColumn = $(this).val();
 
             $(".ordinal-scale-part-2").collapse("show");
         })
-        .on("click", ".ordinal-scale-add-value", function (event) {
+        .on("change", "#inter-ordinal-scale-column", function () {
+            scaleCreation.selectedColumn = $(this).val();
+
+            $(".inter-ordinal-scale-part-2").collapse("show");
+        })
+        .on("change", "#grid-first-scale-column", function () {
+            scaleCreation.selectedColumn = $(this).val();
+
+            $(".grid-first-scale-part-2").collapse("show");
+        })
+        .on("change", "#grid-second-scale-column", function () {
+            scaleCreation.selectedColumn = $(this).val();
+
+            $(".grid-second-scale-part-2").collapse("show");
+        })
+        .on("click", ".scale-add-value", function (event) {
             event.preventDefault();
-            var input = $(this).closest(".ordinal-scale-elements").find(".ordinal-scale-elements-input");
+            var parent = $(this).closest(".scale-elements");
+            var prefix = parent.data("prefix");
+            var input = parent.find(".scale-elements-input");
             var value = input.val();
 
             if (value !== "") {
+                var scaleValueslist = parent.find(".scale-values-list");
                 $("<li>").addClass("list-group-item").html($("<span>").text(value))
-                    .append("<button class=\"btn btn-xs btn-danger pull-right ordinal-scale-remove-value\">Remove</button>")
-                    .appendTo($(".ordinal-scale-values-list"));
-                $("<input>").attr("type", "hidden").attr("name", "ordinalScaleValues[]")
-                    .addClass("ordinal-scale-values").val(value).appendTo($(".ordinal-scale-part-2"));
+                    .append("<button class=\"btn btn-xs btn-danger pull-right scale-remove-value\">Remove</button>")
+                    .appendTo(scaleValueslist);
+                $("<input>").attr("type", "hidden").attr("name", prefix + "ScaleValues[]")
+                    .addClass(prefix + "-scale-values").val(value).appendTo(parent);
 
                 input.val("");
+
+                scaleValueslist.children('li').sort(function(a, b) {
+                    var val1 = parseFloat($(a).find("span").text());
+                    var val2 = parseFloat($(b).find("span").text());
+                    return val1 > val2;
+                }).appendTo(scaleValueslist);
             }
         })
-        .on("click", ".ordinal-scale-remove-value", function (event) {
+        .on("click", ".scale-remove-value", function (event) {
             event.preventDefault();
+            var parent = $(this).closest(".scale-elements");
+            var prefix = parent.data("prefix");
             var listItem = $(this).parent();
             var value = listItem.find("span").text();
 
             listItem.remove();
-            $(".ordinal-scale-part-2").find("input[value='" + value + "']").remove();
+            parent.find("input." + prefix + "-scale-values[value='" + value + "']").remove();
         })
         .on("click", ".btn-create-nominal-scale", function (event) {
             event.preventDefault();
@@ -159,6 +183,18 @@ $(document).ready(function () {
             submitScaleForm(form);
         })
         .on("click", ".btn-create-ordinal-scale", function (event) {
+            event.preventDefault();
+
+            var form = $(this).closest("form");
+            submitScaleForm(form);
+        })
+        .on("click", ".btn-create-inter-ordinal-scale", function (event) {
+            event.preventDefault();
+
+            var form = $(this).closest("form");
+            submitScaleForm(form);
+        })
+        .on("click", ".btn-create-grid-scale", function (event) {
             event.preventDefault();
 
             var form = $(this).closest("form");
@@ -253,7 +289,7 @@ function loadTableData(currentInstance, callback) {
 
 function loadTables(currentInstance, callback) {
     if (scaleCreation.tables === null) {
-        showLoadingOverlay($(this), function (currentInstance) {
+        showLoadingOverlay(currentInstance, function (currentInstance) {
             var url = $(".create-new-scale-page").data("get-tables-url");
             var databaseConnection = $.trim($("#databaseConnection").val());
 
@@ -293,6 +329,17 @@ function prepareScaleDefinitionForm() {
             break;
         case "ordinal":
             selectBox = $("#ordinal-scale-column");
+            fillSelectBox(selectBox, scaleCreation.tableData.columns, scaleCreation.selectedColumn);
+            break;
+        case "inter-ordinal":
+            selectBox = $("#inter-ordinal-scale-column");
+            fillSelectBox(selectBox, scaleCreation.tableData.columns, scaleCreation.selectedColumn);
+            break;
+        case "grid":
+            selectBox = $("#grid-first-scale-column");
+            fillSelectBox(selectBox, scaleCreation.tableData.columns, scaleCreation.selectedColumn);
+
+            selectBox = $("#grid-second-scale-column");
             fillSelectBox(selectBox, scaleCreation.tableData.columns, scaleCreation.selectedColumn);
             break;
         case "custom":

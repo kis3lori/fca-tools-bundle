@@ -7,7 +7,11 @@
 
         <ol class="breadcrumb">
             <li><a href="{{ path("homepage") }}">Home</a></li>
-            <li><a href="{{ path("view_context", {"id": context.id }) }}">{{ context.name }}</a></li>
+            {% if context.scale %}
+                <li><a href="{{ path("view_scale", {"id": context.scale.id }) }}">{{ context.scale.name }}</a></li>
+            {% else %}
+                <li><a href="{{ path("view_context", {"id": context.id }) }}">{{ context.name }}</a></li>
+            {% endif %}
             <li class="active">Concept Lattice</li>
         </ol>
     </div>

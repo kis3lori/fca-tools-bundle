@@ -56,6 +56,16 @@
                         Ordinal
                     </option>
 
+                    <option value="inter-ordinal"
+                            {{ app.request.request.get("scaleType") == "inter-ordinal" ? 'selected="selected"' : "" }}>
+                        Inter-Ordinal
+                    </option>
+
+                    <option value="grid"
+                            {{ app.request.request.get("scaleType") == "grid" ? 'selected="selected"' : "" }}>
+                        Grid
+                    </option>
+
                     <option value="custom"
                             {{ app.request.request.get("scaleType") == "custom" ? 'selected="selected"' : "" }}>
                         Custom

@@ -36,7 +36,6 @@ class ScaleController extends BaseController
         if ($request->isMethod("POST")) {
             $scaleService = $this->get("app.scale_service");
             $postData = $request->request;
-            $postData->set("column", "asdasd");
 
             $databaseConnectionId = $postData->get('databaseConnectionId');
             $tableName = $postData->get("tableName");
