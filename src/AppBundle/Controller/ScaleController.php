@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
 class ScaleController extends BaseController
 {
 
-    private $tempCsvFilePath = "bin/temp/scale/files/";
+    private $tempCsvFilePath = "../bin/temp/scale/files/";
 
     /**
      * @Route("/create-new-scale", name="create_new_scale")
