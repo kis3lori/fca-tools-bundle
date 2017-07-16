@@ -3,9 +3,12 @@
 namespace AppBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @MongoDB\Document
+ * @Vich\Uploadable
  */
 class Scale
 {
@@ -46,6 +49,18 @@ class Scale
     protected $user;
 
     /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $csvFileName;
+
+    /**
+     * @var File
+     *
+     * @Vich\UploadableField(mapping="csv_file", fileNameProperty="csvFileName")
+     */
+    protected $csvFile;
+
+    /**
      * @MongoDB\ReferenceOne(targetDocument="DatabaseConnection", inversedBy="scales")
      */
     protected $databaseConnection;
@@ -55,9 +70,48 @@ class Scale
      */
     protected $context;
 
+    /**
+     * @var string
+     */
+    protected $baseFilePath = "web/uploads/scale/files/";
+
     public function __construct()
     {
         $this->data = array();
+    }
+
+    /**
+     * @return string
+     */
+    public function getBaseFilePath()
+    {
+        return $this->baseFilePath;
+    }
+
+    /**
+     * @param string $baseFilePath
+     */
+    public function setBaseFilePath($baseFilePath)
+    {
+        $this->baseFilePath = $baseFilePath;
+    }
+
+    /**
+     * Get csv file path
+     *
+     * @return string
+     */
+    public function getCsvFilePath()
+    {
+        return $this->baseFilePath . $this->csvFileName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCsvAssetPath()
+    {
+        return substr($this->baseFilePath, 4) . $this->csvFileName;
     }
 
     /**
@@ -244,5 +298,27 @@ class Scale
     public function getTable()
     {
         return $this->table;
+    }
+
+    /**
+     * Set csvFileName
+     *
+     * @param string $csvFileName
+     * @return self
+     */
+    public function setCsvFileName($csvFileName)
+    {
+        $this->csvFileName = $csvFileName;
+        return $this;
+    }
+
+    /**
+     * Get csvFileName
+     *
+     * @return string $csvFileName
+     */
+    public function getCsvFileName()
+    {
+        return $this->csvFileName;
     }
 }

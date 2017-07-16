@@ -1,5 +1,34 @@
-<div id="step1-tab" class="tab-pane fade in active">
-    <form action="#" class="form-horizontal select-database-form form-to-validate" method="post">
+<div id="step1-tab" class="tab-pane fade{{ tab == "select-source" ? " in active" : "" }}">
+    <form action="#" class="form-horizontal" method="post">
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="sourceType">Source Type:</label>
+
+            <div class="col-sm-10">
+                <select name="sourceType" id="sourceType" class="form-control" required="required">
+                    <option value="" disabled="disabled"
+                            {{ app.request.request.get("sourceType") == "" ? 'selected="selected"' : "" }}>
+                        Select a source for the scale.
+                    </option>
+
+                    <option value="database"
+                            {{ "database" == app.request.request.get("sourceType") ? 'selected="selected"' : "" }}>
+                        Database
+                    </option>
+                    <option value="csv"
+                            {{ "csv" == app.request.request.get("sourceType") ? 'selected="selected"' : "" }}>
+                        CSV File
+                    </option>
+                </select>
+
+                {% if errors['sourceType'] is defined %}
+                    <p class="bg-danger error-message">{{ errors['sourceType'] }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </form>
+
+    <form action="#" class="form-horizontal select-database-form form-to-validate source-variant collapse"
+          method="post" data-variant="database">
         <div class="form-group">
             <label class="col-sm-2 control-label" for="databaseConnection">Database Connection:</label>
 
@@ -29,6 +58,25 @@
             </div>
         </div>
 
+        <input type="submit" class="submit-btn hidden"/>
+    </form>
+
+    <form action="{{ path("upload_temp_csv_file") }}"
+          class="form-horizontal upload-csv-file-form source-variant form-to-validate collapse"
+          method="post" data-variant="csv" enctype="multipart/form-data">
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="csvFile">CSV File:</label>
+
+            <div class="col-sm-10">
+                <input class="form-control-file" id="csvFile" type="file" name="file" required="required"/>
+
+                {% if errors['file'] is defined %}
+                    <p class="bg-danger error-message">{{ errors['file'] }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <input type="hidden" name="tempCsvFile" id="tempCsvFile" value="{{ app.request.request.get("csvFileName") }}"/>
         <input type="submit" class="submit-btn hidden"/>
     </form>
 
@@ -89,7 +137,7 @@
 
     <p>
         <a class="btn btn-danger" href="{{ path("list_user_scales") }}">Cancel</a>
-        <a class="btn btn-primary choose-database-btn">Next</a>
+        <a class="btn btn-primary choose-source-btn">Next</a>
         <a class="hidden next-tab-hidden-btn" href="#step2-tab" data-toggle="tab">Next</a>
     </p>
 </div>

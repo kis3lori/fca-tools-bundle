@@ -13,19 +13,19 @@
         </ol>
 
         <ul class="nav nav-tabs">
-            <li class="active primary">
+            <li class="{{ tab == "select-source" ? "active primary" : "disabled" }}">
                 <a>
                     <strong>Step 1:</strong> Select Database
                 </a>
             </li>
 
-            <li class="disabled">
+            <li class="{{ tab == "describe-scale" ? "active primary" : "disabled" }}">
                 <a>
                     <strong>Step 2:</strong> Provide General Scale Data
                 </a>
             </li>
 
-            <li class="disabled">
+            <li class="{{ tab == "define-scale" ? "active primary" : "disabled" }}">
                 <a>
                     <strong>Step 3:</strong> Provide Type Specific Scale Data
                 </a>

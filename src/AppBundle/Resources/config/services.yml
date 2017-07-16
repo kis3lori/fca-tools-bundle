@@ -11,6 +11,9 @@ services:
     app.database_connection_service:
         class: AppBundle\Service\DatabaseConnectionService
         arguments: ["@service_container"]
+    app.csv_table_service:
+        class: AppBundle\Service\CsvTableService
+        arguments: ["@service_container"]
     app.parser.cxt_parser:
         class: AppBundle\Parser\CxtParser
         arguments: ["@service_container"]

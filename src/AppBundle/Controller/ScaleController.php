@@ -9,6 +9,8 @@ use AppBundle\Document\User;
 use AppBundle\Helper\CommonUtils;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,6 +20,9 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class ScaleController extends BaseController
 {
+
+    private $tempCsvFilePath = "bin/temp/scale/files/";
+
     /**
      * @Route("/create-new-scale", name="create_new_scale")
      *
@@ -29,26 +34,58 @@ class ScaleController extends BaseController
         $this->startStatisticsCounter();
 
         $databaseConnectionService = $this->get("app.database_connection_service");
-        $tab = "select-database";
+        $csvTableService = $this->get("app.csv_table_service");
+        $tab = "select-source";
         $errors = array();
         $fillData = array();
+
+        if ($request->getSession()->has("errors")) {
+            $errors = $request->getSession()->remove("errors");
+        }
+
+        if ($request->getSession()->has("csvFileName")) {
+            $csvFileName = $request->getSession()->get("csvFileName");
+            $fileContent = file_get_contents($this->tempCsvFilePath . $csvFileName);
+
+            $fillData['tableData'] = $csvTableService->getTableDataFromFileContents($fileContent);
+            $tab = "describe-scale";
+
+            $request->request->set("sourceType", "csv");
+            $request->request->set("csvFileName", $csvFileName);
+
+            $request->getSession()->remove("csvFileName");
+        }
 
         if ($request->isMethod("POST")) {
             $scaleService = $this->get("app.scale_service");
             $postData = $request->request;
 
+            $sourceType = $postData->get("sourceType");
+            $csvFileName = $postData->get("csvFileName");
             $databaseConnectionId = $postData->get('databaseConnectionId');
             $tableName = $postData->get("tableName");
             $scaleName = $postData->get("scaleName");
             $scaleType = $postData->get("scaleType");
 
-            /** @var DatabaseConnection $databaseConnection */
-            $databaseConnection = $this->getRepo("AppBundle:DatabaseConnection")->find($databaseConnectionId);
+            $errors = $scaleService->validateSourceType($errors, $sourceType, $databaseConnectionId, $csvFileName);
 
-            $errors = $scaleService->validateDatabaseConnection($errors, $databaseConnection);
+            $databaseConnection = null;
+            if (empty($errors)) {
+                if ($sourceType == "database") {
+                    /** @var DatabaseConnection $databaseConnection */
+                    $databaseConnection = $this->getRepo("AppBundle:DatabaseConnection")->find($databaseConnectionId);
+                    $errors = $scaleService->validateDatabaseConnection($errors, $databaseConnection);
+                }
+            }
+
             if (empty($errors)) {
                 $tab = "describe-scale";
-                $fillData['tables'] = $databaseConnectionService->getTables($databaseConnection);
+
+                if ($sourceType == "database") {
+                    $fillData['tables'] = $databaseConnectionService->getTables($databaseConnection);
+                } else {
+                    $fillData['tables'] = array($tableName);
+                }
 
                 $errors = $scaleService->validateGenericScale($errors, $tableName, $scaleName, $scaleType, $fillData['tables']);
             }
@@ -56,14 +93,28 @@ class ScaleController extends BaseController
             if (empty($errors)) {
                 $tab = "define-scale";
 
-                $fillData['tableData'] = $databaseConnectionService->getTableData($databaseConnection, $tableName);
+                if ($sourceType == "database") {
+                    $fillData['tableData'] = $databaseConnectionService->getTableData($databaseConnection, $tableName);
+                } else {
+                    $fileContent = file_get_contents($this->tempCsvFilePath . $csvFileName);
+                    $fillData['tableData'] = $csvTableService->getTableDataFromFileContents($fileContent);
+                }
+
                 $errors = $scaleService->validateScaleType($errors, $scaleType, $postData, $fillData['tableData']);
             }
 
             if (empty($errors)) {
                 $scale = new Scale();
                 $scale->setUser($this->getUser());
-                $scale->setDatabaseConnection($databaseConnection);
+
+                if ($sourceType == "database") {
+                    $scale->setDatabaseConnection($databaseConnection);
+                } else {
+                    $tempCsvFile = new File($this->tempCsvFilePath . $csvFileName);
+                    $tempCsvFile->move(substr($scale->getBaseFilePath(), 4), $csvFileName);
+                    $scale->setCsvFileName($csvFileName);
+                }
+
                 $scale->setTable($tableName);
                 $scale->setName($scaleName);
                 $scale->setType($scaleType);
@@ -138,9 +189,8 @@ class ScaleController extends BaseController
             return $this->renderFoundError("my_scales");
         }
 
-        $databaseConnectionService = $this->get("app.database_connection_service");
-        $tableData = $databaseConnectionService
-            ->getTableData($scale->getDatabaseConnection(), $scale->getTable());
+        $scaleService = $this->get("app.scale_service");
+        $tableData = $scaleService->getTableData($scale);
 
         return $this->render("@App/Scale/scale.html.twig", array(
             'scale' => $scale,
@@ -277,6 +327,47 @@ class ScaleController extends BaseController
                 "tableData" => $tableData
             )
         ));
+    }
+
+    /**
+     * @Route("/upload-temp-csv-file", name="upload_temp_csv_file")
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function uploadTempCsvFileAction(Request $request)
+    {
+        $errors = array();
+
+        if ($request->isMethod("POST")) {
+            /** @var UploadedFile $uploadedFile */
+            $uploadedFile = $request->files->get("file");
+            $extension = null;
+
+            if ($uploadedFile == null) {
+                $errors['file'] = "The file is missing or an error occurred during it's upload.";
+            } else if ($uploadedFile->getClientSize() > 10000000) {
+                $errors['file'] = "The file size cannot exceed 10MB.";
+            } else {
+                $extension = $uploadedFile->getClientOriginalExtension();
+                if (!in_array($extension, array("csv"))) {
+                    $errors['file'] = "Only 'csv' files are currently supported.";
+                }
+            }
+
+            if (empty($errors)) {
+                $fileName = uniqid() . ".csv";
+                $uploadedFile->move($this->tempCsvFilePath, $fileName);
+
+                $request->getSession()->set("csvFileName", $fileName);
+
+                return $this->redirect($this->generateUrl("create_new_scale"));
+            }
+        }
+
+        $request->getSession()->set("errors", $errors);
+
+        return $this->redirect($this->generateUrl("create_new_scale"));
     }
 
 }

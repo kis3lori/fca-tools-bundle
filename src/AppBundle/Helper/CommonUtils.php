@@ -13,10 +13,27 @@ class CommonUtils
      */
     public static function trim($text)
     {
+        if (empty($text)) return $text;
+
         $text = trim($text, " \t\n\r\0\x0B");
         while ($text[0] == $text[strlen($text) - 1] && ($text[0] == "\"" || $text[0] == "'")) {
             $text = trim(substr($text, 1, strlen($text) - 2), " \t\n\r\0\x0B");
         }
+
+        return $text;
+    }
+
+    /**
+     * Trim a text of all spaces.
+     *
+     * @param $text
+     * @return string
+     */
+    public static function simpleTrim($text)
+    {
+        if (empty($text)) return $text;
+
+        $text = trim($text, " \t\n\r\0\x0B");
 
         return $text;
     }

@@ -1,4 +1,4 @@
-<div id="step3-tab" class="tab-pane fade">
+<div id="step3-tab" class="tab-pane fade{{ tab == "define-scale" ? " in active" : "" }}">
     <div class="create-nominal-scale scale-type-form" data-scale-type="nominal">
         {{ include('@App/Scale/Helper/ScaleTypes/createNewNominalScaleContextForm.html.twig') }}
     </div>

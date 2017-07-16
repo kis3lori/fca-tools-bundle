@@ -404,6 +404,7 @@ class Context
     public function addRelation($relation)
     {
         $this->relations[] = $relation;
+        return $this;
     }
 
     /**
@@ -556,7 +557,7 @@ class Context
     {
         return $this->description;
     }
-    
+
     /**
      * Add group
      *
@@ -598,7 +599,7 @@ class Context
      * @param  $scale
      * @return self
      */
-    public function setScale( $scale)
+    public function setScale($scale)
     {
         $this->scale = $scale;
         return $this;

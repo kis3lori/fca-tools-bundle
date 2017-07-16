@@ -25,6 +25,11 @@ class ScaleService
     protected $databaseConnectionService;
 
     /**
+     * @var CsvTableService
+     */
+    protected $csvTableService;
+
+    /**
      * @var array
      */
     protected $fcaParams;
@@ -36,6 +41,7 @@ class ScaleService
     {
         $this->statisticsService = $container->get("app.statistics_service");
         $this->databaseConnectionService = $container->get("app.database_connection_service");
+        $this->csvTableService = $container->get("app.csv_table_service");
         $this->fcaParams = $container->getParameter('fca');
     }
 
@@ -48,8 +54,7 @@ class ScaleService
      */
     public function generateContextFromScale($scale, $column)
     {
-        $tableData = $this->databaseConnectionService
-            ->getTableData($scale->getDatabaseConnection(), $scale->getTable());
+        $tableData = $this->getTableData($scale);
 
         $objects = array();
         $assocArray = array();
@@ -109,15 +114,14 @@ class ScaleService
                 );
 
                 if ($subType == "simple") {
-                    $tableData = $this->databaseConnectionService
-                        ->getTableData($scale->getDatabaseConnection(), $scale->getTable());
+                    $tableData = $this->getTableData($scale);
 
                     $values = array();
                     foreach ($tableData['data'] as $row) {
                         $values[] = $row[$column];
                     }
 
-                    $values = array_unique($values);
+                    $values = array_values(array_unique($values));
                 } else {
                     $values = $postData->get("nominalScaleValues");
                     $data['nominalScaleValues'] = $values;
@@ -128,7 +132,7 @@ class ScaleService
                 $objects = array();
                 $relationPairs = array();
                 foreach ($values as $index => $value) {
-                    $objects[] = $column . " == " . $value;
+                    $objects[] = $column . " == '" . $value . "'";
                     $relationPairs[] = array($index, $index);
                 }
 
@@ -411,6 +415,27 @@ class ScaleService
         return $errors;
     }
 
+    public function validateSourceType($errors, $sourceType, $databaseConnectionId, $csvFileName)
+    {
+        if (!$sourceType) {
+            $errors["sourceType"] = "You have to select a source type.";
+        } else if (!in_array($sourceType, array("database", "csv"))) {
+            $errors["sourceType"] = "The source type can only be 'database' or 'csv'. Please select a valid source type.";
+        } else {
+            if ($sourceType == "csv") {
+                if (!$csvFileName) {
+                    $errors["csvFileName"] = "You have to upload a csv file as the source of the scale.";
+                }
+            } else {
+                if (!$databaseConnectionId) {
+                    $errors["databaseConnectionId"] = "You have to select a database connection.";
+                }
+            }
+        }
+
+        return $errors;
+    }
+
     /**
      * @param $errors array
      * @param $databaseConnection DatabaseConnection
@@ -603,6 +628,22 @@ class ScaleService
         }
 
         return $errors;
+    }
+
+    /**
+     * Get table data from scale.
+     *
+     * @param Scale $scale
+     * @return array
+     */
+    public function getTableData($scale)
+    {
+        if ($scale->getDatabaseConnection()) {
+            return $this->databaseConnectionService
+                ->getTableData($scale->getDatabaseConnection(), $scale->getTable());
+        } else {
+            return $this->csvTableService->getTableData($scale);
+        }
     }
 
 }

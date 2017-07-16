@@ -6,19 +6,31 @@ var scaleCreation = {
 };
 
 $(document).ready(function () {
-    $("#table-select-box").change(function () {
+    $(".table-select-box").change(function () {
         scaleCreation.selectedTable = $(this).val();
     });
 
-    $(".choose-database-btn").click(function () {
+    $(".table-name-input").change(function () {
+        scaleCreation.selectedTable = $(this).val();
+        scaleCreation.tableData.table = $(this).val();
+    });
+
+    $("#sourceType").change(function () {
+        var sourceType = $(this).val();
+        $(".source-variant").collapse("hide");
+        $(".source-variant[data-variant='" + sourceType + "']").collapse("show");
+    });
+
+    $(".choose-source-btn").click(function () {
         var tabPane = $(this).closest(".tab-pane");
-        var form = tabPane.find(".form-to-validate");
+        var sourceType = $("#sourceType").val();
+        var form = tabPane.find(".form-to-validate[data-variant='" + sourceType + "']");
 
         if (!form[0].checkValidity()) {
             form.find(".submit-btn").click();
         } else {
             loadTables($(this), function (currentInstance) {
-                var selectBox = $("#table-select-box");
+                var selectBox = $(".table-select-box");
                 fillSelectBox(selectBox, scaleCreation.tables, scaleCreation.selectedTable);
 
                 var tabIndex = tabPane.index() + 1;
@@ -159,7 +171,7 @@ $(document).ready(function () {
 
                 input.val("");
 
-                scaleValueslist.children('li').sort(function(a, b) {
+                scaleValueslist.children('li').sort(function (a, b) {
                     var val1 = parseFloat($(a).find("span").text());
                     var val2 = parseFloat($(b).find("span").text());
                     return val1 > val2;
@@ -204,7 +216,7 @@ $(document).ready(function () {
             event.preventDefault();
 
             var form = $(this).closest("form");
-            submitScaleForm(form, $(this), function(currentInstance) {
+            submitScaleForm(form, $(this), function (currentInstance) {
                 var tablesContainer = form.find(".relation-tables");
                 var table = tablesContainer.find(".create-context-table:first");
                 table.find(".top-head-cell:not(:last)").each(function () {
@@ -259,7 +271,7 @@ function loadTableData(currentInstance, callback) {
         showLoadingOverlay(currentInstance, function () {
             var url = $(".create-new-scale-page").data("get-table-data-url");
             var databaseConnection = $.trim($("#databaseConnection").val());
-            var tableName = $.trim($("#table-select-box").val());
+            var tableName = $.trim($(".table-select-box").val());
 
             $.ajax(url, {
                 method: "get",
@@ -289,28 +301,33 @@ function loadTableData(currentInstance, callback) {
 
 function loadTables(currentInstance, callback) {
     if (scaleCreation.tables === null) {
-        showLoadingOverlay(currentInstance, function (currentInstance) {
-            var url = $(".create-new-scale-page").data("get-tables-url");
-            var databaseConnection = $.trim($("#databaseConnection").val());
+        var sourceType = $("#sourceType").val();
+        if (sourceType !== "database") {
+            $('.upload-csv-file-form').submit();
+        } else {
+            showLoadingOverlay(currentInstance, function (currentInstance) {
+                var url = $(".create-new-scale-page").data("get-tables-url");
+                var databaseConnection = $.trim($("#databaseConnection").val());
 
-            $.ajax(url, {
-                method: "get",
-                data: {
-                    'databaseConnectionId': databaseConnection
-                },
-                success: function (response) {
-                    if (response.success) {
-                        scaleCreation.tables = response.data.tables;
+                $.ajax(url, {
+                    method: "get",
+                    data: {
+                        'databaseConnectionId': databaseConnection
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            scaleCreation.tables = response.data.tables;
 
-                        if (typeof(callback) === "function") {
-                            callback(currentInstance);
+                            if (typeof(callback) === "function") {
+                                callback(currentInstance);
+                            }
                         }
-                    }
 
-                    hideLoadingOverlay();
-                }
+                        hideLoadingOverlay();
+                    }
+                });
             });
-        });
+        }
     } else {
         if (typeof(callback) === "function") {
             callback(currentInstance);
@@ -361,14 +378,22 @@ function submitScaleForm(form, currentInstance, callback) {
     if (!form[0].checkValidity()) {
         form.find(".submit-btn").click();
     } else {
-        var databaseConnection = $.trim($("#databaseConnection").val());
-        $("<input>").attr("type", "hidden").attr("name", "databaseConnectionId").val(databaseConnection).appendTo(form);
-        var tableName = $.trim($("#table-select-box").val());
+        var tableName = $.trim($("#tableName").val());
         $("<input>").attr("type", "hidden").attr("name", "tableName").val(tableName).appendTo(form);
         var scaleName = $.trim($("#scaleName").val());
         $("<input>").attr("type", "hidden").attr("name", "scaleName").val(scaleName).appendTo(form);
         var scaleType = $.trim($("#scale-type-select-box").val());
         $("<input>").attr("type", "hidden").attr("name", "scaleType").val(scaleType).appendTo(form);
+        var sourceType = $.trim($("#sourceType").val());
+        $("<input>").attr("type", "hidden").attr("name", "sourceType").val(sourceType).appendTo(form);
+
+        if (sourceType === "database") {
+            var databaseConnection = $.trim($("#databaseConnection").val());
+            $("<input>").attr("type", "hidden").attr("name", "databaseConnectionId").val(databaseConnection).appendTo(form);
+        } else {
+            var csvFileName = $.trim($("#tempCsvFile").val());
+            $("<input>").attr("type", "hidden").attr("name", "csvFileName").val(csvFileName).appendTo(form);
+        }
 
         if (typeof(callback) === "function") {
             callback(currentInstance);
