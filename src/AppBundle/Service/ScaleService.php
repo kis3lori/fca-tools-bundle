@@ -74,13 +74,18 @@ class ScaleService
                 }
             }
         }
+
+        $objects = array_unique($objects);
         sort($objects);
         $objectToIndex = array_flip($objects);
 
         $newRelations = array();
         foreach ($scale->getContext()->getRelations() as $relation) {
             foreach ($assocArray[$relation[0]] as $object) {
-                $newRelations[] = array($objectToIndex[$object], $relation[1]);
+                $newRelation = array($objectToIndex[$object], $relation[1]);
+                if (!in_array($newRelation, $newRelations)) {
+                    $newRelations[] = array($objectToIndex[$object], $relation[1]);
+                }
             }
         }
 
