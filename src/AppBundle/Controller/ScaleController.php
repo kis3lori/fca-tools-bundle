@@ -105,7 +105,11 @@ class ScaleController extends BaseController
                     $fillData['tableData'] = $databaseConnectionService->getTableData($databaseConnection, $tableName);
                 } else {
                     $fileContent = file_get_contents($this->tempCsvFilePath . $csvFileName);
-                    $fillData['tableData'] = $csvTableService->getTableDataFromFileContents($fileContent);
+                    try {
+                        $fillData['tableData'] = $csvTableService->getTableDataFromFileContents($fileContent);
+                    } catch (\Exception $exception) {
+                        $errors["csvFileName"] = "Unable to parse the csv file. Please check the correct format and try again.";
+                    }
                 }
 
                 $errors = $scaleService->validateScaleType($errors, $scaleType, $postData, $fillData['tableData']);
