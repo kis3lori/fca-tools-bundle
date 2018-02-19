@@ -43,8 +43,16 @@ class CsvTableService
     public function getTableDataFromFileContents($csvFileContent)
     {
         $csvFileContent = CommonUtils::simpleTrim($csvFileContent);
-        $csvFileContent = str_replace(",,", ",\"\",", $csvFileContent);
+//        $csvFileContent = str_replace(",", "\",\"", $csvFileContent);
+        $csvFileContent = str_replace("\r\n", "\n", $csvFileContent);
+        $csvFileContent = str_replace("\n\r", "\n", $csvFileContent);
+        $csvFileContent = str_replace("\r", "", $csvFileContent);
+//        $csvFileContent = str_replace("\n", "\"],[\"", $csvFileContent);
         $csvFileContent = str_replace("\n", "],[", $csvFileContent);
+        $csvFileContent = str_replace(";", ",", $csvFileContent);
+        $csvFileContent = str_replace("\", ,", "\", \"\",", $csvFileContent);
+        $csvFileContent = str_replace("\",,\"", "\",\"\",\"", $csvFileContent);
+//        $csvFileContent = "[[\"" . $csvFileContent . "\"]]";
         $csvFileContent = "[[" . $csvFileContent . "]]";
 
         $data = json_decode($csvFileContent);

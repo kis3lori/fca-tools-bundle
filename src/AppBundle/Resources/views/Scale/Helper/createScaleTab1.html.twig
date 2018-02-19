@@ -23,6 +23,10 @@
                 {% if errors['sourceType'] is defined %}
                     <p class="bg-danger error-message">{{ errors['sourceType'] }}</p>
                 {% endif %}
+
+                {% if errors['csvFileName'] is defined %}
+                    <p class="bg-danger error-message">{{ errors['csvFileName'] }}</p>
+                {% endif %}
             </div>
         </div>
     </form>

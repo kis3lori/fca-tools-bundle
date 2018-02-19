@@ -47,16 +47,24 @@ class ScaleController extends BaseController
             $csvFileName = $request->getSession()->get("csvFileName");
             $fileContent = file_get_contents($this->tempCsvFilePath . $csvFileName);
 
-            $fillData['tableData'] = $csvTableService->getTableDataFromFileContents($fileContent);
-            $tab = "describe-scale";
+            try {
+                $fillData['tableData'] = $csvTableService->getTableDataFromFileContents($fileContent);
+            } catch (\Exception $exception) {
+                $request->getSession()->remove("csvFileName");
+                $errors["csvFileName"] = "Unable to parse the csv file. Please check the correct format and try again.";
+            }
 
-            $request->request->set("sourceType", "csv");
-            $request->request->set("csvFileName", $csvFileName);
+            if (empty($errors)) {
+                $tab = "describe-scale";
 
-            $request->getSession()->remove("csvFileName");
+                $request->request->set("sourceType", "csv");
+                $request->request->set("csvFileName", $csvFileName);
+
+                $request->getSession()->remove("csvFileName");
+            }
         }
 
-        if ($request->isMethod("POST")) {
+        if (empty($errors) && $request->isMethod("POST")) {
             $scaleService = $this->get("app.scale_service");
             $postData = $request->request;
 
