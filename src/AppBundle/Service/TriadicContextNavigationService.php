@@ -27,24 +27,9 @@ class TriadicContextNavigationService
     protected $scriptDir;
 
     /**
-     * @var GenerateConceptService
+     * @var ContextService
      */
-    public $generateConceptService;
-
-    /**
-     * @var GenerateContextFilesService
-     */
-    public $generateContextFilesService;
-
-    /**
-     * @var GenerateLatticeService
-     */
-    public $generateLatticeService;
-
-    /**
-     * @var ContextRestrictionValidationService
-     */
-    public $contextRestrictionValidationService;
+    public $contextService;
 
     /**
      * @param $container ContainerInterface
@@ -54,10 +39,7 @@ class TriadicContextNavigationService
         $this->kernel = $container->get('kernel');
         $this->statisticsService = $container->get("app.statistics_service");
         $this->scriptDir = $this->kernel->getRootDir() . "/../bin/fca/";
-        $this->generateConceptService = $container->get("app.generate_concept_service");
-        $this->generateContextFilesService = $container->get("app.generate_context_files_service");
-        $this->generateLatticeService = $container->get("app.generate_lattice_service");
-        $this->contextRestrictionValidationService = $container->get("app.context_restriction_validation_service");
+        $this->contextService = $container->get("app.context_service");
     }
 
     /**
@@ -114,24 +96,13 @@ class TriadicContextNavigationService
             }
         }
 
-        $fileName = $this->generateContextFilesService->generateTempFileName("cxt");
-        $dyadicContext->setContextFileName($fileName);
+        $fileName = CommonUtils::generateTempFileName("cxt");
 
-        $this->generateContextFilesService->generateContextFile($dyadicContext);
-
-        if (!$this->contextRestrictionValidationService->canComputeConcepts($dyadicContext)) {
+        $errors = array();
+        $errors = $this->contextService->computeConceptsAndConceptLattice($dyadicContext, $fileName, $errors);
+        if (!empty($errors)) {
             return null;
         }
-
-        $concepts = $this->generateConceptService->generateConcepts($dyadicContext);
-        $dyadicContext->setConcepts($concepts);
-
-        if (!$this->contextRestrictionValidationService->canComputeConceptLattice($dyadicContext)) {
-            return null;
-        }
-
-        $conceptLattice = $this->generateLatticeService->generateConceptLattice($dyadicContext);
-        $dyadicContext->setConceptLattice($conceptLattice);
 
         return $dyadicContext;
     }

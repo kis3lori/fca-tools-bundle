@@ -1,0 +1,108 @@
+<form class="form-horizontal create-context-form" action="{{ path("create_new_scale") }}" method="post">
+    <p class="message bg-info">
+        Ordinal scales are used for scaling attributes with ordered values, having the property
+        that each value implies the smaller value. <br />
+        For example: expensive, very expensive, extremely expensive.
+    </p>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label" for="ordinal-scale-column">Column:</label>
+        <div class="col-sm-10">
+            <select name="column" class="form-control" id="ordinal-scale-column" required="required">
+                <option value="" disabled="disabled"
+                        {{ app.request.request.get("column") == "" ? 'selected="selected"' : "" }}>
+                    Select a column
+                </option>
+
+                {% if fillData.tableData is defined %}
+                    {% for column in fillData.tableData['columns'] %}
+                        <option value="{{ column }}"
+                                {{ app.request.request.get("column") == column ? 'selected="selected"' : "" }}>
+                            {{ column }}
+                        </option>
+                    {% endfor %}
+                {% endif %}
+            </select>
+
+            {% if errors['column'] is defined %}
+                <p class="bg-danger error-message">{{ errors['column'] }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="ordinal-scale-part-2 collapse{{ app.request.request.get("column") != "" ? " in" : "" }}">
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="ordinal-scale-column">Order: </label>
+            <div class="col-sm-2">
+                <label>
+                    <input type="radio" name="order" class="ordinal-scale-order" value="increasing" checked="checked"/>
+                    Increasing
+                </label>
+            </div>
+            <div class="col-sm-2">
+                <label>
+                    <input type="radio" name="order" class="ordinal-scale-order" value="decreasing"/>
+                    Decreasing
+                </label>
+            </div>
+            <div class="col-sm-6"></div>
+        </div>
+
+        {% if errors['order'] is defined %}
+            <p class="bg-danger error-message">{{ errors['order'] }}</p>
+        {% endif %}
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="ordinal-scale-column">Bounds: </label>
+            <div class="col-sm-2">
+                <label>
+                    <input type="radio" name="bounds" class="ordinal-scale-bounds" value="include" checked="checked"/>
+                    Include
+                </label>
+            </div>
+            <div class="col-sm-2">
+                <label>
+                    <input type="radio" name="bounds" class="ordinal-scale-bounds" value="exclude"/>
+                    Exclude
+                </label>
+            </div>
+            <div class="col-sm-6"></div>
+        </div>
+
+        {% if errors['bounds'] is defined %}
+            <p class="bg-danger error-message">{{ errors['bounds'] }}</p>
+        {% endif %}
+
+        <div class="form-group">
+            <div class="col-sm-12 scale-elements" data-prefix="ordinal">
+                <div class="input-group">
+                    <div class="input-group-btn">
+                        <button class="scale-add-value btn btn-primary">Add Value</button>
+                    </div>
+
+                    <input class="form-control scale-elements-input" type="number" step="any"
+                           value="" placeholder="Type in a value..."/>
+                </div>
+
+                <br/>
+
+                <ul class="list-group scale-values-list">
+                </ul>
+            </div>
+        </div>
+
+        {% if errors['ordinalScaleValues'] is defined %}
+            <p class="bg-danger error-message">{{ errors['ordinalScaleValues'] }}</p>
+        {% endif %}
+    </div>
+    <br/>
+
+    <p>
+        <a class="btn btn-danger" href="{{ path("list_user_scales") }}">Cancel</a>
+        <a class="btn btn-default prev-tab">Back</a>
+        <button class="btn btn-primary btn-create-ordinal-scale">Submit</button>
+
+        <input class="hidden submit-btn" type="submit"/>
+        <a class="hidden prev-tab-hidden-btn" href="#step2-tab" data-toggle="tab">Back</a>
+    </p>
+</form>

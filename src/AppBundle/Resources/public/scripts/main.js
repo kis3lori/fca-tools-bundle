@@ -13,6 +13,8 @@ var conceptLattice = {
     }
 };
 
+var LOADING = false;
+
 $(document).ready(function () {
     var body = $("body");
     var container = $(".main-container");
@@ -46,7 +48,7 @@ $(document).ready(function () {
         var url = $(this).attr("href");
         $.ajax(url, {
             success: function (response) {
-                if (response.success == true) {
+                if (response.success === true) {
                     memberContainer.remove();
                 } else {
                     alert(response.error);
@@ -59,11 +61,15 @@ $(document).ready(function () {
         var submitBtn = $(this).parent().find(".submit-btn").removeClass("disabled").removeAttr("disabled");
         var hasContext = $(this).find(":selected").data("has-context");
 
-        if (hasContext == "1") {
+        if (hasContext === "1") {
             submitBtn.removeClass("btn-primary").addClass("btn-danger").val("Remove context from group");
         } else {
             submitBtn.removeClass("btn-danger").addClass("btn-primary").val("Add context to group");
         }
+    });
+
+    $('#choose_object_column').change(function () {
+        $(this).parent().find(".submit-btn").removeClass("disabled").removeAttr("disabled");
     });
 
     $(function () {
@@ -76,7 +82,7 @@ $(document).ready(function () {
 
     body.on("click", ".node-popup", function (event) {
         event.stopPropagation();
-    }).on("click", function (event) {
+    }).on("click", function () {
         $(".node-popup").remove();
     });
 
@@ -137,7 +143,7 @@ $(document).ready(function () {
 
             var group = $(this).closest(".btn-group").data("group");
             $(this).closest(".dimensions-lock-list").find(".btn-group").each(function () {
-                if ($(this).data("group") != group) {
+                if ($(this).data("group") !== group) {
                     var btn = $(this).find(".btn");
 
                     btn.removeClass("btn-success");
@@ -165,7 +171,7 @@ $(document).ready(function () {
 
         var isLockable = searchForArray(data['lock'], LOCKABLE_ELEMENTS);
 
-        if ((typeof LOCKABLE_ELEMENTS == 'undefined') || LOCKABLE_ELEMENTS.length == 0 || isLockable != -1) {
+        if ((typeof LOCKABLE_ELEMENTS === 'undefined') || LOCKABLE_ELEMENTS.length === 0 || isLockable !== -1) {
             var url = $(".main-lock-btn").attr("href").replace("_lockType_", lockType) + "?" + $.param(data);
 
             redirect(url);
@@ -180,7 +186,7 @@ $(document).ready(function () {
         .on("click", ".data-cell", function (event) {
             event.preventDefault();
 
-            if ($(this).text() == "X") {
+            if ($(this).text() === "X") {
                 $(this).html("&nbsp;");
             } else {
                 $(this).text("X");
@@ -190,7 +196,7 @@ $(document).ready(function () {
             var name = $(this).val();
             $(this).val("");
 
-            if (name == "") return;
+            if (name === "") return;
 
             var input = $("<input>");
             input.attr("type", "text")
@@ -231,7 +237,7 @@ $(document).ready(function () {
             var name = $(this).val();
             $(this).val("");
 
-            if (name == "") return;
+            if (name === "") return;
 
             var input = $("<input>");
             input.attr("type", "text")
@@ -274,12 +280,12 @@ $(document).ready(function () {
             event.preventDefault();
 
             var form = $(this).closest("form");
-            if (form.find("input[name=name]").val() == "") {
+            if (form.find("input[name=name]").val() === "") {
                 showAlert("The name of the context cannot be empty.");
                 return;
             }
 
-            var dimCount = form.find('input[type=radio][name=context_type]:checked').val() == "dyadic" ? 2 : 3;
+            var dimCount = form.find('input[type=radio][name=context_type]:checked').val() === "dyadic" ? 2 : 3;
             var tablesContainer = form.find(".relation-tables");
             var table = tablesContainer.find(".create-context-table:first");
 
@@ -297,7 +303,7 @@ $(document).ready(function () {
                 form.append(input);
             });
 
-            if (dimCount == 3) {
+            if (dimCount === 3) {
                 tablesContainer.find(".create-context-table").each(function () {
                     var val = $.trim($(this).find(".empty-cell input").val());
                     var input = $("<input>").attr("type", "hidden").attr("name", "conditions[]").val(val);
@@ -306,14 +312,14 @@ $(document).ready(function () {
                 });
             }
 
-            if (dimCount == 2) {
+            if (dimCount === 2) {
                 var firstRow = table.find(".first-row");
                 table.find("tr:not(.first-row)").each(function () {
                     var row = $(this);
                     var objectName = row.find(".left-head-cell input").val();
 
                     row.find(".data-cell").each(function (i) {
-                        if ($.trim($(this).text()) == "X") {
+                        if ($.trim($(this).text()) === "X") {
                             var attributeCell = firstRow.find(".top-head-cell").eq(i);
                             var attributeName = attributeCell.find("input").val();
 
@@ -334,7 +340,7 @@ $(document).ready(function () {
                         var objectName = row.find(".left-head-cell input").val();
 
                         row.find(".data-cell").each(function (i) {
-                            if ($.trim($(this).text()) == "X") {
+                            if ($.trim($(this).text()) === "X") {
                                 var attributeCell = firstRow.find(".top-head-cell").eq(i);
                                 var attributeName = attributeCell.find("input").val();
 
@@ -418,7 +424,8 @@ function searchForArray(needle, haystack) {
     for (i = 0; i < haystack.length; ++i) {
         if (needle.length === haystack[i].length) {
             current = haystack[i];
-            for (j = 0; j < needle.length && needle[j] === current[j]; ++j);
+            j = 0;
+            while (j < needle.length && needle[j] === current[j]) j++;
             if (j === needle.length)
                 return i;
         }
@@ -441,4 +448,26 @@ function adjustMinHeight(container) {
 
 function showAlert(msg) {
     alert(msg);
+}
+
+function showLoadingOverlay(currentInstance, callback) {
+    LOADING = true;
+
+    var spinner = $(".spinner");
+    spinner.show();
+    if (!LOADING) {
+        spinner.hide();
+    }
+
+    if (typeof(callback) === "function") {
+        setTimeout(function () {
+            callback(currentInstance);
+        }, 100);
+    }
+}
+
+function hideLoadingOverlay() {
+    LOADING = false;
+
+    $(".spinner").hide();
 }

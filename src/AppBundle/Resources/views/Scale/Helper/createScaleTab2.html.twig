@@ -1,0 +1,96 @@
+<div id="step2-tab" class="tab-pane fade{{ tab == "describe-scale" ? " in active" : "" }}">
+    <form action="#" class="form-horizontal form-to-validate">
+        <div class="form-group row">
+            <label class="col-sm-2 control-label" for="scaleName">Scale Name:</label>
+            <div class="col-sm-10">
+                <input class="form-control" type="text" name="scaleName" id="scaleName" required="required"
+                       value="{{ app.request.request.get("scaleName") }}"/>
+
+                {% if errors['scaleName'] is defined %}
+                    <p class="bg-danger error-message">{{ errors['scaleName'] }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="tableName">Table:</label>
+            <div class="col-sm-10">
+                {% if app.request.request.get("sourceType") == "csv" %}
+                    <input class="form-control table-name-input" type="text" name="tableName" id="tableName"
+                           required="required" value="{{ app.request.request.get("scaleName") }}"/>
+                {% else %}
+                    <select name="tableName" class="form-control table-select-box" id="tableName" required="required">
+                        <option value="" disabled="disabled"
+                                {{ app.request.request.get("tableName") == "" ? 'selected="selected"' : "" }}>
+                            Select a table
+                        </option>
+
+                        {% if fillData.tables is defined %}
+                            {% for table in fillData.tables %}
+                                <option value="{{ table }}"
+                                        {{ app.request.request.get("tableName") == table ? 'selected="selected"' : "" }}>
+                                    {{ table }}
+                                </option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                {% endif %}
+
+                {% if errors['tableName'] is defined %}
+                    <p class="bg-danger error-message">{{ errors['tableName'] }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="scale-type-select-box">Scale Type:</label>
+            <div class="col-sm-10">
+                <select name="scaleType" class="form-control" id="scale-type-select-box" required="required">
+                    <option value="" disabled="disabled"
+                            {{ app.request.request.get("scaleType") == "" ? 'selected="selected"' : "" }}>
+                        Select the scale type
+                    </option>
+
+                    <option value="nominal"
+                            {{ app.request.request.get("scaleType") == "nominal" ? 'selected="selected"' : "" }}>
+                        Nominal
+                    </option>
+
+                    <option value="ordinal"
+                            {{ app.request.request.get("scaleType") == "ordinal" ? 'selected="selected"' : "" }}>
+                        Ordinal
+                    </option>
+
+                    <option value="inter-ordinal"
+                            {{ app.request.request.get("scaleType") == "inter-ordinal" ? 'selected="selected"' : "" }}>
+                        Inter-Ordinal
+                    </option>
+
+                    <option value="grid"
+                            {{ app.request.request.get("scaleType") == "grid" ? 'selected="selected"' : "" }}>
+                        Grid
+                    </option>
+
+                    <option value="custom"
+                            {{ app.request.request.get("scaleType") == "custom" ? 'selected="selected"' : "" }}>
+                        Custom
+                    </option>
+                </select>
+
+                {% if errors['scaleType'] is defined %}
+                    <p class="bg-danger error-message">{{ errors['scaleType'] }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <p>
+            <a class="btn btn-danger" href="{{ path("list_user_scales") }}">Cancel</a>
+            <a class="btn btn-default prev-tab">Back</a>
+            <a class="btn btn-primary define-scale-btn">Next</a>
+
+            <a class="hidden prev-tab-hidden-btn" href="#step1-tab" data-toggle="tab">Back</a>
+            <a class="hidden next-tab-hidden-btn" href="#step3-tab" data-toggle="tab">Next</a>
+            <input type="submit" class="hidden submit-btn"/>
+        </p>
+    </form>
+</div>

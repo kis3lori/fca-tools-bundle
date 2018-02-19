@@ -1,0 +1,20 @@
+{% extends "@App/layout.html.twig" %}
+
+{% block body %}
+    <div>
+        <h1 class="page-header">List of my scales</h1>
+
+        <ol class="breadcrumb">
+            <li><a href="{{ path("homepage") }}">Home</a></li>
+            <li class="active">My Scales</li>
+        </ol>
+
+        <div class="table-responsive">
+            <p>
+                <a class="btn btn-primary" href="{{ path("create_new_scale") }}">Create a new scale</a>
+            </p>
+
+            {{ include("@App/Scale/Helper/scaleList.html.twig") }}
+        </div>
+    </div>
+{% endblock %}

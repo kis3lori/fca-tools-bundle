@@ -10,66 +10,68 @@
             <li class="active">Import Context</li>
         </ol>
 
-        <form action="{{ path("import_context") }}" method="post" enctype="multipart/form-data" >
+        <form action="{{ path("import_context") }}" method="post" enctype="multipart/form-data"
+              class="form-horizontal">
             <div class="form-group row">
-                <label class="col-sm-2 form-control-label" for="name">Name:</label>
+                <label class="col-sm-2 control-label" for="name">Name:</label>
                 <div class="col-sm-10">
-                    <input class="form-control" type="text" name="name" id="name" />
+                    <input class="form-control" type="text" name="name" id="name"/>
+
+                    {% if errors['name'] is defined %}
+                        <p class="bg-danger error-message">{{ errors['name'] }}</p>
+                    {% endif %}
                 </div>
             </div>
 
-            {% if errors['name'] is defined %}
-                <p class="bg-danger error-message">{{ errors['name'] }}</p>
-            {% endif %}
-
             <div class="form-group row">
-                <label class="col-sm-2 form-control-label" for="description">Description:</label>
+                <label class="col-sm-2 control-label" for="description">Description:</label>
                 <div class="col-sm-10">
-                    <input class="form-control" type="text" name="description" id="description" />
+                    <input class="form-control" type="text" name="description" id="description"/>
+
+                    {% if errors['description'] is defined %}
+                        <p class="bg-danger error-message">{{ errors['description'] }}</p>
+                    {% endif %}
                 </div>
             </div>
 
-            {% if errors['description'] is defined %}
-                <p class="bg-danger error-message">{{ errors['description'] }}</p>
-            {% endif %}
-
             <div class="form-group row">
-                <label class="col-sm-2 form-control-label" for="numericalDimensions">Numerical dimensions:</label>
+                <label class="col-sm-2 control-label" for="numericalDimensions">Numerical dimensions:</label>
                 <div class="col-sm-10">
-                    <input class="form-control" type="text" name="numericalDimensions" id="numericalDimensions" />
-                    <p class="hint-message text-info">Comma separated indexes of the numerical dimensions. (0-indexed)</p>
+                    <input class="form-control" type="text" name="numericalDimensions" id="numericalDimensions"/>
+                    <p class="hint-message text-info">Comma separated indexes of the numerical dimensions.
+                        (0-indexed)</p>
+
+                    {% if errors['numericalDimensions'] is defined %}
+                        <p class="bg-danger error-message">{{ errors['numericalDimensions'] }}</p>
+                    {% endif %}
                 </div>
             </div>
 
-            {% if errors['numericalDimensions'] is defined %}
-                <p class="bg-danger error-message">{{ errors['numericalDimensions'] }}</p>
-            {% endif %}
-
             <div class="form-group row">
-                <label class="col-sm-2 form-control-label" for="temporalDimensions">Temporal dimensions:</label>
+                <label class="col-sm-2 control-label" for="temporalDimensions">Temporal dimensions:</label>
                 <div class="col-sm-10">
-                    <input class="form-control" type="text" name="temporalDimensions" id="temporalDimensions" />
-                    <p class="hint-message text-info">Comma separated indexes of the temporal dimensions. (0-indexed)</p>
+                    <input class="form-control" type="text" name="temporalDimensions" id="temporalDimensions"/>
+                    <p class="hint-message text-info">Comma separated indexes of the temporal dimensions.
+                        (0-indexed)</p>
+
+                    {% if errors['temporalDimensions'] is defined %}
+                        <p class="bg-danger error-message">{{ errors['temporalDimensions'] }}</p>
+                    {% endif %}
                 </div>
             </div>
 
-            {% if errors['temporalDimensions'] is defined %}
-                <p class="bg-danger error-message">{{ errors['temporalDimensions'] }}</p>
-            {% endif %}
-
             <div class="form-group row">
-                <label class="col-sm-2 form-control-label" for="file">File:</label>
+                <label class="col-sm-2 control-label" for="file">File:</label>
                 <div class="col-sm-10">
-                    <input class="form-control-file" required="required" type="file" name="file" />
+                    <input class="form-control-file" required="required" type="file" name="file"/>
                     <small class="text-muted">Only .ctx and .csv files supported.</small>
+                    {% if errors['file'] is defined %}
+                        <p class="bg-danger error-message">{{ errors['file'] }}</p>
+                    {% endif %}
                 </div>
             </div>
 
-            {% if errors['file'] is defined %}
-                <p class="bg-danger error-message">{{ errors['file'] }}</p>
-            {% endif %}
-
-            <input type="submit" class="btn btn-primary" />
+            <input type="submit" class="btn btn-primary"/>
             <a class="btn btn-danger" href="{{ path("list_user_contexts") }}">Cancel</a>
         </form>
     </div>

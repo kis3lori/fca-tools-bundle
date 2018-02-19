@@ -1,0 +1,61 @@
+{% extends "@App/layout.html.twig" %}
+
+{% block body %}
+    <div class="create-new-scale-page"
+         data-get-table-data-url="{{ url("get_table_data") }}"
+         data-get-tables-url="{{ url("get_tables") }}">
+        <h1 class="page-header">Create a new scale</h1>
+
+        <ol class="breadcrumb">
+            <li><a href="{{ path("homepage") }}">Home</a></li>
+            <li><a href="{{ path("list_user_scales") }}">My Scales</a></li>
+            <li class="active">Create Scale</li>
+        </ol>
+
+        <ul class="nav nav-tabs">
+            <li class="{{ tab == "select-source" ? "active primary" : "disabled" }}">
+                <a>
+                    <strong>Step 1:</strong> Select Database
+                </a>
+            </li>
+
+            <li class="{{ tab == "describe-scale" ? "active primary" : "disabled" }}">
+                <a>
+                    <strong>Step 2:</strong> Provide General Scale Data
+                </a>
+            </li>
+
+            <li class="{{ tab == "define-scale" ? "active primary" : "disabled" }}">
+                <a>
+                    <strong>Step 3:</strong> Provide Type Specific Scale Data
+                </a>
+            </li>
+        </ul>
+        <br/>
+
+        <div class="tab-content">
+            {{ include('@App/Scale/Helper/createScaleTab1.html.twig') }}
+
+            {{ include('@App/Scale/Helper/createScaleTab2.html.twig') }}
+
+            {{ include('@App/Scale/Helper/createScaleTab3.html.twig') }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script src="{{ asset('bundles/app/scripts/scale-creation.js') }}"></script>
+
+    <script>
+        $(document).ready(function() {
+            scaleCreation = {
+                'tables': {{ (fillData.tables is defined ? (fillData.tables|json_encode) : "null")|raw }},
+                'selectedTable': {{ (app.request.request.get("tableName") ? (app.request.request.get("tableName")|json_encode) : "null")|raw }},
+                'tableData': {{ (fillData.tableData is defined ? (fillData.tableData|json_encode) : "null")|raw }},
+                'selectedColumn': {{ (app.request.request.get("column") ? (app.request.request.get("column")|json_encode) : "null")|raw }}
+            };
+        })
+    </script>
+{% endblock %}

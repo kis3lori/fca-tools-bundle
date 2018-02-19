@@ -292,7 +292,7 @@ class ContextImportExportController extends BaseController
         }
 
         $contextService = $this->get("app.generate_context_files_service");
-        $fileName = $contextService->generateTempFileName("csv");
+        $fileName = CommonUtils::generateTempFileName("csv");
         $filePath = "bin/temp/cron_delete/" . $fileName;
 
         $contextService->generateContextCsvFile($context, $filePath);
@@ -334,8 +334,7 @@ class ContextImportExportController extends BaseController
 
         unset($jsonContext['_id'], $jsonContext['user']);
 
-        $contextService = $this->get("app.context_service");
-        $fileName = $contextService->generateTempFileName("json");
+        $fileName = CommonUtils::generateTempFileName("json");
         $filePath = "bin/temp/cron_delete/" . $fileName;
 
         $rootDir = $this->get("kernel")->getRootDir();

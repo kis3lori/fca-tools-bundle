@@ -68,12 +68,24 @@ class User implements UserInterface, \Serializable
      */
     protected $groupsOwned;
 
+    /**
+     * @MongoDB\ReferenceMany(targetDocument="DatabaseConnection", mappedBy="user")
+     */
+    protected $databaseConnections;
+
+    /**
+     * @MongoDB\ReferenceMany(targetDocument="Scale", mappedBy="user")
+     */
+    protected $scales;
+
     public function __construct()
     {
         $this->contexts = new ArrayCollection();
         $this->conceptFinderBookmarks = new ArrayCollection();
         $this->groupsOwned = new ArrayCollection();
         $this->groups = new ArrayCollection();
+        $this->databaseConnections = new ArrayCollection();
+        $this->scales = new ArrayCollection();
     }
 
     public function getSalt()
@@ -378,5 +390,65 @@ class User implements UserInterface, \Serializable
     public function getGroupsOwned()
     {
         return $this->groupsOwned;
+    }
+
+    /**
+     * Add databaseConnection
+     *
+     * @param DatabaseConnection $databaseConnection
+     */
+    public function addDatabaseConnection(DatabaseConnection $databaseConnection)
+    {
+        $this->databaseConnections[] = $databaseConnection;
+    }
+
+    /**
+     * Remove databaseConnection
+     *
+     * @param DatabaseConnection $databaseConnection
+     */
+    public function removeDatabaseConnection(DatabaseConnection $databaseConnection)
+    {
+        $this->databaseConnections->removeElement($databaseConnection);
+    }
+
+    /**
+     * Get databaseConnections
+     *
+     * @return \Doctrine\Common\Collections\Collection $databaseConnections
+     */
+    public function getDatabaseConnections()
+    {
+        return $this->databaseConnections;
+    }
+
+    /**
+     * Add scale
+     *
+     * @param Scale $scale
+     */
+    public function addScale(Scale $scale)
+    {
+        $this->scales[] = $scale;
+    }
+
+    /**
+     * Remove scale
+     *
+     * @param Scale $scale
+     */
+    public function removeScale(Scale $scale)
+    {
+        $this->scales->removeElement($scale);
+    }
+
+    /**
+     * Get scales
+     *
+     * @return \Doctrine\Common\Collections\Collection $scales
+     */
+    public function getScales()
+    {
+        return $this->scales;
     }
 }

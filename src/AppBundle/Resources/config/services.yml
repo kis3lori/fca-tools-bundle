@@ -2,8 +2,17 @@ services:
     app.context_service:
         class: AppBundle\Service\ContextService
         arguments: ["@service_container"]
+    app.scale_service:
+        class: AppBundle\Service\ScaleService
+        arguments: ["@service_container"]
     app.statistics_service:
         class: AppBundle\Service\StatisticsService
+        arguments: ["@service_container"]
+    app.database_connection_service:
+        class: AppBundle\Service\DatabaseConnectionService
+        arguments: ["@service_container"]
+    app.csv_table_service:
+        class: AppBundle\Service\CsvTableService
         arguments: ["@service_container"]
     app.parser.cxt_parser:
         class: AppBundle\Parser\CxtParser

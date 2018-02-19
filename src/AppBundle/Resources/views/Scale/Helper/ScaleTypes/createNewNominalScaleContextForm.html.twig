@@ -1,0 +1,78 @@
+<form class="form-horizontal create-context-form" action="{{ path("create_new_scale") }}" method="post">
+    <p class="message bg-info">
+        Nominal scales are used for scaling attributes, whose values are mutually exclusive,
+        like for example gender. <br/>
+        Having attributes that exclude each other, the concept extents build a partition of the object set.
+    </p>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label" for="nominal-scale-column">Column:</label>
+        <div class="col-sm-10">
+            <select name="column" class="form-control" id="nominal-scale-column" required="required">
+                <option value="" disabled="disabled"
+                        {{ app.request.request.get("column") == "" ? 'selected="selected"' : "" }}>
+                    Select a column
+                </option>
+
+                {% if fillData.tableData is defined %}
+                    {% for column in fillData.tableData['columns'] %}
+                        <option value="{{ column }}"
+                                {{ app.request.request.get("column") == column ? 'selected="selected"' : "" }}>
+                            {{ column }}
+                        </option>
+                    {% endfor %}
+                {% endif %}
+            </select>
+
+            {% if errors['column'] is defined %}
+                <p class="bg-danger error-message">{{ errors['column'] }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="nominal-scale-part-2 collapse{{ app.request.request.get("column") != "" ? " in" : "" }}">
+        <p class="message bg-info">All values from the column are included by default.</p>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">Do you wish to customize the list of elements?</label>
+            <div class="col-sm-2">
+                <label>
+                    <input type="radio" name="subType" class="subType" value="simple" checked="checked"/>
+                    No
+                </label>
+            </div>
+            <div class="col-sm-2">
+                <label>
+                    <input type="radio" name="subType" class="subType" value="custom"/>
+                    Yes
+                </label>
+            </div>
+        </div>
+
+        {% if errors['subType'] is defined %}
+            <p class="bg-danger error-message">{{ errors['subType'] }}</p>
+        {% endif %}
+
+        <div class="form-group nominal-scale-elements-selector collapse">
+            <label class="col-sm-2 control-label" for="nominalScaleValues">Select values:</label>
+            <div class="col-sm-10">
+                <select name="nominalScaleValues[]" class="form-control" id="nominalScaleValues" multiple="multiple">
+                    <option value="" selected="selected" disabled="disabled">Select elements to include</option>
+                </select>
+
+                {% if errors['nominalScaleValues'] is defined %}
+                    <p class="bg-danger error-message">{{ errors['nominalScaleValues'] }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <p>
+        <a class="btn btn-danger" href="{{ path("list_user_scales") }}">Cancel</a>
+        <a class="btn btn-default prev-tab">Back</a>
+        <button class="btn btn-primary btn-create-nominal-scale">Submit</button>
+
+        <input class="hidden submit-btn" type="submit"/>
+        <a class="hidden prev-tab-hidden-btn" href="#step2-tab" data-toggle="tab">Back</a>
+    </p>
+</form>

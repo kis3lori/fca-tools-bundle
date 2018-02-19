@@ -16,18 +16,18 @@
             </button>
 
             <div class="collapse" id="create-group">
-                <form action="{{ path("create_new_group") }}" method="post" class="create-context-form">
-                    <div class="form-group row">
-                        <label class="col-sm-2 form-control-label" for="name">Name:</label>
+                <form class="form-horizontal create-context-form" action="{{ path("create_new_group") }}" method="post">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="name">Group Name:</label>
                         <div class="col-sm-10">
                             <input class="form-control" type="text" name="name" id="name" required="required"
                                    value="{{ app.request.request.get("name", "") }}"/>
+
+                            {% if errors['name'] is defined %}
+                                <p class="bg-danger error-message">{{ errors['name'] }}</p>
+                            {% endif %}
                         </div>
                     </div>
-
-                    {% if errors['name'] is defined %}
-                        <p class="bg-danger error-message">{{ errors['name'] }}</p>
-                    {% endif %}
 
                     <p>
                         <button class="btn btn-primary">Submit</button>

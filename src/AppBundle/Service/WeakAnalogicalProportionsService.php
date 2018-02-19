@@ -32,11 +32,6 @@ class WeakAnalogicalProportionsService
     public $contextService;
 
     /**
-     * @var GenerateContextFilesService
-     */
-    public $generateContextFilesService;
-
-    /**
      * @var ContextRestrictionValidationService
      */
     public $contextRestrictionValidationService;
@@ -50,7 +45,6 @@ class WeakAnalogicalProportionsService
         $this->statisticsService = $container->get("app.statistics_service");
         $this->scriptDir = $this->kernel->getRootDir() . "/../bin/fca/";
         $this->contextService = $container->get("app.context_service");
-        $this->generateContextFilesService = $container->get("app.generate_context_files_service");
         $this->contextRestrictionValidationService = $container->get("app.context_restriction_validation_service");
     }
 
@@ -120,8 +114,8 @@ admissible_attribute(Y):-  attribute(Y), optype(T), not imp_attribute(Y,T).
 #show acomp/3.
 EOT;
 
-        $dataFileName = $this->generateContextFilesService->generateTempFileName("lp");
-        $resultFileName = $this->generateContextFilesService->generateTempFileName("txt");
+        $dataFileName = CommonUtils::generateTempFileName("lp");
+        $resultFileName = CommonUtils::generateTempFileName("txt");
 
         $dataFilePath = $this->kernel->getRootDir() . "/../bin/temp/find_triadic_concept/input/" . $dataFileName;
         $resultFilePath = $this->kernel->getRootDir() . "/../bin/temp/find_triadic_concept/output/" . $resultFileName;

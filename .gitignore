@@ -19,8 +19,6 @@
 /bin/fca/parsedConcepts.json
 /bin/fca/trias_progress.log
 /bin/fca/triasResult.txt
-/web/uploads/context/files
-/web/uploads/tri-context/files
 /bin/fca/gistfile1.pyc
 /bin/fca/svgfig.pyc
 /src/AppBundle/Document/*.php~

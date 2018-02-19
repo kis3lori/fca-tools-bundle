@@ -1,0 +1,92 @@
+<form class="form-horizontal create-context-form" action="{{ path("create_new_scale") }}" method="post">
+    <p class="message bg-info">
+        Like ordinal scales, inter-ordinal scales are used for scaling attributes with ordered values,
+        but in this case, the concept intents are the intervals of scale values.<br/>
+        For example: Between 1000 and 2000, between 2000 and 3000, etc. <br/>
+    </p>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label" for="inter-ordinal-scale-column">Column:</label>
+        <div class="col-sm-10">
+            <select name="column" class="form-control" id="inter-ordinal-scale-column" required="required">
+                <option value="" disabled="disabled"
+                        {{ app.request.request.get("column") == "" ? 'selected="selected"' : "" }}>
+                    Select a column
+                </option>
+
+                {% if fillData.tableData is defined %}
+                    {% for column in fillData.tableData['columns'] %}
+                        <option value="{{ column }}"
+                                {{ app.request.request.get("column") == column ? 'selected="selected"' : "" }}>
+                            {{ column }}
+                        </option>
+                    {% endfor %}
+                {% endif %}
+            </select>
+
+            {% if errors['column'] is defined %}
+                <p class="bg-danger error-message">{{ errors['column'] }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="inter-ordinal-scale-part-2 collapse{{ app.request.request.get("column") != "" ? " in" : "" }}">
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="inter-ordinal-scale-column">Which side includes the
+                bounds? </label>
+            <div class="col-sm-2">
+                <label>
+                    <input type="radio" name="boundsInclusionSide" class="inter-ordinal-scale-bounds-inclusion-side"
+                           value="increasing-side"
+                           checked="checked"/>
+                    Increasing side
+                </label>
+            </div>
+            <div class="col-sm-2">
+                <label>
+                    <input type="radio" name="boundsInclusionSide" class="inter-ordinal-scale-bounds-inclusion-side"
+                           value="decreasing-side"/>
+                    Decreasing side
+                </label>
+            </div>
+            <div class="col-sm-6"></div>
+        </div>
+
+        {% if errors['boundsInclusionSide'] is defined %}
+            <p class="bg-danger error-message">{{ errors['boundsInclusionSide'] }}</p>
+        {% endif %}
+
+        <div class="form-group">
+            <div class="col-sm-12 scale-elements" data-prefix="interOrdinal">
+                <div class="input-group">
+                    <div class="input-group-btn">
+                        <button class="scale-add-value btn btn-primary">Add Value</button>
+                    </div>
+
+                    <input class="form-control scale-elements-input" type="number" step="any"
+                           value="" placeholder="Type in a value..."/>
+                </div>
+
+                <br/>
+
+                <ul class="list-group scale-values-list">
+                </ul>
+            </div>
+        </div>
+
+        {% if errors['interOrdinalScaleValues'] is defined %}
+            <p class="bg-danger error-message">{{ errors['interOrdinalScaleValues'] }}</p>
+        {% endif %}
+    </div>
+
+    <br/>
+
+    <p>
+        <a class="btn btn-danger" href="{{ path("list_user_scales") }}">Cancel</a>
+        <a class="btn btn-default prev-tab">Back</a>
+        <button class="btn btn-primary btn-create-inter-ordinal-scale">Submit</button>
+
+        <input class="hidden submit-btn" type="submit"/>
+        <a class="hidden prev-tab-hidden-btn" href="#step2-tab" data-toggle="tab">Back</a>
+    </p>
+</form>
