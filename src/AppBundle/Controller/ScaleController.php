@@ -108,6 +108,7 @@ class ScaleController extends BaseController
                     try {
                         $fillData['tableData'] = $csvTableService->getTableDataFromFileContents($fileContent);
                     } catch (\Exception $exception) {
+                        $request->getSession()->remove("csvFileName");
                         $errors["csvFileName"] = "Unable to parse the csv file. Please check the correct format and try again.";
                     }
                 }

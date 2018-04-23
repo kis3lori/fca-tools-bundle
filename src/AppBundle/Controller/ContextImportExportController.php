@@ -221,8 +221,8 @@ class ContextImportExportController extends BaseController
                     $fileName = uniqid() . ".cxt";
                     $context->setContextFileName($fileName);
 
-                    $contextService = $this->get("app.context_service");
-                    $contextService->generateContextFile($context);
+                    $generateContextFilesService = $this->get("app.generate_context_files_service");
+                    $generateContextFilesService->generateContextFile($context);
 
                     $em = $this->getManager();
                     $em->persist($context);
