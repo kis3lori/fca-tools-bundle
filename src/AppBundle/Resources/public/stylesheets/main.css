@@ -183,9 +183,9 @@ body {
 }
 
 /* line 128, ../../sass/main.sass */
-.create-new-context-page .condition-input,
-.create-new-context-page .btn-add-condition,
-.create-new-context-page .condition-delete-input {
+.manual-context-form .condition-input,
+.manual-context-form .btn-add-condition,
+.manual-context-form .condition-delete-input {
   display: none;
 }
 
