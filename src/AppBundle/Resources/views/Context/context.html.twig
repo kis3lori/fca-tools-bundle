@@ -16,6 +16,10 @@
 
         {% if context.user == app.user %}
             <p>
+                <a class="btn btn-default" href="{{ path("edit_context", {"id": context.id}) }}">
+                    Edit Context
+                </a>
+
                 {% if context.concepts is empty %}
                     <a class="btn btn-primary" href="{{ path("generate_concepts", {"id": context.id}) }}">
                         Generate Concepts

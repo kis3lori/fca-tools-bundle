@@ -2,11 +2,13 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Document\ConceptLattice;
 use AppBundle\Document\Context;
 use AppBundle\Helper\CommonUtils;
 use AppBundle\Parser\Exception\InvalidNumericDimensionException;
 use AppBundle\Parser\Exception\InvalidTemporalDimensionException;
 use AppBundle\Parser\FcaParser;
+use Doctrine\Common\Collections\ArrayCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -122,6 +124,121 @@ class ContextImportExportController extends BaseController
 
         return $this->render('@App/ContextImportExport/createNewContext.html.twig', array(
             'activeMenu' => "my_contexts",
+            'errors' => $errors,
+        ));
+    }
+
+    /**
+     * @Security("has_role('ROLE_USER')")
+     * @Route("/edit-context/{id}", name="edit_context")
+     *
+     * @param Request $request
+     * @param $id
+     * @return Response
+     */
+    public function editContext(Request $request, $id)
+    {
+        $this->startStatisticsCounter();
+
+        $em = $this->getManager();
+        /** @var Context $context */
+        $context = $em->getRepository("AppBundle:Context")->find($id);
+
+        if (!$this->isValidContext($context, array("not null", "is own"))) {
+            return $this->renderFoundError("contexts");
+        }
+
+        $errors = array();
+        if (!in_array($context->getDimCount(), array(2, 3))) {
+            $errors["context_type"] = "Only dyadic and triadic context can be edited using this page. "
+                . "For context with more dimensions please use the re-import method.";
+        }
+
+        if (empty($errors) && $request->isMethod("POST")) {
+            $params = $this->getParameter('fca');
+
+            $postData = $request->request;
+            $contextType = $postData->get("context_type", "dyadic");
+
+            if (!in_array($contextType, array("dyadic", "triadic"))) {
+                $errors["context_type"] = "Only dyadic and triadic context can be edited using this page. "
+                    . "For context with more dimensions please use the import method.";
+            }
+            if (!$postData->has("name") || $postData->get("name") == "") {
+                $errors["name"] = "The name of the context cannot be empty.";
+            }
+            if (!$postData->has("description") || $postData->get("description") == "") {
+                $errors["description"] = "The description of the context cannot be empty.";
+            }
+            if (!$postData->has("objects")) {
+                $errors["objects"] = "The context must have at least one object.";
+            }
+            if (!$postData->has("attributes")) {
+                $errors["attributes"] = "The context must have at least one attribute.";
+            }
+            if ($contextType == "triadic" && (!$postData->has("conditions") || $postData->get("conditions") == "")) {
+                $errors["conditions"] = "The context must have at least one condition.";
+            }
+
+            if (empty($errors)) {
+                $context->setName($postData->get("name"));
+                $context->setDescription($postData->get("description"));
+                switch ($contextType) {
+                    case "triadic":
+                        $dimCount = 3;
+                        break;
+                    case "dyadic":
+                    default:
+                        $dimCount = 2;
+                        break;
+                }
+                $context->setDimCount($dimCount);
+
+                $context->setDimensions(array());
+                $dimensions = array_slice($params['dimensionsPlural'], 0, $dimCount);
+                for ($index = 0; $index < $context->getDimCount(); $index++) {
+                    $paramName = $dimensions[$index];
+                    $elements = $postData->get($paramName, array());
+                    foreach ($elements as $elem) {
+                        $context->addElement($index, CommonUtils::trim($elem));
+                    }
+                }
+
+                $context->setRelations(array());
+                foreach ($postData->get('relation_tuples', array()) as $tuple) {
+                    $parts = explode("###", $tuple);
+                    $relation = array();
+
+                    for ($index = 0; $index < $dimCount; $index++) {
+                        $elemName = CommonUtils::trim($parts[$index]);
+                        $elemId = array_search($elemName, $context->getDimension($index));
+                        $relation[] = $elemId;
+                    }
+
+                    $context->addRelation($relation);
+                }
+
+                $context->setConceptFinderBookmarks(new ArrayCollection());
+                $context->setConcepts(array());
+                $context->setContextFile(null);
+
+                $generateContextFilesService = $this->get("app.generate_context_files_service");
+                $generateContextFilesService->generateContextFile($context);
+
+                $em->persist($context);
+                $em->flush();
+
+                $this->stopCounterAndLogStatistics("edit context", $context);
+
+                return $this->redirect($this->generateUrl("view_context", array(
+                    "id" => $context->getId(),
+                )));
+            }
+        }
+
+        return $this->render('@App/ContextImportExport/editContext.html.twig', array(
+            'activeMenu' => "my_contexts",
+            'context' => $context,
             'errors' => $errors,
         ));
     }

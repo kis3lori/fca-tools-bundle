@@ -182,7 +182,7 @@ $(document).ready(function () {
 
     $(".create-context-table").scroll(adjustTablesScroll);
 
-    $(".create-context-form")
+    $(".manual-context-form")
         .on("click", ".data-cell", function (event) {
             event.preventDefault();
 
@@ -198,6 +198,10 @@ $(document).ready(function () {
 
             if (name === "") return;
 
+            var deleteIcon = $("<span>");
+            deleteIcon.addClass("delete-icon")
+                .text("x");
+
             var input = $("<input>");
             input.attr("type", "text")
                 .addClass("item-name-input")
@@ -205,6 +209,7 @@ $(document).ready(function () {
 
             var firstColumn = $("<td>");
             firstColumn.addClass("left-head-cell");
+            firstColumn.append(deleteIcon);
             firstColumn.append(input);
             firstColumn.css({
                 "left": "-1px"
@@ -228,7 +233,7 @@ $(document).ready(function () {
             var val = $(this).val();
             var index = $(this).closest("tr").index();
 
-            var tablesContainer = $(this).closest(".create-context-form").find(".relation-tables");
+            var tablesContainer = $(this).closest(".manual-context-form").find(".relation-tables");
             tablesContainer.find(".create-context-table").each(function () {
                 $(this).find("tbody tr").eq(index).find(".left-head-cell input").val(val);
             });
@@ -239,6 +244,10 @@ $(document).ready(function () {
 
             if (name === "") return;
 
+            var deleteIcon = $("<span>");
+            deleteIcon.addClass("delete-icon")
+                .text("x");
+
             var input = $("<input>");
             input.attr("type", "text")
                 .addClass("item-name-input")
@@ -246,6 +255,7 @@ $(document).ready(function () {
 
             var firstCell = $("<td>");
             firstCell.addClass("top-head-cell");
+            firstCell.append(deleteIcon);
             firstCell.append(input);
 
             var cell = $("<td>").html("&nbsp;");
@@ -271,7 +281,7 @@ $(document).ready(function () {
             var val = $(this).val();
             var index = $(this).closest(".top-head-cell").index() - 1;
 
-            var tablesContainer = $(this).closest(".create-context-form").find(".relation-tables");
+            var tablesContainer = $(this).closest(".manual-context-form").find(".relation-tables");
             tablesContainer.find(".create-context-table").each(function () {
                 $(this).find(".top-head-cell").eq(index).find("input").val(val);
             });
@@ -358,29 +368,54 @@ $(document).ready(function () {
         .on("click", ".btn-add-condition", function (event) {
             event.preventDefault();
 
-            var tablesContainer = $(this).closest(".create-context-form").find(".relation-tables");
+            var tablesContainer = $(this).closest(".manual-context-form").find(".relation-tables");
             var table = tablesContainer.find(".table-data:first").clone();
             table.find(".data-cell").html("&nbsp;");
             table.find(".empty-cell input").val("");
             table.scroll(adjustTablesScroll);
 
             tablesContainer.append(table);
+        })
+        .on("click", ".left-head-cell .delete-icon", function (event) {
+            event.preventDefault();
+            var rowIndex = $(this).closest("tr").index();
+            $(this).closest(".relation-tables").find(".table-data").each(function () {
+                $(this).find("tbody tr").eq(rowIndex).remove();
+            });
+        })
+        .on("click", ".top-head-cell .delete-icon", function (event) {
+            event.preventDefault();
+            var colIndex = $(this).closest("td").index();
+            $(this).closest(".relation-tables").find(".table-data tbody tr").each(function () {
+                $(this).find("td").eq(colIndex).remove();
+            });
+        })
+        .on("click", ".empty-cell .delete-icon", function (event) {
+            event.preventDefault();
+            if ($(this).closest(".relation-tables").find(".table-data").length <= 1) {
+                alert("Cannot remove the last table.");
+            } else {
+                $(this).closest(".table-data").remove();
+            }
         });
 
     $('input[type=radio][name=context_type]').on('change', function () {
         var btnAddCondition = $(".btn-add-condition");
         var conditionInputs = $(".condition-input");
-        var additionalTables = $(".create-context-form .table-data:not(:first)");
+        var conditionDeleteInputs = $(".condition-delete-input");
+        var additionalTables = $(".manual-context-form .table-data:not(:first)");
 
         switch ($(this).val()) {
             case 'dyadic':
                 btnAddCondition.hide();
                 conditionInputs.hide();
+                conditionDeleteInputs.hide();
                 additionalTables.hide();
                 break;
             case 'triadic':
                 btnAddCondition.show();
                 conditionInputs.show();
+                conditionDeleteInputs.show();
                 additionalTables.show();
                 break;
         }

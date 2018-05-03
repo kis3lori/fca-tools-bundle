@@ -1,0 +1,18 @@
+{% extends "@App/layout.html.twig" %}
+
+{% block body %}
+    {# context \AppBundle\Document\Context #}
+
+    <div class="edit-context-page">
+        <h1 class="page-header">Edit context</h1>
+
+        <ol class="breadcrumb">
+            <li><a href="{{ path("homepage") }}">Home</a></li>
+            <li><a href="{{ path("list_user_contexts") }}">My Contexts</a></li>
+            <li><a href="{{ path("view_context", {"id": context.id}) }}">{{ context.name }}</a></li>
+            <li class="active">Edit</li>
+        </ol>
+
+        {{ include("@App/ContextImportExport/Helper/editContextForm.html.twig") }}
+    </div>
+{% endblock %}

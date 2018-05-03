@@ -111,7 +111,7 @@ class Context
         $this->conceptFinderBookmarks = new ArrayCollection();
         $this->numericalDimensions = array();
         $this->temporalDimensions = array();
-        $this->elements = array();
+        $this->dimensions = array();
         $this->relations = array();
         $this->concepts = array();
         $this->groups = new ArrayCollection();
@@ -174,6 +174,17 @@ class Context
     public function setConceptLattice(ConceptLattice $conceptLattice)
     {
         $this->conceptLattice = $conceptLattice;
+        return $this;
+    }
+
+    /**
+     * Reset conceptLattice
+     *
+     * @return self
+     */
+    public function resetConceptLattice()
+    {
+        $this->conceptLattice = null;
         return $this;
     }
 
@@ -342,11 +353,11 @@ class Context
 
     /**
      * @param int $index
-     * @param array $elements
+     * @param array $dimensions
      */
-    public function setDimension($index, $elements)
+    public function setDimension($index, $dimensions)
     {
-        $this->dimensions[$index] = $elements;
+        $this->dimensions[$index] = $dimensions;
     }
 
     /**
@@ -512,6 +523,18 @@ class Context
     public function getConceptFinderBookmarks()
     {
         return $this->conceptFinderBookmarks;
+    }
+
+    /**
+     * Set conceptFinderBookmarks
+     *
+     * @param \Doctrine\Common\Collections\Collection $conceptFinderBookmarks
+     * @return self
+     */
+    public function setConceptFinderBookmarks($conceptFinderBookmarks)
+    {
+        $this->conceptFinderBookmarks = $conceptFinderBookmarks;
+        return $this;
     }
 
     /**

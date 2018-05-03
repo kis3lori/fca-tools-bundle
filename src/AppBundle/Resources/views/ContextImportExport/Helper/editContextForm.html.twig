@@ -1,10 +1,10 @@
-<form action="{{ path("create_new_context") }}" method="post"
-      class="form-horizontal create-context-form manual-context-form">
+{# context \AppBundle\Document\Context #}
+<form action="{{ path("edit_context", {"id": context.id}) }}" method="post" class="form-horizontal edit-context-form manual-context-form">
     <div class="form-group">
         <label class="col-sm-2 control-label" for="name">Name:</label>
         <div class="col-sm-10">
             <input class="form-control" type="text" name="name" id="name" required="required"
-                   value="{{ app.request.request.get("name", "") }}"/>
+                   value="{{ app.request.request.has("name") ? app.request.request.get("name") : context.name }}"/>
 
             {% if errors['name'] is defined %}
                 <p class="bg-danger error-message">{{ errors['name'] }}</p>
@@ -16,7 +16,7 @@
         <label class="col-sm-2 control-label" for="description">Description:</label>
         <div class="col-sm-10">
             <input class="form-control" type="text" name="description" id="description" required="required"
-                   value="{{ app.request.request.get("description", "") }}"/>
+                   value="{{ app.request.request.has("description") ? app.request.request.get("description") : context.description }}"/>
 
             {% if errors['description'] is defined %}
                 <p class="bg-danger error-message">{{ errors['description'] }}</p>
@@ -28,7 +28,7 @@
         <label class="col-sm-2 control-label" for="context_type">Context Type:</label>
 
         <div class="col-sm-10">
-            {% set contextType = app.request.request.get("context_type", "dyadic") %}
+            {% set contextType = app.request.request.has("context_type") ? app.request.request.get("context_type") : (context.dimCount == 2 ? "dyadic" : "triadic") %}
             <label class="radio-inline">
                 <input type="radio" name="context_type" value="dyadic"
                         {{ contextType == "dyadic"?"checked=\"checked\"":"" }}/>
@@ -47,10 +47,23 @@
         </div>
     </div>
 
-    {% set objects =  app.request.request.get("objects", []) %}
-    {% set attributes = app.request.request.get("attributes", []) %}
-    {% set conditions = app.request.request.get("conditions", [""]) %}
-    {% set relationTuples = app.request.request.get("relation_tuples", []) %}
+    {% set objects =  app.request.request.has("objects") ? app.request.request.get("objects") : context.dimension(0) %}
+    {% set attributes = app.request.request.has("attributes") ? app.request.request.get("attributes") : context.dimension(1) %}
+    {% set conditions = app.request.request.has("conditions") ? app.request.request.get("conditions") : (context.dimensions[2] is defined ? context.dimension(2) : [""]) %}
+
+    {% if app.request.request.has("relation_tuples") %}
+        {% set relationTuples = app.request.request.get("relation_tuples") %}
+    {% else %}
+        {% set relationTuples = [] %}
+        {% for relation in context.relations %}
+            {% set relationElements = [] %}
+            {% for key, item in relation %}
+                {% set relationElements = relationElements|merge([context.dimension(key)[item]]) %}
+            {% endfor %}
+            {% set relationTuple = [relationElements|join("###")] %}
+            {% set relationTuples = relationTuples|merge(relationTuple) %}
+        {% endfor %}
+    {% endif %}
 
     {% set condition = conditions[0] %}
     <div class="relation-tables">
@@ -118,9 +131,10 @@
                     <table class="table table-bordered create-context-table">
                         <tr class="first-row">
                             <td class="empty-cell">
-                                <span class="delete-icon condition-delete-input">x</span>
+                                <span class="delete-icon condition-delete-input" {{ contextType == "triadic"?"style=\"display: block\"":"" }}>x</span>
                                 <input type="text" class="item-name-input condition-input"
-                                       placeholder="condition..." style="display: block" value="{{ condition }}"/>
+                                       placeholder="condition..."
+                                       style="display: block" value="{{ condition }}"/>
                             </td>
 
                             {% for attribute in attributes %}

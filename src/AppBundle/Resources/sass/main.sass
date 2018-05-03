@@ -126,7 +126,8 @@ body
 
 .create-new-context-page
   .condition-input,
-  .btn-add-condition
+  .btn-add-condition,
+  .condition-delete-input
     display: none
 
 .relation-tables
@@ -160,6 +161,7 @@ body
           td
             width: 100px
             min-width: 100px
+            position: relative
             .item-name-input
               width: 100%
               height: 100%
@@ -167,6 +169,13 @@ body
               -webkit-text-fill-color: white
               border: 0 none
               background: transparent
+              margin-left: 8px
+            .delete-icon
+              font-size: 15px
+              position: absolute
+              left: 5px
+              top: 7px
+              cursor: pointer
             &.data-cell
               cursor: pointer
               text-align: center
@@ -184,6 +193,10 @@ body
               height: 38px
               left: -102px
               border-bottom: 1px solid white
+            &.left-head-cell.add-object-cell,
+            &.top-head-cell.add-attribute-cell
+              .item-name-input
+                margin-left: 0
 
 .found-concept
   margin: 20px 0 20px 0
