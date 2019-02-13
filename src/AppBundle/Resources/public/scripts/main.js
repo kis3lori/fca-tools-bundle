@@ -183,6 +183,13 @@ $(document).ready(function () {
     $(".create-context-table").scroll(adjustTablesScroll);
 
     $(".manual-context-form")
+        .on('keyup keypress', function(event) {
+            var keyCode = event.keyCode || event.which;
+            if (keyCode === 13) { 
+                event.preventDefault();
+                return false;
+            }
+        })
         .on("click", ".data-cell", function (event) {
             event.preventDefault();
 
